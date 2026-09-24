@@ -1,120 +1,189 @@
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Money</title>
-    <meta name="theme-color" content="#1e40af">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22My%20Money%22,%22short_name%22:%22MyMoney%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%231e40af%22}">
-    <!-- Tailwind CSS -->
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22My%20Money%22,%22short_name%22:%22MyMoney%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%230d6efd%22}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen pb-12 font-sans">
+<body class="bg-blue-50/40 min-h-screen pb-12">
 
-    <!-- Header -->
-    <header class="bg-blue-800 text-white p-5 rounded-b-3xl shadow-xl">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex items-center gap-2">
-                <i data-lucide="wallet" class="w-8 h-8 text-yellow-400"></i>
-                <h1 class="text-2xl font-bold tracking-wide">My Money</h1>
+    <!-- Header Section -->
+    <header class="bg-blue-600 text-white p-5 shadow-md">
+        <div class="flex justify-between items-start max-w-md mx-auto">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight">My Money</h1>
+                <p class="text-xs text-blue-100 font-medium">Income & Expenses</p>
             </div>
-            <span class="text-xs bg-blue-900 px-3 py-1 rounded-full text-blue-200 border border-blue-700">PWA App</span>
-        </div>
-
-        <!-- Dashboard Totals -->
-        <div class="grid grid-cols-3 gap-2 text-center mt-2">
-            <div class="bg-blue-900/60 p-3 rounded-2xl border border-blue-700/50 backdrop-blur">
-                <p class="text-[11px] text-blue-200">బ్యాలెన్స్ / Balance</p>
-                <p class="text-base font-bold mt-1 text-white" id="totalBalance">₹0</p>
-            </div>
-            <div class="bg-emerald-600/30 p-3 rounded-2xl border border-emerald-500/40 backdrop-blur">
-                <p class="text-[11px] text-emerald-200">ఆదాయం / Income</p>
-                <p class="text-base font-bold mt-1 text-emerald-400" id="totalIncome">₹0</p>
-            </div>
-            <div class="bg-rose-600/30 p-3 rounded-2xl border border-rose-500/40 backdrop-blur">
-                <p class="text-[11px] text-rose-200">ఖర్చు / Expense</p>
-                <p class="text-base font-bold mt-1 text-rose-400" id="totalExpense">₹0</p>
-            </div>
+            <!-- Language Switcher -->
+            <button onclick="toggleLanguage()" class="bg-white text-blue-700 font-bold px-4 py-1.5 rounded-xl text-sm shadow-sm hover:bg-blue-50 transition active:scale-95">
+                <span id="langBtnText">తెలుగు</span>
+            </button>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="max-w-md mx-auto p-4 space-y-5">
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- UPI Actions -->
-        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <i data-lucide="qr-code" class="w-4 h-4 text-blue-600"></i>
-                UPI క్విక్ యాక్షన్స్ / UPI Actions
-            </h2>
+        <!-- Total Balance Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center">
+            <p class="text-gray-600 font-medium text-sm mb-1" id="lblTotalBalance">Total Balance</p>
+            <h2 class="text-3xl font-bold text-blue-600 mb-4" id="totalBalance">₹0</h2>
+
             <div class="grid grid-cols-2 gap-3">
-                <a href="upi://pay" class="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 font-semibold p-3 rounded-xl border border-purple-200 hover:bg-purple-100 transition active:scale-95">
-                    <i data-lucide="scan" class="w-5 h-5"></i>
-                    <span>Scan Shop QR</span>
-                </a>
-                <button onclick="toggleModal('qrModal')" class="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 font-semibold p-3 rounded-xl border border-blue-200 hover:bg-blue-100 transition active:scale-95">
-                    <i data-lucide="qr-code" class="w-5 h-5"></i>
-                    <span>Show Bank QR</span>
-                </button>
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                    <p class="text-xs font-semibold text-gray-600" id="lblIncomeCard">Income</p>
+                    <p class="text-sm font-bold text-emerald-600 mt-1">₹<span id="totalIncome">0</span></p>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                    <p class="text-xs font-semibold text-gray-600" id="lblExpenseCard">Expenses</p>
+                    <p class="text-sm font-bold text-rose-600 mt-1">₹<span id="totalExpense">0</span></p>
+                </div>
             </div>
         </section>
 
-        <!-- Auto Expense & Income Entry Form -->
-        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i>
-                లావాదేవీ రికార్డ్ / Transaction Entry
-            </h2>
+        <!-- Receive Money Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-2xl">💰</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblReceiveTitle">Receive Money</h3>
+            </div>
+            <p class="text-xs text-gray-500 mb-4 leading-relaxed" id="lblReceiveSub">Show your QR and receive money directly to your UPI-linked bank account.</p>
             
-            <form id="txForm" onsubmit="handleAutoTransaction(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">అమౌంట్ / Amount (₹)</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-slate-400 font-bold">₹</span>
-                        <input type="number" id="amount" placeholder="0.00" required class="w-full pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 font-semibold text-slate-800">
-                    </div>
-                </div>
+            <button onclick="toggleModal('qrModal')" class="w-full bg-blue-600 text-white font-bold py-3 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md shadow-blue-200">
+                <span>📱</span>
+                <span id="btnShowQr">Show My QR</span>
+            </button>
+        </section>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">టైప్ / Type</label>
-                        <select id="txType" onchange="updateCategoryOptions()" class="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white font-medium text-slate-700 text-sm">
-                            <option value="expense">Payment (ఖర్చు)</option>
-                            <option value="income">Income (ఆదాయం)</option>
-                        </select>
-                    </div>
+        <!-- Add Income Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-2xl font-bold text-slate-700">➕</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblAddIncomeTitle">Add Income</h3>
+            </div>
 
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">సోర్స్ / Source</label>
-                        <select id="txSource" class="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white font-medium text-slate-700 text-sm">
-                            <!-- Dynamic Options -->
-                        </select>
-                    </div>
-                </div>
+            <form onsubmit="addIncome(event)" class="space-y-3">
+                <select id="incomeType" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 focus:ring-2 focus:ring-blue-600 text-sm">
+                    <option value="QR / UPI Income">QR / UPI Income</option>
+                    <option value="Cash Income">Cash Income</option>
+                    <option value="Other Income">Other Income</option>
+                </select>
 
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold p-3 rounded-xl hover:bg-blue-800 transition shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                    <span>ఆటోమాటిక్ జనరేట్ చేయండి / Auto Generate</span>
+                <input type="number" id="incomeAmount" placeholder="Amount ₹" required class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
+
+                <input type="text" id="incomeNote" placeholder="Income note" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
+
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-2xl hover:bg-emerald-700 transition shadow-md shadow-emerald-100" id="btnAddIncome">
+                    Add Income
                 </button>
             </form>
         </section>
 
-        <!-- Dynamic History & Auto Categories -->
-        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <i data-lucide="history" class="w-4 h-4 text-blue-600"></i>
-                    రిపోర్ట్ & హిస్టరీ / Reports
-                </h2>
-                <button onclick="clearHistory()" class="text-xs text-rose-500 hover:underline flex items-center gap-1">
-                    <i data-lucide="trash-2" class="w-3 h-3"></i> క్లియర్
-                </button>
+        <!-- Pay Shop Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-2xl">📷</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblPayShopTitle">Pay Shop</h3>
             </div>
+            <p class="text-xs text-gray-500 mb-4" id="lblPayShopSub">Scan shop UPI QR and pay using a UPI app.</p>
             
-            <div id="historyList" class="space-y-3">
-                <!-- Data dynamically inserted here -->
+            <a href="upi://pay" class="w-full bg-blue-600 text-white font-bold py-3 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md shadow-blue-200">
+                <span>📷</span>
+                <span id="btnScanQr">Scan Shop QR</span>
+            </a>
+        </section>
+
+        <!-- Add Expense Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-2xl font-bold text-slate-700">➖</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblAddExpenseTitle">Add Expense</h3>
+            </div>
+
+            <form onsubmit="addExpense(event)" class="space-y-3">
+                <input type="number" id="expenseAmount" placeholder="Amount ₹" required class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
+
+                <select id="expenseCategory" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 focus:ring-2 focus:ring-blue-600 text-sm">
+                    <option value="Food">🍔 Food</option>
+                    <option value="Travel">🚗 Travel</option>
+                    <option value="Shopping">🛍️ Shopping</option>
+                    <option value="Bills">🧾 Bills</option>
+                    <option value="Education">🎓 Education</option>
+                    <option value="Medical">🏥 Medical</option>
+                    <option value="Groceries">🛒 Groceries</option>
+                    <option value="Other">⚙️ Other</option>
+                </select>
+
+                <input type="text" id="expenseNote" placeholder="Expense note" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
+
+                <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-2xl hover:bg-rose-700 transition shadow-md shadow-rose-100" id="btnAddExpense">
+                    Add Expense
+                </button>
+            </form>
+        </section>
+
+        <!-- Total Payment Grid -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-2xl">📊</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblTotalPaymentTitle">Total Payment</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-slate-700" id="categoryGrid">
+                <!-- Dynamic Category Cards -->
+            </div>
+        </section>
+
+        <!-- Reports Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-2xl">📈</span>
+                <h3 class="text-xl font-bold text-slate-800" id="lblReportsTitle">Reports</h3>
+            </div>
+
+            <select class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 text-sm">
+                <option value="All Time">All Time</option>
+            </select>
+
+            <div class="space-y-2 text-sm pt-2 border-t border-slate-100">
+                <div class="flex justify-between font-medium">
+                    <span class="text-gray-600" id="lblReportInc">Total Income</span>
+                    <span class="text-emerald-600 font-bold">₹<span id="repIncome">0</span></span>
+                </div>
+                <div class="flex justify-between font-medium">
+                    <span class="text-gray-600" id="lblReportExp">Total Expense</span>
+                    <span class="text-rose-600 font-bold">₹<span id="repExpense">0</span></span>
+                </div>
+                <div class="flex justify-between font-medium">
+                    <span class="text-gray-600" id="lblReportBal">Balance</span>
+                    <span class="text-slate-800 font-bold">₹<span id="repBalance">0</span></span>
+                </div>
+                <div class="flex justify-between font-medium">
+                    <span class="text-gray-600" id="lblReportTx">Transactions</span>
+                    <span class="text-slate-800 font-bold" id="repTxCount">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transaction History Card -->
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🧾</span>
+                    <h3 class="text-xl font-bold text-slate-800" id="lblHistoryTitle">Transaction History</h3>
+                </div>
+                <button onclick="clearHistory()" class="text-xs text-rose-500 font-semibold hover:underline">Clear</button>
+            </div>
+
+            <div id="historyList" class="space-y-3 pt-2">
+                <!-- History Items Render Here -->
             </div>
         </section>
 
@@ -123,175 +192,193 @@
     <!-- Bank QR Modal -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 backdrop-blur-sm z-50">
         <div class="bg-white rounded-3xl p-6 text-center max-w-xs w-full space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 text-sm">మీ బ్యాంక్ QR కోడ్ / Bank QR</h3>
-                <button onclick="toggleModal('qrModal')" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center">
+            <h3 class="font-bold text-slate-800">My Bank QR</h3>
+            <div class="bg-slate-100 p-6 rounded-2xl flex items-center justify-center border">
                 <i data-lucide="qr-code" class="w-32 h-32 text-slate-700"></i>
-                <p class="text-xs text-slate-500 mt-2">బ్యాంక్ ఖాతా ద్వారా డబ్బు పొందేందుకు QR చూపించండి</p>
             </div>
-            <button onclick="toggleModal('qrModal')" class="bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-xl text-sm w-full hover:bg-slate-200 transition">క్లోజ్ / Close</button>
+            <button onclick="toggleModal('qrModal')" class="bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm w-full">Close</button>
         </div>
     </div>
 
-    <!-- Script Section -->
     <script>
-        let transactions = JSON.parse(localStorage.getItem('my_money_txs')) || [];
+        let currentLang = 'en';
+        const STORAGE_KEY = 'mymoney_app_db';
+        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-        function updateCategoryOptions() {
-            const type = document.getElementById('txType').value;
-            const sourceSelect = document.getElementById('txSource');
-            sourceSelect.innerHTML = '';
+        const categories = ['Food', 'Travel', 'Shopping', 'Bills', 'Education', 'Medical', 'Groceries', 'Other'];
 
-            if (type === 'income') {
-                sourceSelect.innerHTML = `
-                    <option value="Hand Cash">Hand Cash (హ్యాండ్ క్యాష్)</option>
-                    <option value="Bank QR">Bank QR (బ్యాంక్ QR)</option>
-                `;
-            } else {
-                sourceSelect.innerHTML = `
-                    <option value="Auto Online">UPI Payment (ఆన్లైన్)</option>
-                    <option value="Auto Cash">Cash Spent (క్యాష్)</option>
-                `;
+        const i18n = {
+            en: {
+                totalBal: "Total Balance", inc: "Income", exp: "Expenses", receiveTitle: "Receive Money",
+                receiveSub: "Show your QR and receive money directly to your UPI-linked bank account.",
+                showQr: "Show My QR", addIncTitle: "Add Income", addIncBtn: "Add Income",
+                payShopTitle: "Pay Shop", payShopSub: "Scan shop UPI QR and pay using a UPI app.",
+                scanQr: "Scan Shop QR", addExpTitle: "Add Expense", addExpBtn: "Add Expense",
+                totalPayTitle: "Total Payment", reportsTitle: "Reports", repInc: "Total Income",
+                repExp: "Total Expense", repBal: "Balance", repTx: "Transactions", historyTitle: "Transaction History"
+            },
+            te: {
+                totalBal: "మొత్తం బ్యాలెన్స్", inc: "ఆదాయం", exp: "ఖర్చులు", receiveTitle: "డబ్బు పొందేందుకు",
+                receiveSub: "మీ UPI కి లింక్ అయిన బ్యాంక్ అకౌంట్ కి డబ్బు పొందేందుకు QR చూపించండి.",
+                showQr: "నా QR చూపించు", addIncTitle: "ఆదాయం నమోదు", addIncBtn: "ఆదాయం యాడ్ చేయి",
+                payShopTitle: "షాప్ లో పే చేయండి", payShopSub: "షాప్ QR స్కాన్ చేసి UPI యాప్ ద్వారా పే చేయండి.",
+                scanQr: "షాప్ QR స్కాన్ చేయి", addExpTitle: "ఖర్చు నమోదు", addExpBtn: "ఖర్చు యాడ్ చేయి",
+                totalPayTitle: "మొత్తం చెల్లింపులు", reportsTitle: "రిపోర్ట్‌లు", repInc: "మొత్తం ఆదాయం",
+                repExp: "మొత్తం ఖర్చు", repBal: "మిగిలిన బ్యాలెన్స్", repTx: "లావాదేవీలు", historyTitle: "లావాదేవీల హిస్టరీ"
             }
-        }
+        };
 
-        function handleAutoTransaction(e) {
-            e.preventDefault();
-            const amt = parseFloat(document.getElementById('amount').value);
-            const type = document.getElementById('txType').value;
-            const source = document.getElementById('txSource').value;
-
-            if (!amt || amt <= 0) return;
-
-            // Auto Category Assignment
-            let category = 'General';
-            let icon = 'circle-dollar-sign';
-
-            if (type === 'income') {
-                if (source === 'Hand Cash') {
-                    category = 'Cash Received (ఆదాయం)';
-                    icon = 'banknote';
-                } else {
-                    category = 'QR Received (ఆదాయం)';
-                    icon = 'qr-code';
-                }
-            } else {
-                // Auto Payment Categorization based on amount patterns
-                if (amt < 200) {
-                    category = 'Food & Snacks (ఆహారం)';
-                    icon = 'utensils';
-                } else if (amt >= 200 && amt < 1000) {
-                    category = 'Travel & Shopping (ప్రయాణం/షాపింగ్)';
-                    icon = 'shopping-bag';
-                } else {
-                    category = 'Bills & Transfer (బిల్లులు)';
-                    icon = 'receipt';
-                }
-            }
-
-            const now = new Date();
-            const dateStr = `${now.toLocaleDateString('te-IN')} | ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
-
-            const newTx = {
-                id: Date.now(),
-                amount: amt,
-                type: type,
-                source: source,
-                category: category,
-                icon: icon,
-                dateTime: dateStr
-            };
-
-            transactions.unshift(newTx);
-            localStorage.setItem('my_money_txs', JSON.stringify(transactions));
-            
-            document.getElementById('amount').value = '';
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'te' : 'en';
+            document.getElementById('langBtnText').innerText = currentLang === 'en' ? 'తెలుగు' : 'English';
+            applyTranslations();
             renderApp();
         }
 
+        function applyTranslations() {
+            const t = i18n[currentLang];
+            document.getElementById('lblTotalBalance').innerText = t.totalBal;
+            document.getElementById('lblIncomeCard').innerText = t.inc;
+            document.getElementById('lblExpenseCard').innerText = t.exp;
+            document.getElementById('lblReceiveTitle').innerText = t.receiveTitle;
+            document.getElementById('lblReceiveSub').innerText = t.receiveSub;
+            document.getElementById('btnShowQr').innerText = t.showQr;
+            document.getElementById('lblAddIncomeTitle').innerText = t.addIncTitle;
+            document.getElementById('btnAddIncome').innerText = t.addIncBtn;
+            document.getElementById('lblPayShopTitle').innerText = t.payShopTitle;
+            document.getElementById('lblPayShopSub').innerText = t.payShopSub;
+            document.getElementById('btnScanQr').innerText = t.scanQr;
+            document.getElementById('lblAddExpenseTitle').innerText = t.addExpTitle;
+            document.getElementById('btnAddExpense').innerText = t.addExpBtn;
+            document.getElementById('lblTotalPaymentTitle').innerText = t.totalPayTitle;
+            document.getElementById('lblReportsTitle').innerText = t.reportsTitle;
+            document.getElementById('lblReportInc').innerText = t.repInc;
+            document.getElementById('lblReportExp').innerText = t.repExp;
+            document.getElementById('lblReportBal').innerText = t.repBal;
+            document.getElementById('lblReportTx').innerText = t.repTx;
+            document.getElementById('lblHistoryTitle').innerText = t.historyTitle;
+        }
+
+        function addIncome(e) {
+            e.preventDefault();
+            const type = document.getElementById('incomeType').value;
+            const amt = parseFloat(document.getElementById('incomeAmount').value);
+            const note = document.getElementById('incomeNote').value.trim();
+
+            if (!amt || amt <= 0) return;
+
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+
+            transactions.unshift({
+                id: Date.now(),
+                type: 'income',
+                category: type,
+                amount: amt,
+                note: note || '',
+                date: dateStr
+            });
+
+            saveData();
+            document.getElementById('incomeAmount').value = '';
+            document.getElementById('incomeNote').value = '';
+            renderApp();
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('expenseAmount').value);
+            const cat = document.getElementById('expenseCategory').value;
+            const note = document.getElementById('expenseNote').value.trim();
+
+            if (!amt || amt <= 0) return;
+
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+
+            transactions.unshift({
+                id: Date.now(),
+                type: 'expense',
+                category: cat,
+                amount: amt,
+                note: note || '',
+                date: dateStr
+            });
+
+            saveData();
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseNote').value = '';
+            renderApp();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+        }
+
         function renderApp() {
+            let totalInc = 0;
+            let totalExp = 0;
+            let categoryTotals = {};
+            categories.forEach(c => categoryTotals[c] = 0);
+
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
 
-            let incomeTotal = 0;
-            let expenseTotal = 0;
-
-            if (transactions.length === 0) {
-                historyList.innerHTML = `
-                    <div class="text-center py-6 text-slate-400">
-                        <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-1 opacity-50"></i>
-                        <p class="text-xs">రికార్డులు ఏవీ లేవు / No Records</p>
-                    </div>
-                `;
-            }
-
-            transactions.forEach((tx) => {
+            transactions.forEach(tx => {
                 const amt = Number(tx.amount) || 0;
-                const isInc = tx.type === 'income';
+                if (tx.type === 'income') {
+                    totalInc += amt;
+                } else {
+                    totalExp += amt;
+                    if (categoryTotals[tx.category] !== undefined) {
+                        categoryTotals[tx.category] += amt;
+                    }
+                }
 
-                if (isInc) incomeTotal += amt;
-                else expenseTotal += amt;
-
+                // Render Clean History (No Undefined)
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/80 transition';
+                item.className = 'py-2 border-b border-slate-100 flex justify-between items-center text-sm';
                 
+                const noteText = tx.note ? ` • ${tx.note}` : '';
                 item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 rounded-xl ${isInc ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-                            <i data-lucide="${tx.icon || 'circle-dollar-sign'}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-xs text-slate-800">${tx.category}</p>
-                            <p class="text-[10px] text-slate-400">${tx.dateTime}</p>
-                        </div>
+                    <div>
+                        <p class="font-medium text-slate-700">${tx.category}${noteText}</p>
+                        <p class="text-xs text-gray-400">${tx.date}</p>
                     </div>
-                    <span class="font-bold text-sm ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
-                        ${isInc ? '+' : '-'}₹${amt.toLocaleString('en-IN')}
+                    <span class="font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${tx.type === 'income' ? '+' : '-'} ₹${amt}
                     </span>
                 `;
                 historyList.appendChild(item);
             });
 
-            document.getElementById('totalIncome').innerText = `₹${incomeTotal.toLocaleString('en-IN')}`;
-            document.getElementById('totalExpense').innerText = `₹${expenseTotal.toLocaleString('en-IN')}`;
-            document.getElementById('totalBalance').innerText = `₹${(incomeTotal - expenseTotal).toLocaleString('en-IN')}`;
+            if (transactions.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-xs text-gray-400 py-3">No transactions found</p>';
+            }
 
-            // Re-initialize Lucide Icons
+            // Dashboard & Reports
+            const bal = totalInc - totalExp;
+            document.getElementById('totalBalance').innerText = `₹${bal}`;
+            document.getElementById('totalIncome').innerText = totalInc;
+            document.getElementById('totalExpense').innerText = totalExp;
+
+            document.getElementById('repIncome').innerText = totalInc;
+            document.getElementById('repExpense').innerText = totalExp;
+            document.getElementById('repBalance').innerText = bal;
+            document.getElementById('repTxCount').innerText = transactions.length;
+
+            // Render Payment Category Grid
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = '';
+            categories.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-100';
+                card.innerHTML = `
+                    <p class="text-xs text-gray-600 font-medium">${cat}</p>
+                    <p class="text-sm font-bold text-slate-800 mt-1">₹${categoryTotals[cat]}</p>
+                `;
+                grid.appendChild(card);
+            });
+
             lucide.createIcons();
         }
-
-        function clearHistory() {
-            if (confirm("హిస్టరీ మొత్తం క్లియర్ చేయాలా? / Clear all history?")) {
-                transactions = [];
-                localStorage.removeItem('my_money_txs');
-                renderApp();
-            }
-        }
-
-        function toggleModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-        }
-
-        // Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
-        }
-
-        // Initialize Options & View
-        updateCategoryOptions();
-        renderApp();
-    </script>
-</body>
-</html>
