@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,209 +9,137 @@
     <style>
         :root {
             --primary: #1976d2;
-            --primary-dark: #1565c0;
-            --income: #2e7d32;
-            --expense: #c62828;
-            --bg: #f4f7fa;
+            --bg: #f4f7fb;
             --card-bg: #ffffff;
             --text-main: #2d3748;
             --text-muted: #718096;
+            --income: #2e7d32;
+            --expense: #c62828;
         }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             padding: 0; 
             margin: 0; 
             background-color: var(--bg); 
             color: var(--text-main); 
-            -webkit-font-smoothing: antialiased;
         }
         
-        /* Top Premium Blue Header */
+        /* 1. TOP BLUE HEADER PANEL (As seen in Image 1) */
         .header { 
-            background: linear-gradient(135deg, var(--primary-dark), #1976d2); 
+            background: #1976d2; 
             color: white; 
-            padding: 30px 20px 50px 20px; 
+            padding: 25px 20px 45px 20px; 
             position: relative; 
-            border-bottom-left-radius: 28px; 
-            border-bottom-right-radius: 28px; 
-            box-shadow: 0 4px 20px rgba(25, 118, 210, 0.2);
         }
-        .header h1 { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
-        .header p { margin: 6px 0 0 0; opacity: 0.85; font-size: 14px; font-weight: 500; }
+        .header h1 { margin: 0; font-size: 34px; font-weight: bold; line-height: 1.1; }
+        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 15px; }
         .lang-btn { 
-            position: absolute; 
-            right: 20px; 
-            top: 30px; 
-            background: rgba(255, 255, 255, 0.2); 
-            color: white; 
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            padding: 6px 18px; 
-            border-radius: 20px; 
-            font-weight: 600; 
-            font-size: 13px; 
-            backdrop-filter: blur(10px);
+            position: absolute; right: 20px; top: 25px; 
+            background: white; color: var(--primary); 
+            border: none; padding: 8px 24px; border-radius: 8px; 
+            font-weight: bold; font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             cursor: pointer;
         }
         
-        /* Main Container */
+        /* Main Layout Wrapper */
         .container { 
             padding: 0 16px 40px 16px; 
-            margin-top: -30px; 
+            margin-top: -25px; 
             max-width: 480px; 
-            margin-left: auto; 
-            margin-right: auto; 
+            margin-left: auto; margin-right: auto; 
             box-sizing: border-box; 
         }
         
-        /* Modern Card Architecture */
+        /* Premium Floating Cards Layout */
         .card { 
             background: var(--card-bg); 
-            border-radius: 24px; 
+            border-radius: 20px; 
             padding: 24px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); 
             margin-bottom: 20px; 
             box-sizing: border-box;
-            border: 1px solid rgba(0,0,0,0.01);
         }
         
-        /* Premium Balance Section */
-        .balance-card { text-align: center; background: white; }
-        .balance-title { font-size: 15px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-amount { font-size: 40px; font-weight: 800; color: var(--primary); margin: 8px 0 20px 0; letter-spacing: -1px; }
+        /* 2. TOTAL BALANCE DISPLAY CARD (Image 1) */
+        .balance-card { text-align: center; padding: 20px 24px; }
+        .balance-title { font-size: 15px; color: #555; font-weight: 500; margin-bottom: 8px; }
+        .balance-amount { font-size: 38px; font-weight: bold; color: var(--primary); margin: 0 0 20px 0; }
         .inc-exp-row { display: flex; gap: 14px; }
         .ie-box { 
             flex: 1; 
             background: #f8fafc; 
-            padding: 16px 12px; 
-            border-radius: 16px; 
+            padding: 14px 10px; 
+            border-radius: 12px; 
             text-align: center; 
-            border: 1px solid #edf2f7;
         }
-        .ie-title { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-        .ie-amount { font-size: 20px; font-weight: 700; margin-top: 6px; }
+        .ie-title { font-size: 14px; color: #555; font-weight: 500; }
+        .ie-amount { font-size: 18px; font-weight: bold; margin-top: 6px; }
         
-        /* Titles inside cards */
-        .card h3 { 
-            margin-top: 0; 
-            margin-bottom: 18px;
-            font-size: 19px; 
-            font-weight: 700; 
-            color: #1a202c; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
+        /* Card Headings with Icons matching your screens */
+        .card h2 { 
+            margin-top: 0; margin-bottom: 16px; 
+            font-size: 22px; font-weight: 700; color: #1a202c; 
+            display: flex; align-items: center; gap: 10px; 
         }
         
-        /* Form Styling */
+        /* Interactive Input Elements */
         input, select { 
-            width: 100%; 
-            padding: 14px 16px; 
-            margin: 10px 0; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 14px; 
-            box-sizing: border-box; 
-            font-size: 15px; 
-            background: #f8fafc; 
-            color: var(--text-main);
-            font-weight: 500;
+            width: 100%; padding: 14px 16px; margin: 10px 0; 
+            border: 2px solid #e2e8f0; border-radius: 12px; 
+            box-sizing: border-box; font-size: 16px; background: #fff; 
+            font-weight: 500; color: #333;
         }
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            background: #fff; 
-            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
-        }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
         
-        /* Highly Interactive Buttons */
+        /* App Native Action Buttons */
         .btn { 
-            width: 100%; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            color: white; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-top: 10px;
+            width: 100%; padding: 14px; border: none; border-radius: 10px; 
+            font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin-top: 8px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .btn-inc { background: linear-gradient(135deg, #388e3c, var(--income)); }
-        .btn-exp { background: linear-gradient(135deg, #d32f2f, var(--expense)); }
-        .btn-blue { background: linear-gradient(135deg, var(--primary), #1565c0); box-shadow: 0 6px 16px rgba(25, 118, 210, 0.25); }
+        .btn-inc { background: #1b5e20; }
+        .btn-exp { background: #b71c1c; }
+        .btn-blue { background: #1565c0; }
         
-        /* Dynamic QR Box styling */
-        .qr-section { text-align: center; }
-        .qr-section p { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-top: 0; margin-bottom: 16px; }
-        .qr-holder { 
-            display: none; 
-            margin-top: 20px; 
-            padding: 20px; 
-            background: #f8fafc; 
-            border-radius: 18px; 
-            border: 2px dashed #cbd5e0; 
-            animation: fadeIn 0.3s ease;
-        }
-        .qr-holder img { width: 170px; height: 170px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* 3. RECEIVE MONEY QR DISPLAY SECTION (Image 1) */
+        .qr-info-text { font-size: 14px; color: var(--text-muted); margin: 0 0 16px 0; line-height: 1.4; }
+        .qr-box-area { display: none; margin-top: 15px; padding: 15px; background: #f8fafc; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+        .qr-box-area img { width: 170px; height: 170px; border-radius: 8px; }
 
-        /* Total Payment Grid Architecture */
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .grid-item { 
-            background: #f8fafc; 
-            padding: 16px; 
-            border-radius: 16px; 
-            border-left: 4px solid var(--primary); 
-            border: 1px solid #edf2f7;
-            border-left: 4px solid var(--primary);
-        }
-        .grid-item-title { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-        .grid-item-val { font-size: 18px; font-weight: 700; color: #1a202c; margin-top: 6px; }
+        /* 4. TOTAL PAYMENT GRID PATTERN (Image 4) */
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .grid-box { background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid #edf2f7; }
+        .grid-box-title { font-size: 14px; color: #4a5568; font-weight: 500; }
+        .grid-box-val { font-size: 18px; font-weight: bold; color: #1a202c; margin-top: 6px; }
         
-        /* Reports Dashboard Design */
-        .report-row { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 14px 0; 
-            border-bottom: 1px solid #edf2f7; 
-            font-size: 15px; 
-            font-weight: 500;
-        }
-        .report-row:last-child { border-bottom: none; }
+        /* 5. REPORTS DASHBOARD SUMMARY PANEL (Image 5) */
+        .report-item-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #edf2f7; font-size: 15px; font-weight: 500; }
+        .report-item-row:last-child { border-bottom: none; }
         
-        /* Premium Log History List */
+        /* 6. CLEAN LOG HISTORY MODULE (Fixed Image 5 Undefined Bug) */
         .history-list { max-height: 280px; overflow-y: auto; }
-        .history-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 14px 0; 
-            border-bottom: 1px solid #edf2f7; 
-        }
-        .history-item:last-child { border-bottom: none; }
-        .h-info { display: flex; flex-direction: column; }
-        .h-cat { font-weight: 700; font-size: 15px; color: #1a202c; }
-        .h-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-        .h-amt { font-weight: 700; font-size: 16px; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .history-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #edf2f7; }
+        .history-row:last-child { border-bottom: none; }
+        .log-meta-details { display: flex; flex-direction: column; }
+        .log-main-title { font-weight: bold; font-size: 15px; color: #2d3748; }
+        .log-sub-time { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .log-amount-badge { font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <!-- Header UI -->
+    <!-- Header Block (Image 1) -->
     <div class="header">
-        <h1>My Money</h1>
+        <h1>My<br>Money</h1>
         <p>Income & Expenses</p>
         <button class="lang-btn">తెలుగు</button>
     </div>
 
-    <!-- Main App Interface -->
+    <!-- Main Container -->
     <div class="container">
         
-        <!-- Live Total Balance Card -->
+        <!-- Total Balance Display (Image 1) -->
         <div class="card balance-card">
             <div class="balance-title">Total Balance</div>
             <div class="balance-amount" id="totalBalance">₹0</div>
@@ -228,21 +156,19 @@
             </div>
         </div>
 
-        <!-- Section 1: Receive Money Dynamic QR -->
+        <!-- Receive Money Panel (Image 1) -->
         <div class="card">
-            <h3>💰 Receive Money</h3>
-            <div class="qr-section">
-                <p>Show your QR and receive money directly to your UPI-linked bank account.</p>
-                <button class="btn btn-blue" onclick="toggleQR()">📱 Show My QR</button>
-                <div class="qr-holder" id="qrHolder">
-                    <img src="qr.png" alt="My UPI QR" onerror="this.src='https://dummyimage.com'">
-                </div>
+            <h2>💰 Receive Money</h2>
+            <p class="qr-info-text">Show your QR and receive money directly to your UPI-linked bank account.</p>
+            <button class="btn btn-blue" onclick="toggleQRView()">📱 Show My QR</button>
+            <div class="qr-box-area" id="qrBoxArea">
+                <img src="qr.png" alt="My UPI QR" onerror="this.src='https://dummyimage.com'">
             </div>
         </div>
 
-        <!-- Section 2: Add Income Interface -->
+        <!-- Add Income Interface (Image 2 & 3) -->
         <div class="card">
-            <h3>➕ Add Income</h3>
+            <h2>➕ Add Income</h2>
             <select id="incCategory">
                 <option value="QR / UPI Income">QR / UPI Income</option>
                 <option value="Cash Income">Cash Income</option>
@@ -250,11 +176,49 @@
             </select>
             <input type="number" id="incAmount" placeholder="Amount ₹" inputmode="numeric">
             <input type="text" id="incNote" placeholder="Income note">
-            <button class="btn btn-inc" onclick="addTransaction('Income')">Add Income</button>
+            <button class="btn btn-inc" onclick="submitLog('Income')">Add Income</button>
         </div>
 
-        <!-- Section 3: Pay Shop Shortcut Gateway -->
+        <!-- Pay Shop Redirection Button (Image 2) -->
         <div class="card">
-            <h3>📷 Pay Shop</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin-top:0; margin-bottom: 12px; line-height: 1.4;">Scan shop UPI QR and pay using a UPI app.</p>
-            
+            <h2>📷 Pay Shop</h2>
+            <p class="qr-info-text" style="margin-bottom: 12px;">Scan shop UPI QR and pay using a UPI app.</p>
+            <!-- గమనిక: YOURUPIID మార్చుకోండి -->
+            <a href="upi://pay?pa=YOURUPIID@ybl&pn=ShopPay" style="text-decoration:none;" target="_blank">
+                <button class="btn btn-blue">📷 Scan Shop QR</button>
+            </a>
+        </div>
+
+        <!-- Add Expense Interface (Image 4) -->
+        <div class="card">
+            <h2>➖ Add Expense</h2>
+            <input type="number" id="expAmount" placeholder="Amount ₹" inputmode="numeric">
+            <select id="expCategory">
+                <option value="Food 🍔">🍔 Food</option>
+                <option value="Travel 🚗">🚗 Travel</option>
+                <option value="Shopping 🛍️">🛍️ Shopping</option>
+                <option value="Bills 📄">📄 Bills</option>
+                <option value="Education 📚">📚 Education</option>
+                <option value="Medical 🏥">🏥 Medical</option>
+                <option value="Groceries 🍏">🍏 Groceries</option>
+                <option value="Other 🪙">🪙 Other</option>
+            </select>
+            <input type="text" id="expNote" placeholder="Expense note">
+            <button class="btn btn-exp" onclick="submitLog('Expense')">Add Expense</button>
+        </div>
+
+        <!-- Total Payment Category Grid (Image 4) -->
+        <div class="card">
+            <h2>📊 Total Payment</h2>
+            <div class="grid-layout" id="categoryGrid">
+                <!-- Grid elements load here -->
+            </div>
+        </div>
+
+        <!-- Reports Dynamic Log Summary (Image 5) -->
+        <div class="card">
+            <h2>📈 Reports</h2>
+            <select id="reportFilter" onchange="refreshDashboard()" style="margin-top:0;">
+                <option value="all">All Time</option>
+                <option value="daily">Today</option>
+                
