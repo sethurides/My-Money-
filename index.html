@@ -3,159 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Tracker PWA</title>
-    <meta name="theme-color" content="#4f46e5">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22FinanceTracker%22,%22short_name%22:%22Finance%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%234f46e5%22}">
+    <title>My Money</title>
+    <meta name="theme-color" content="#1e40af">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22My%20Money%22,%22short_name%22:%22MyMoney%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%231e40af%22}">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-    </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-100 min-h-screen pb-10">
+<body class="bg-slate-100 min-h-screen pb-12 font-sans">
 
-    <!-- Header & Dashboard -->
-    <div class="bg-indigo-600 text-white p-6 rounded-b-3xl shadow-lg">
-        <h1 class="text-xl font-bold mb-4 text-center">ఫైనాన్స్ డ్యాష్‌బోర్డ్ (Finance Tracker)</h1>
-        <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="bg-indigo-700 p-3 rounded-xl">
-                <p class="text-xs text-indigo-200">టోటల్ బ్యాలెన్స్</p>
-                <p class="text-lg font-bold mt-1" id="totalBalance">₹0</p>
+    <!-- Header -->
+    <header class="bg-blue-800 text-white p-5 rounded-b-3xl shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="wallet" class="w-8 h-8 text-yellow-400"></i>
+                <h1 class="text-2xl font-bold tracking-wide">My Money</h1>
             </div>
-            <div class="bg-green-600 p-3 rounded-xl">
-                <p class="text-xs text-green-200">ఇన్కమ్</p>
-                <p class="text-lg font-bold mt-1" id="totalIncome">₹0</p>
+            <span class="text-xs bg-blue-900 px-3 py-1 rounded-full text-blue-200 border border-blue-700">PWA App</span>
+        </div>
+
+        <!-- Dashboard Totals -->
+        <div class="grid grid-cols-3 gap-2 text-center mt-2">
+            <div class="bg-blue-900/60 p-3 rounded-2xl border border-blue-700/50 backdrop-blur">
+                <p class="text-[11px] text-blue-200">బ్యాలెన్స్ / Balance</p>
+                <p class="text-base font-bold mt-1 text-white" id="totalBalance">₹0</p>
             </div>
-            <div class="bg-red-600 p-3 rounded-xl">
-                <p class="text-xs text-red-200">ఎక్స్‌పెన్స్</p>
-                <p class="text-lg font-bold mt-1" id="totalExpense">₹0</p>
+            <div class="bg-emerald-600/30 p-3 rounded-2xl border border-emerald-500/40 backdrop-blur">
+                <p class="text-[11px] text-emerald-200">ఆదాయం / Income</p>
+                <p class="text-base font-bold mt-1 text-emerald-400" id="totalIncome">₹0</p>
+            </div>
+            <div class="bg-rose-600/30 p-3 rounded-2xl border border-rose-500/40 backdrop-blur">
+                <p class="text-[11px] text-rose-200">ఖర్చు / Expense</p>
+                <p class="text-base font-bold mt-1 text-rose-400" id="totalExpense">₹0</p>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Main Content -->
-    <div class="max-w-md mx-auto p-4 space-y-4">
+    <!-- Main Content Area -->
+    <main class="max-w-md mx-auto p-4 space-y-5">
 
-        <!-- Quick UPI Actions -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-sm font-semibold text-gray-600 mb-3">యూపిఐ (UPI) క్విక్ యాక్షన్స్</h2>
+        <!-- UPI Actions -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <i data-lucide="qr-code" class="w-4 h-4 text-blue-600"></i>
+                UPI క్విక్ యాక్షన్స్ / UPI Actions
+            </h2>
             <div class="grid grid-cols-2 gap-3">
-                <a href="upi://pay" class="bg-purple-50 text-purple-700 font-medium p-3 rounded-xl text-center border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-2">
+                <a href="upi://pay" class="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 font-semibold p-3 rounded-xl border border-purple-200 hover:bg-purple-100 transition active:scale-95">
+                    <i data-lucide="scan" class="w-5 h-5"></i>
                     <span>Scan Shop QR</span>
                 </a>
-                <button onclick="toggleModal('qrModal')" class="bg-blue-50 text-blue-700 font-medium p-3 rounded-xl text-center border border-blue-200 hover:bg-blue-100">
-                    Show My QR
+                <button onclick="toggleModal('qrModal')" class="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 font-semibold p-3 rounded-xl border border-blue-200 hover:bg-blue-100 transition active:scale-95">
+                    <i data-lucide="qr-code" class="w-5 h-5"></i>
+                    <span>Show Bank QR</span>
                 </button>
             </div>
-        </div>
+        </section>
 
-        <!-- Add Transaction Form -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-sm font-semibold text-gray-600 mb-3">కొత్త లావాదేవీ నమోదు చేయండి</h2>
-            <form id="txForm" onsubmit="addTransaction(event)" class="space-y-3">
+        <!-- Auto Expense & Income Entry Form -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i>
+                లావాదేవీ రికార్డ్ / Transaction Entry
+            </h2>
+            
+            <form id="txForm" onsubmit="handleAutoTransaction(event)" class="space-y-3">
                 <div>
-                    <input type="number" id="amount" placeholder="అమౌంట్ (₹)" required class="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">అమౌంట్ / Amount (₹)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-slate-400 font-bold">₹</span>
+                        <input type="number" id="amount" placeholder="0.00" required class="w-full pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 font-semibold text-slate-800">
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <select id="type" class="p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-                        <option value="expense">Expense (ఖర్చు)</option>
-                        <option value="income">Income (ఆదాయం)</option>
-                    </select>
-                    <select id="category" class="p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-                        <option value="Food">Food</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Bills">Bills</option>
-                        <option value="Salary">Salary</option>
-                        <option value="Other">Other</option>
-                    </select>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">టైప్ / Type</label>
+                        <select id="txType" onchange="updateCategoryOptions()" class="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white font-medium text-slate-700 text-sm">
+                            <option value="expense">Payment (ఖర్చు)</option>
+                            <option value="income">Income (ఆదాయం)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">సోర్స్ / Source</label>
+                        <select id="txSource" class="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white font-medium text-slate-700 text-sm">
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-semibold p-3 rounded-xl hover:bg-indigo-700">యాడ్ చేయండి</button>
+
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold p-3 rounded-xl hover:bg-blue-800 transition shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    <span>ఆటోమాటిక్ జనరేట్ చేయండి / Auto Generate</span>
+                </button>
             </form>
-        </div>
+        </section>
 
-        <!-- Transaction History -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-sm font-semibold text-gray-600 mb-3">రీసెంట్ హిస్టరీ</h2>
+        <!-- Dynamic History & Auto Categories -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="history" class="w-4 h-4 text-blue-600"></i>
+                    రిపోర్ట్ & హిస్టరీ / Reports
+                </h2>
+                <button onclick="clearHistory()" class="text-xs text-rose-500 hover:underline flex items-center gap-1">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> క్లియర్
+                </button>
+            </div>
+            
             <div id="historyList" class="space-y-3">
-                <!-- Data renders dynamically -->
+                <!-- Data dynamically inserted here -->
             </div>
+        </section>
+
+    </main>
+
+    <!-- Bank QR Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 backdrop-blur-sm z-50">
+        <div class="bg-white rounded-3xl p-6 text-center max-w-xs w-full space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 text-sm">మీ బ్యాంక్ QR కోడ్ / Bank QR</h3>
+                <button onclick="toggleModal('qrModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col items-center justify-center">
+                <i data-lucide="qr-code" class="w-32 h-32 text-slate-700"></i>
+                <p class="text-xs text-slate-500 mt-2">బ్యాంక్ ఖాతా ద్వారా డబ్బు పొందేందుకు QR చూపించండి</p>
+            </div>
+            <button onclick="toggleModal('qrModal')" class="bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-xl text-sm w-full hover:bg-slate-200 transition">క్లోజ్ / Close</button>
         </div>
     </div>
 
-    <!-- Show My QR Modal -->
-    <div id="qrModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 text-center max-w-xs w-full space-y-4">
-            <h3 class="font-bold text-gray-800">మీ బ్యాంక్ QR కోడ్</h3>
-            <div class="bg-gray-200 w-48 h-48 mx-auto rounded-xl flex items-center justify-center border">
-                <span class="text-gray-500 text-xs">QR Image Here<br>(సొంత QR Image ని Replace చేసుకోండి)</span>
-            </div>
-            <button onclick="toggleModal('qrModal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl text-sm w-full">క్లోజ్</button>
-        </div>
-    </div>
-
+    <!-- Script Section -->
     <script>
-        let transactions = JSON.parse(localStorage.getItem('pwa_tx_data')) || [];
+        let transactions = JSON.parse(localStorage.getItem('my_money_txs')) || [];
 
-        function updateUI() {
+        function updateCategoryOptions() {
+            const type = document.getElementById('txType').value;
+            const sourceSelect = document.getElementById('txSource');
+            sourceSelect.innerHTML = '';
+
+            if (type === 'income') {
+                sourceSelect.innerHTML = `
+                    <option value="Hand Cash">Hand Cash (హ్యాండ్ క్యాష్)</option>
+                    <option value="Bank QR">Bank QR (బ్యాంక్ QR)</option>
+                `;
+            } else {
+                sourceSelect.innerHTML = `
+                    <option value="Auto Online">UPI Payment (ఆన్లైన్)</option>
+                    <option value="Auto Cash">Cash Spent (క్యాష్)</option>
+                `;
+            }
+        }
+
+        function handleAutoTransaction(e) {
+            e.preventDefault();
+            const amt = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('txType').value;
+            const source = document.getElementById('txSource').value;
+
+            if (!amt || amt <= 0) return;
+
+            // Auto Category Assignment
+            let category = 'General';
+            let icon = 'circle-dollar-sign';
+
+            if (type === 'income') {
+                if (source === 'Hand Cash') {
+                    category = 'Cash Received (ఆదాయం)';
+                    icon = 'banknote';
+                } else {
+                    category = 'QR Received (ఆదాయం)';
+                    icon = 'qr-code';
+                }
+            } else {
+                // Auto Payment Categorization based on amount patterns
+                if (amt < 200) {
+                    category = 'Food & Snacks (ఆహారం)';
+                    icon = 'utensils';
+                } else if (amt >= 200 && amt < 1000) {
+                    category = 'Travel & Shopping (ప్రయాణం/షాపింగ్)';
+                    icon = 'shopping-bag';
+                } else {
+                    category = 'Bills & Transfer (బిల్లులు)';
+                    icon = 'receipt';
+                }
+            }
+
+            const now = new Date();
+            const dateStr = `${now.toLocaleDateString('te-IN')} | ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+
+            const newTx = {
+                id: Date.now(),
+                amount: amt,
+                type: type,
+                source: source,
+                category: category,
+                icon: icon,
+                dateTime: dateStr
+            };
+
+            transactions.unshift(newTx);
+            localStorage.setItem('my_money_txs', JSON.stringify(transactions));
+            
+            document.getElementById('amount').value = '';
+            renderApp();
+        }
+
+        function renderApp() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
 
-            let income = 0;
-            let expense = 0;
+            let incomeTotal = 0;
+            let expenseTotal = 0;
 
             if (transactions.length === 0) {
-                historyList.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">రికార్డులు ఏవీ లేవు</p>';
+                historyList.innerHTML = `
+                    <div class="text-center py-6 text-slate-400">
+                        <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-1 opacity-50"></i>
+                        <p class="text-xs">రికార్డులు ఏవీ లేవు / No Records</p>
+                    </div>
+                `;
             }
 
             transactions.forEach((tx) => {
                 const amt = Number(tx.amount) || 0;
-                if (tx.type === 'income') income += amt;
-                if (tx.type === 'expense') expense += amt;
+                const isInc = tx.type === 'income';
+
+                if (isInc) incomeTotal += amt;
+                else expenseTotal += amt;
 
                 const item = document.createElement('div');
-                item.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100';
+                item.className = 'flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/80 transition';
                 
-                const isInc = tx.type === 'income';
                 item.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-gray-800 text-sm">${tx.category || 'General'}</p>
-                        <p class="text-xs text-gray-400">${tx.dateTime || ''}</p>
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl ${isInc ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                            <i data-lucide="${tx.icon || 'circle-dollar-sign'}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-slate-800">${tx.category}</p>
+                            <p class="text-[10px] text-slate-400">${tx.dateTime}</p>
+                        </div>
                     </div>
-                    <span class="font-bold text-sm ${isInc ? 'text-green-600' : 'text-red-600'}">
+                    <span class="font-bold text-sm ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
                         ${isInc ? '+' : '-'}₹${amt.toLocaleString('en-IN')}
                     </span>
                 `;
                 historyList.appendChild(item);
             });
 
-            document.getElementById('totalIncome').innerText = `₹${income.toLocaleString('en-IN')}`;
-            document.getElementById('totalExpense').innerText = `₹${expense.toLocaleString('en-IN')}`;
-            document.getElementById('totalBalance').innerText = `₹${(income - expense).toLocaleString('en-IN')}`;
+            document.getElementById('totalIncome').innerText = `₹${incomeTotal.toLocaleString('en-IN')}`;
+            document.getElementById('totalExpense').innerText = `₹${expenseTotal.toLocaleString('en-IN')}`;
+            document.getElementById('totalBalance').innerText = `₹${(incomeTotal - expenseTotal).toLocaleString('en-IN')}`;
+
+            // Re-initialize Lucide Icons
+            lucide.createIcons();
         }
 
-        function addTransaction(e) {
-            e.preventDefault();
-            const amountVal = document.getElementById('amount').value;
-            const typeVal = document.getElementById('type').value;
-            const categoryVal = document.getElementById('category').value;
-
-            if (!amountVal || amountVal <= 0) return;
-
-            const now = new Date();
-            const formattedDate = `${now.toLocaleDateString('en-IN')} ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
-
-            const newTx = {
-                id: Date.now(),
-                amount: parseFloat(amountVal),
-                type: typeVal,
-                category: categoryVal,
-                dateTime: formattedDate
-            };
-
-            transactions.unshift(newTx);
-            localStorage.setItem('pwa_tx_data', JSON.stringify(transactions));
-            
-            document.getElementById('amount').value = '';
-            updateUI();
+        function clearHistory() {
+            if (confirm("హిస్టరీ మొత్తం క్లియర్ చేయాలా? / Clear all history?")) {
+                transactions = [];
+                localStorage.removeItem('my_money_txs');
+                renderApp();
+            }
         }
 
         function toggleModal(id) {
@@ -164,7 +278,7 @@
             modal.classList.toggle('flex');
         }
 
-        // Service Worker Registration for PWA functionality
+        // Service Worker for PWA
         if ('serviceWorker' in navigator) {
             const swCode = `
                 self.addEventListener('fetch', (e) => {
@@ -175,8 +289,9 @@
             navigator.serviceWorker.register(URL.createObjectURL(blob));
         }
 
-        // Initial Load
-        updateUI();
+        // Initialize Options & View
+        updateCategoryOptions();
+        renderApp();
     </script>
 </body>
 </html>
