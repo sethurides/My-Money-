@@ -5,47 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Money App</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#673ab7">
+    <meta name="theme-color" content="#1e3c72">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background-color: #f1f3f6; color: #333; max-width: 500px; margin: auto; }
-        h1 { text-align: center; color: #673ab7; margin-bottom: 5px; }
-        .subtitle { text-align: center; font-size: 14px; color: #666; margin-top: 0; margin-bottom: 20px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; border-left: 5px solid #673ab7; }
-        .card-income { border-left-color: #4caf50; }
-        .card-report { border-left-color: #ff9800; }
-        h3 { margin-top: 0; color: #444; }
-        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn { flex: 1; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 15px; background-color: #f3f6f9; color: #333; max-width: 500px; margin: auto; }
+        h1 { text-align: center; color: #1e3c72; margin-bottom: 5px; font-size: 26px; }
+        .subtitle { text-align: center; font-size: 13px; color: #666; margin-top: 0; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 20px; border-top: 5px solid #1e3c72; }
+        .card-income { border-top-color: #2e7d32; }
+        .card-report { border-top-color: #ef6c00; }
+        h3 { margin-top: 0; color: #222; font-size: 18px; margin-bottom: 15px; }
+        .method-selector { display: flex; gap: 10px; margin-bottom: 15px; }
+        .method-btn { flex: 1; padding: 10px; border: 2px solid #ccc; border-radius: 8px; background: #fff; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; }
+        .method-btn.active { border-color: #1e3c72; background: #e8f0fe; color: #1e3c72; }
+        .card-income .method-btn.active { border-color: #2e7d32; background: #e8f5e9; color: #2e7d32; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn { flex: 1; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; display: inline-block; }
         .btn-pe { background: #5f259f; }
         .btn-tm { background: #00baf2; }
-        .btn-save { background: #4caf50; width: 100%; display: block; margin-top: 10px; }
-        .btn-inc { background: #2196f3; width: 100%; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        .qr-box { text-align: center; margin: 15px 0; }
-        .qr-box img { width: 180px; height: 180px; border: 1px solid #ddd; padding: 5px; border-radius: 8px; }
+        .btn-save { background: #2e7d32; width: 100%; display: block; margin-top: 15px; }
+        .btn-exp-save { background: #d32f2f; width: 100%; display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; }
+        .qr-box { text-align: center; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
+        .qr-box img { width: 160px; height: 160px; border: 1px solid #ddd; border-radius: 8px; }
         .report-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .tab-btn { background: #e0e0e0; border: none; padding: 8px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .tab-btn.active { background: #ff9800; color: white; }
-        .report-list { text-align: left; max-height: 250px; overflow-y: auto; font-size: 14px; }
-        .report-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 8px 0; }
-        .summary-box { display: flex; justify-content: space-between; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 15px; }
+        .tab-btn { background: #e0e0e0; border: none; padding: 8px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .tab-btn.active { background: #ef6c00; color: white; }
+        .report-list { max-height: 250px; overflow-y: auto; font-size: 14px; }
+        .report-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; align-items: center; }
+        .summary-box { display: flex; justify-content: space-between; font-weight: bold; background: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 15px; }
     </style>
 </head>
 <body>
 
-    <h1>💰 My Money App</h1>
-    <p class="subtitle">ఆటోమేటిక్ డేట్ & ఈజీ ట్రాకింగ్ PWA</p>
+    <h1>💰 My Money</h1>
+    <p class="subtitle">ఆటోమేటిక్ రిపోర్ట్స్ మేనేజర్</p>
+
+    <!-- INCOME SECTION (First Place) -->
+    <div class="card card-income">
+        <h3>🟩 ఆదాయం రికార్డ్ (Add Income)</h3>
+        <p style="margin:0 0 8px 0; font-size:14px; font-weight:bold; color:#555;">డబ్బులు ఎలా వచ్చాయి?</p>
+        <div class="method-selector">
+            <button class="method-btn active" id="inc-cash-btn" onclick="setIncomeMethod('Hand Cash')">💵 Hand Cash</button>
+            <button class="method-btn" id="inc-qr-btn" onclick="setIncomeMethod('Bank Account QR')">🏦 Bank QR</button>
+        </div>
+
+        <!-- QR కోడ్ బాక్స్ (Bank QR నొక్కినప్పుడు మాత్రమే ఓపెన్ అవుతుంది) -->
+        <div class="qr-box" id="qrContainer">
+            <p style="margin: 0 0 8px 0; font-size: 13px; color: #666;">మీ బ్యాంక్ QR కోడ్ ఇక్కడ స్కాన్ చేయించండి:</p>
+            <img src="qr.png" alt="QR Code" onerror="this.src='https://dummyimage.com'">
+        </div>
+
+        <input type="number" id="incAmount" placeholder="వచ్చిన ఆదాయం ఎంత? (₹)">
+        <input type="text" id="incNote" placeholder="వివరాలు (ఎవరిచ్చారు / ఎందుకు వచ్చింది?)">
+        <button class="btn btn-save" onclick="saveTransaction('Income')">Income యాడ్ చేయి</button>
+    </div>
 
     <!-- EXPENSE SECTION -->
     <div class="card">
         <h3>💸 ఖర్చుల లావాదేవీలు (Expenses)</h3>
+        <p style="margin:0 0 8px 0; font-size:14px; font-weight:bold; color:#555;">డైరెక్ట్ పేమెంట్ యాప్స్:</p>
         <div class="btn-group">
-            <!-- గమనిక: YOURUPIID స్థానంలో మీ UPI ID మార్చుకోండి -->
-            <a href="upi://pay?pa=YOURUPIID@ybl&pn=MyMoneyApp" class="btn btn-pe" target="_blank">PhonePe</a>
-            <a href="upi://pay?pa=YOURUPIID@paytm&pn=MyMoneyApp" class="btn btn-tm" target="_blank">Paytm</a>
+            <!-- YOURUPIID స్థానంలో మీ ఒరిజినల్ ID పెట్టుకోండి -->
+            <a href="upi://pay?pa=YOURUPIID@ybl&pn=MyMoneyApp" class="btn btn-pe" target="_blank">PhonePe ఓపెన్</a>
+            <a href="upi://pay?pa=YOURUPIID@paytm&pn=MyMoneyApp" class="btn btn-tm" target="_blank">Paytm ఓపెన్</a>
         </div>
         
-        <input type="number" id="expAmount" placeholder="ఎంత అమౌంట్ చెల్లించారు? (₹)">
+        <input type="number" id="expAmount" placeholder="ఎంత అమౌంట్ ఖర్చు పెట్టారు? (₹)">
         <select id="expCategory">
             <option value="Food 🍔">Food 🍔</option>
             <option value="Fuel ⛽">Fuel ⛽</option>
@@ -53,20 +78,7 @@
             <option value="Rent 🏠">Rent 🏠</option>
             <option value="Others 🪙">ఇతరములు 🪙</option>
         </select>
-        <button class="btn btn-save" onclick="saveTransaction('Expense')">Record Expense</button>
-    </div>
-
-    <!-- INCOME SECTION -->
-    <div class="card card-income">
-        <h3>🟩 ఆదాయం (Received Income)</h3>
-        <div class="qr-box">
-            <p style="margin: 0 0 10px 0; font-size: 14px; color: #555;">మీ QR కోడ్‌ను ఇక్కడ స్కాన్ చేయించండి:</p>
-            <!-- మీ QR కోడ్ ఇమేజ్ ఫైల్ పేరు "qr.png" అని పెట్టి గిట్ హబ్ లో అప్లోడ్ చేయండి -->
-            <img src="qr.png" alt="మీ QR కోడ్ ఇక్కడ యాడ్ చేయండి" onerror="this.src='https://dummyimage.com'">
-        </div>
-        
-        <input type="number" id="incAmount" placeholder="వచ్చిన ఆదాయం ఎంత? (₹)">
-        <button class="btn btn-inc" onclick="saveTransaction('Income')">Record Income</button>
+        <button class="btn btn-exp-save" onclick="saveTransaction('Expense')">Expense యాడ్ చేయి</button>
     </div>
 
     <!-- REPORTS SECTION -->
@@ -80,28 +92,46 @@
         </div>
 
         <div class="summary-box">
-            <span style="color: green;" id="totalInc">In: ₹0</span>
-            <span style="color: red;" id="totalExp">Out: ₹0</span>
+            <span style="color: #2e7d32;" id="totalInc">In: ₹0</span>
+            <span style="color: #d32f2f;" id="totalExp">Out: ₹0</span>
         </div>
 
-        <div class="report-list" id="reportOutput">
-            <!-- రిపోర్ట్ డేటా ఇక్కడ లోడ్ అవుతుంది -->
-        </div>
+        <div class="report-list" id="reportOutput"></div>
     </div>
 
     <script>
-        // Service Worker Registration for PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
-            .then(() => console.log("Service Worker Registered"));
+            .then(() => console.log("Service Worker Active"));
         }
 
         let transactions = JSON.parse(localStorage.getItem('my_money_txs')) || [];
+        let currentIncomeMethod = 'Hand Cash';
+
+        function setIncomeMethod(method) {
+            currentIncomeMethod = method;
+            document.getElementById('inc-cash-btn').classList.remove('active');
+            document.getElementById('inc-qr-btn').classList.remove('active');
+            
+            if(method === 'Hand Cash') {
+                document.getElementById('inc-cash-btn').classList.add('active');
+                document.getElementById('qrContainer').style.display = 'none';
+            } else {
+                document.getElementById('inc-qr-btn').classList.add('active');
+                document.getElementById('qrContainer').style.display = 'block';
+            }
+        }
 
         function saveTransaction(type) {
-            let amtInput = type === 'Expense' ? document.getElementById('expAmount') : document.getElementById('incAmount');
-            let amt = amtInput.value;
-            let cat = type === 'Expense' ? document.getElementById('expCategory').value : 'Income 📥';
+            let amt, cat;
+            if(type === 'Income') {
+                amt = document.getElementById('incAmount').value;
+                let note = document.getElementById('incNote').value || 'Income';
+                cat = `${currentIncomeMethod} (${note})`;
+            } else {
+                amt = document.getElementById('expAmount').value;
+                cat = document.getElementById('expCategory').value;
+            }
             
             if(!amt || amt <= 0) { alert("దయచేసి సరైన అమౌంట్ ఎంటర్ చేయండి!"); return; }
 
@@ -110,77 +140,44 @@
                 amount: parseFloat(amt),
                 category: cat,
                 type: type,
-                date: new Date().toISOString() // ఆటోమేటిక్ కరెంట్ డేట్ & టైమ్
+                date: new Date().toISOString()
             };
 
             transactions.push(tx);
             localStorage.setItem('my_money_txs', JSON.stringify(transactions));
-            alert(type + " విజయవంతంగా రికార్డ్ చేయబడింది!");
+            alert(type + " సేవ్ చేయబడింది!");
             
-            amtInput.value = '';
-            // ప్రస్తుతం ఉన్న యాక్టివ్ ట్యాబ్ రిపోర్ట్ రీలోడ్ అవుతుంది
+            if(type === 'Income') {
+                document.getElementById('incAmount').value = '';
+                document.getElementById('incNote').value = '';
+            } else {
+                document.getElementById('expAmount').value = '';
+            }
+            
             let activeTab = document.querySelector('.tab-btn.active').id.replace('tab-', '');
             loadReport(activeTab);
         }
 
         function loadReport(filter) {
-            // ట్యాబ్ కలర్స్ మార్చడం
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + filter).classList.add('active');
 
             let now = new Date();
             let filtered = transactions.filter(tx => {
                 let txDate = new Date(tx.date);
-                if (filter === 'daily') {
-                    return txDate.toDateString() === now.toDateString();
-                } else if (filter === 'weekly') {
+                if (filter === 'daily') return txDate.toDateString() === now.toDateString();
+                if (filter === 'weekly') {
                     let oneWeekAgo = new Date();
                     oneWeekAgo.setDate(now.getDate() - 7);
                     return txDate >= oneWeekAgo;
-                } else if (filter === 'monthly') {
-                    return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-                } else if (filter === 'yearly') {
-                    return txDate.getFullYear() === now.getFullYear();
                 }
+                if (filter === 'monthly') return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+                if (filter === 'yearly') return txDate.getFullYear() === now.getFullYear();
                 return true;
             });
 
-            // టోటల్స్ లెక్కించడం
             let incSum = filtered.filter(t => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
             let expSum = filtered.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0);
 
             document.getElementById('totalInc').innerText = `In: ₹${incSum}`;
-            document.getElementById('totalExp').innerText = `Out: ₹${expSum}`;
-
-            // లిస్ట్ డిస్‌ప్లే చేయడం
-            let html = '';
-            if(filtered.length === 0) {
-                html = '<p style="text-align:center; color:#999;">ఈ కాలానికి ఎటువంటి డేటా లేదు.</p>';
-            } else {
-                // కొత్తవి పైన కనిపించేలా రివర్స్ ఆర్డర్
-                filtered.slice().reverse().forEach(tx => {
-                    let d = new Date(tx.date);
-                    let timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    let dateStr = d.toLocaleDateString([], {month: 'short', day: 'numeric'});
-                    let color = tx.type === 'Income' ? 'green' : 'red';
-                    let prefix = tx.type === 'Income' ? '+' : '-';
-                    
-                    html += `
-                        <div class="report-item">
-                            <div>
-                                <strong>${tx.category}</strong><br>
-                                <small style="color:#888;">${dateStr} | ${timeStr}</small>
-                            </div>
-                            <span style="color: ${color}; font-weight:bold;">${prefix}₹${tx.amount}</span>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('reportOutput').innerHTML = html;
-        }
-
-        // యాప్ ఓపెన్ అవ్వగానే డైలీ రిపోర్ట్ చూపిస్తుంది
-        window.onload = function() { loadReport('daily'); };
-    </script>
-</body>
-</html>
+            
