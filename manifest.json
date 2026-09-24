@@ -1,11 +1,11 @@
 {
-  "name": "My Money App",
+  "name": "My Money",
   "short_name": "MyMoney",
-  "description": "Income, Expenses, Hand Cash and Bank QR Tracker PWA",
+  "description": "Attractive Income and Expense Wallet Dashboard",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#1e3c72",
-  "theme_color": "#1e3c72",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
   "orientation": "portrait",
   "id": "/my-money-app/",
   "icons": [
@@ -13,13 +13,25 @@
       "src": "https://icons8.com",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://icons8.com",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "https://icons8.com",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://icons8.com",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
