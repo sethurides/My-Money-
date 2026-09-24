@@ -1,0 +1,22 @@
+{
+  "name": "My Money Tracker App",
+  "short_name": "MyMoney",
+  "description": "Income and Expense tracker PWA App",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme-color": "#673ab7",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://dummyimage.com",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://dummyimage.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
