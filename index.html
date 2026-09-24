@@ -3,181 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Money App</title>
+    <title>My Money</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e3c72">
+    <meta name="theme-color" content="#1976d2">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 15px; background-color: #f3f6f9; color: #333; max-width: 500px; margin: auto; }
-        h1 { text-align: center; color: #1e3c72; margin-bottom: 5px; font-size: 26px; }
-        .subtitle { text-align: center; font-size: 13px; color: #666; margin-top: 0; margin-bottom: 20px; }
-        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 20px; border-top: 5px solid #1e3c72; }
-        .card-income { border-top-color: #2e7d32; }
-        .card-report { border-top-color: #ef6c00; }
-        h3 { margin-top: 0; color: #222; font-size: 18px; margin-bottom: 15px; }
-        .method-selector { display: flex; gap: 10px; margin-bottom: 15px; }
-        .method-btn { flex: 1; padding: 10px; border: 2px solid #ccc; border-radius: 8px; background: #fff; font-weight: bold; cursor: pointer; text-align: center; font-size: 14px; }
-        .method-btn.active { border-color: #1e3c72; background: #e8f0fe; color: #1e3c72; }
-        .card-income .method-btn.active { border-color: #2e7d32; background: #e8f5e9; color: #2e7d32; }
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        .btn { flex: 1; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; display: inline-block; }
-        .btn-pe { background: #5f259f; }
-        .btn-tm { background: #00baf2; }
-        .btn-save { background: #2e7d32; width: 100%; display: block; margin-top: 15px; }
-        .btn-exp-save { background: #d32f2f; width: 100%; display: block; margin-top: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; }
-        .qr-box { text-align: center; margin: 15px 0; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
-        .qr-box img { width: 160px; height: 160px; border: 1px solid #ddd; border-radius: 8px; }
-        .report-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .tab-btn { background: #e0e0e0; border: none; padding: 8px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .tab-btn.active { background: #ef6c00; color: white; }
-        .report-list { max-height: 250px; overflow-y: auto; font-size: 14px; }
-        .report-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; align-items: center; }
-        .summary-box { display: flex; justify-content: space-between; font-weight: bold; background: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 15px; }
+        :root {
+            --primary: #1976d2;
+            --primary-dark: #1565c0;
+            --income: #2e7d32;
+            --expense: #c62828;
+            --bg: #f4f7fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            padding: 0; 
+            margin: 0; 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Top Premium Blue Header */
+        .header { 
+            background: linear-gradient(135deg, var(--primary-dark), #1976d2); 
+            color: white; 
+            padding: 30px 20px 50px 20px; 
+            position: relative; 
+            border-bottom-left-radius: 28px; 
+            border-bottom-right-radius: 28px; 
+            box-shadow: 0 4px 20px rgba(25, 118, 210, 0.2);
+        }
+        .header h1 { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+        .header p { margin: 6px 0 0 0; opacity: 0.85; font-size: 14px; font-weight: 500; }
+        .lang-btn { 
+            position: absolute; 
+            right: 20px; 
+            top: 30px; 
+            background: rgba(255, 255, 255, 0.2); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            padding: 6px 18px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+        
+        /* Main Container */
+        .container { 
+            padding: 0 16px 40px 16px; 
+            margin-top: -30px; 
+            max-width: 480px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            box-sizing: border-box; 
+        }
+        
+        /* Modern Card Architecture */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 24px; 
+            padding: 24px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
+            margin-bottom: 20px; 
+            box-sizing: border-box;
+            border: 1px solid rgba(0,0,0,0.01);
+        }
+        
+        /* Premium Balance Section */
+        .balance-card { text-align: center; background: white; }
+        .balance-title { font-size: 15px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-amount { font-size: 40px; font-weight: 800; color: var(--primary); margin: 8px 0 20px 0; letter-spacing: -1px; }
+        .inc-exp-row { display: flex; gap: 14px; }
+        .ie-box { 
+            flex: 1; 
+            background: #f8fafc; 
+            padding: 16px 12px; 
+            border-radius: 16px; 
+            text-align: center; 
+            border: 1px solid #edf2f7;
+        }
+        .ie-title { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .ie-amount { font-size: 20px; font-weight: 700; margin-top: 6px; }
+        
+        /* Titles inside cards */
+        .card h3 { 
+            margin-top: 0; 
+            margin-bottom: 18px;
+            font-size: 19px; 
+            font-weight: 700; 
+            color: #1a202c; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        /* Form Styling */
+        input, select { 
+            width: 100%; 
+            padding: 14px 16px; 
+            margin: 10px 0; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 14px; 
+            box-sizing: border-box; 
+            font-size: 15px; 
+            background: #f8fafc; 
+            color: var(--text-main);
+            font-weight: 500;
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            background: #fff; 
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+        }
+        
+        /* Highly Interactive Buttons */
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: white; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        .btn-inc { background: linear-gradient(135deg, #388e3c, var(--income)); }
+        .btn-exp { background: linear-gradient(135deg, #d32f2f, var(--expense)); }
+        .btn-blue { background: linear-gradient(135deg, var(--primary), #1565c0); box-shadow: 0 6px 16px rgba(25, 118, 210, 0.25); }
+        
+        /* Dynamic QR Box styling */
+        .qr-section { text-align: center; }
+        .qr-section p { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-top: 0; margin-bottom: 16px; }
+        .qr-holder { 
+            display: none; 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #f8fafc; 
+            border-radius: 18px; 
+            border: 2px dashed #cbd5e0; 
+            animation: fadeIn 0.3s ease;
+        }
+        .qr-holder img { width: 170px; height: 170px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* Total Payment Grid Architecture */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .grid-item { 
+            background: #f8fafc; 
+            padding: 16px; 
+            border-radius: 16px; 
+            border-left: 4px solid var(--primary); 
+            border: 1px solid #edf2f7;
+            border-left: 4px solid var(--primary);
+        }
+        .grid-item-title { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .grid-item-val { font-size: 18px; font-weight: 700; color: #1a202c; margin-top: 6px; }
+        
+        /* Reports Dashboard Design */
+        .report-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 14px 0; 
+            border-bottom: 1px solid #edf2f7; 
+            font-size: 15px; 
+            font-weight: 500;
+        }
+        .report-row:last-child { border-bottom: none; }
+        
+        /* Premium Log History List */
+        .history-list { max-height: 280px; overflow-y: auto; }
+        .history-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 14px 0; 
+            border-bottom: 1px solid #edf2f7; 
+        }
+        .history-item:last-child { border-bottom: none; }
+        .h-info { display: flex; flex-direction: column; }
+        .h-cat { font-weight: 700; font-size: 15px; color: #1a202c; }
+        .h-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+        .h-amt { font-weight: 700; font-size: 16px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <h1>💰 My Money</h1>
-    <p class="subtitle">ఆటోమేటిక్ రిపోర్ట్స్ మేనేజర్</p>
-
-    <!-- INCOME SECTION (First Place) -->
-    <div class="card card-income">
-        <h3>🟩 ఆదాయం రికార్డ్ (Add Income)</h3>
-        <p style="margin:0 0 8px 0; font-size:14px; font-weight:bold; color:#555;">డబ్బులు ఎలా వచ్చాయి?</p>
-        <div class="method-selector">
-            <button class="method-btn active" id="inc-cash-btn" onclick="setIncomeMethod('Hand Cash')">💵 Hand Cash</button>
-            <button class="method-btn" id="inc-qr-btn" onclick="setIncomeMethod('Bank Account QR')">🏦 Bank QR</button>
-        </div>
-
-        <!-- QR కోడ్ బాక్స్ (Bank QR నొక్కినప్పుడు మాత్రమే ఓపెన్ అవుతుంది) -->
-        <div class="qr-box" id="qrContainer">
-            <p style="margin: 0 0 8px 0; font-size: 13px; color: #666;">మీ బ్యాంక్ QR కోడ్ ఇక్కడ స్కాన్ చేయించండి:</p>
-            <img src="qr.png" alt="QR Code" onerror="this.src='https://dummyimage.com'">
-        </div>
-
-        <input type="number" id="incAmount" placeholder="వచ్చిన ఆదాయం ఎంత? (₹)">
-        <input type="text" id="incNote" placeholder="వివరాలు (ఎవరిచ్చారు / ఎందుకు వచ్చింది?)">
-        <button class="btn btn-save" onclick="saveTransaction('Income')">Income యాడ్ చేయి</button>
+    <!-- Header UI -->
+    <div class="header">
+        <h1>My Money</h1>
+        <p>Income & Expenses</p>
+        <button class="lang-btn">తెలుగు</button>
     </div>
 
-    <!-- EXPENSE SECTION -->
-    <div class="card">
-        <h3>💸 ఖర్చుల లావాదేవీలు (Expenses)</h3>
-        <p style="margin:0 0 8px 0; font-size:14px; font-weight:bold; color:#555;">డైరెక్ట్ పేమెంట్ యాప్స్:</p>
-        <div class="btn-group">
-            <!-- YOURUPIID స్థానంలో మీ ఒరిజినల్ ID పెట్టుకోండి -->
-            <a href="upi://pay?pa=YOURUPIID@ybl&pn=MyMoneyApp" class="btn btn-pe" target="_blank">PhonePe ఓపెన్</a>
-            <a href="upi://pay?pa=YOURUPIID@paytm&pn=MyMoneyApp" class="btn btn-tm" target="_blank">Paytm ఓపెన్</a>
-        </div>
+    <!-- Main App Interface -->
+    <div class="container">
         
-        <input type="number" id="expAmount" placeholder="ఎంత అమౌంట్ ఖర్చు పెట్టారు? (₹)">
-        <select id="expCategory">
-            <option value="Food 🍔">Food 🍔</option>
-            <option value="Fuel ⛽">Fuel ⛽</option>
-            <option value="Shopping 🛍️">Shopping 🛍️</option>
-            <option value="Rent 🏠">Rent 🏠</option>
-            <option value="Others 🪙">ఇతరములు 🪙</option>
-        </select>
-        <button class="btn btn-exp-save" onclick="saveTransaction('Expense')">Expense యాడ్ చేయి</button>
-    </div>
-
-    <!-- REPORTS SECTION -->
-    <div class="card card-report">
-        <h3>📊 రిపోర్ట్స్ డ్యాష్‌బోర్డ్ (Reports)</h3>
-        <div class="report-tabs">
-            <button class="tab-btn active" id="tab-daily" onclick="loadReport('daily')">Date</button>
-            <button class="tab-btn" id="tab-weekly" onclick="loadReport('weekly')">Weekly</button>
-            <button class="tab-btn" id="tab-monthly" onclick="loadReport('monthly')">Monthly</button>
-            <button class="tab-btn" id="tab-yearly" onclick="loadReport('yearly')">Yearly</button>
+        <!-- Live Total Balance Card -->
+        <div class="card balance-card">
+            <div class="balance-title">Total Balance</div>
+            <div class="balance-amount" id="totalBalance">₹0</div>
+            
+            <div class="inc-exp-row">
+                <div class="ie-box">
+                    <div class="ie-title">Income</div>
+                    <div class="ie-amount" style="color: var(--income);" id="topIncome">₹0</div>
+                </div>
+                <div class="ie-box">
+                    <div class="ie-title">Expenses</div>
+                    <div class="ie-amount" style="color: var(--expense);" id="topExpense">₹0</div>
+                </div>
+            </div>
         </div>
 
-        <div class="summary-box">
-            <span style="color: #2e7d32;" id="totalInc">In: ₹0</span>
-            <span style="color: #d32f2f;" id="totalExp">Out: ₹0</span>
+        <!-- Section 1: Receive Money Dynamic QR -->
+        <div class="card">
+            <h3>💰 Receive Money</h3>
+            <div class="qr-section">
+                <p>Show your QR and receive money directly to your UPI-linked bank account.</p>
+                <button class="btn btn-blue" onclick="toggleQR()">📱 Show My QR</button>
+                <div class="qr-holder" id="qrHolder">
+                    <img src="qr.png" alt="My UPI QR" onerror="this.src='https://dummyimage.com'">
+                </div>
+            </div>
         </div>
 
-        <div class="report-list" id="reportOutput"></div>
-    </div>
+        <!-- Section 2: Add Income Interface -->
+        <div class="card">
+            <h3>➕ Add Income</h3>
+            <select id="incCategory">
+                <option value="QR / UPI Income">QR / UPI Income</option>
+                <option value="Cash Income">Cash Income</option>
+                <option value="Other Income">Other Income</option>
+            </select>
+            <input type="number" id="incAmount" placeholder="Amount ₹" inputmode="numeric">
+            <input type="text" id="incNote" placeholder="Income note">
+            <button class="btn btn-inc" onclick="addTransaction('Income')">Add Income</button>
+        </div>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-            .then(() => console.log("Service Worker Active"));
-        }
-
-        let transactions = JSON.parse(localStorage.getItem('my_money_txs')) || [];
-        let currentIncomeMethod = 'Hand Cash';
-
-        function setIncomeMethod(method) {
-            currentIncomeMethod = method;
-            document.getElementById('inc-cash-btn').classList.remove('active');
-            document.getElementById('inc-qr-btn').classList.remove('active');
-            
-            if(method === 'Hand Cash') {
-                document.getElementById('inc-cash-btn').classList.add('active');
-                document.getElementById('qrContainer').style.display = 'none';
-            } else {
-                document.getElementById('inc-qr-btn').classList.add('active');
-                document.getElementById('qrContainer').style.display = 'block';
-            }
-        }
-
-        function saveTransaction(type) {
-            let amt, cat;
-            if(type === 'Income') {
-                amt = document.getElementById('incAmount').value;
-                let note = document.getElementById('incNote').value || 'Income';
-                cat = `${currentIncomeMethod} (${note})`;
-            } else {
-                amt = document.getElementById('expAmount').value;
-                cat = document.getElementById('expCategory').value;
-            }
-            
-            if(!amt || amt <= 0) { alert("దయచేసి సరైన అమౌంట్ ఎంటర్ చేయండి!"); return; }
-
-            let tx = {
-                id: Date.now(),
-                amount: parseFloat(amt),
-                category: cat,
-                type: type,
-                date: new Date().toISOString()
-            };
-
-            transactions.push(tx);
-            localStorage.setItem('my_money_txs', JSON.stringify(transactions));
-            alert(type + " సేవ్ చేయబడింది!");
-            
-            if(type === 'Income') {
-                document.getElementById('incAmount').value = '';
-                document.getElementById('incNote').value = '';
-            } else {
-                document.getElementById('expAmount').value = '';
-            }
-            
-            let activeTab = document.querySelector('.tab-btn.active').id.replace('tab-', '');
-            loadReport(activeTab);
-        }
-
-        function loadReport(filter) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + filter).classList.add('active');
-
-            let now = new Date();
-            let filtered = transactions.filter(tx => {
-                let txDate = new Date(tx.date);
-                if (filter === 'daily') return txDate.toDateString() === now.toDateString();
-                if (filter === 'weekly') {
-                    let oneWeekAgo = new Date();
-                    oneWeekAgo.setDate(now.getDate() - 7);
-                    return txDate >= oneWeekAgo;
-                }
-                if (filter === 'monthly') return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-                if (filter === 'yearly') return txDate.getFullYear() === now.getFullYear();
-                return true;
-            });
-
-            let incSum = filtered.filter(t => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
-            let expSum = filtered.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0);
-
-            document.getElementById('totalInc').innerText = `In: ₹${incSum}`;
+        <!-- Section 3: Pay Shop Shortcut Gateway -->
+        <div class="card">
+            <h3>📷 Pay Shop</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top:0; margin-bottom: 12px; line-height: 1.4;">Scan shop UPI QR and pay using a UPI app.</p>
             
