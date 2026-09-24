@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Money</title>
     <meta name="theme-color" content="#0d6efd">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22My%20Money%22,%22short_name%22:%22MyMoney%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%230d6efd%22}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,13 +15,13 @@
 
     <!-- Header Section -->
     <header class="bg-blue-600 text-white p-5 shadow-md">
-        <div class="flex justify-between items-start max-w-md mx-auto">
+        <div class="flex justify-between items-center max-w-md mx-auto">
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight">My Money</h1>
                 <p class="text-xs text-blue-100 font-medium">Income & Expenses</p>
             </div>
-            <!-- Language Switcher -->
-            <button onclick="toggleLanguage()" class="bg-white text-blue-700 font-bold px-4 py-1.5 rounded-xl text-sm shadow-sm hover:bg-blue-50 transition active:scale-95">
+            <!-- Language Switcher Button -->
+            <button onclick="toggleLanguage()" class="bg-white text-blue-700 font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:bg-blue-50 transition active:scale-95">
                 <span id="langBtnText">తెలుగు</span>
             </button>
         </div>
@@ -141,16 +140,34 @@
             </div>
         </section>
 
-        <!-- Reports Card -->
+        <!-- Reports Card with Dynamic Options -->
         <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
             <div class="flex items-center gap-2 mb-1">
                 <span class="text-2xl">📈</span>
                 <h3 class="text-xl font-bold text-slate-800" id="lblReportsTitle">Reports</h3>
             </div>
 
-            <select class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 text-sm">
-                <option value="All Time">All Time</option>
+            <!-- Report Options Dropdown -->
+            <select id="reportFilter" onchange="handleReportFilterChange()" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 text-sm focus:ring-2 focus:ring-blue-600">
+                <option value="all">All Time</option>
+                <option value="custom">Date Range (1-30 Days Custom)</option>
+                <option value="weekly">Weekly (Sunday to Saturday)</option>
+                <option value="monthly">Monthly (Current Month)</option>
+                <option value="yearly_2026">Yearly (2026)</option>
+                <option value="yearly_2027">Yearly (2027)</option>
             </select>
+
+            <!-- Custom Date Selector Inputs (Hidden by default) -->
+            <div id="customDateRange" class="hidden grid-cols-2 gap-2 pt-2">
+                <div>
+                    <label class="text-[10px] text-gray-500 font-bold block mb-1">FROM DATE</label>
+                    <input type="date" id="startDate" onchange="renderApp()" class="w-full p-2 border border-slate-200 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 font-bold block mb-1">TO DATE</label>
+                    <input type="date" id="endDate" onchange="renderApp()" class="w-full p-2 border border-slate-200 rounded-xl text-xs">
+                </div>
+            </div>
 
             <div class="space-y-2 text-sm pt-2 border-t border-slate-100">
                 <div class="flex justify-between font-medium">
@@ -202,7 +219,7 @@
 
     <script>
         let currentLang = 'en';
-        const STORAGE_KEY = 'mymoney_app_db';
+        const STORAGE_KEY = 'mymoney_app_db_v2';
         let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
         const categories = ['Food', 'Travel', 'Shopping', 'Bills', 'Education', 'Medical', 'Groceries', 'Other'];
@@ -215,7 +232,8 @@
                 payShopTitle: "Pay Shop", payShopSub: "Scan shop UPI QR and pay using a UPI app.",
                 scanQr: "Scan Shop QR", addExpTitle: "Add Expense", addExpBtn: "Add Expense",
                 totalPayTitle: "Total Payment", reportsTitle: "Reports", repInc: "Total Income",
-                repExp: "Total Expense", repBal: "Balance", repTx: "Transactions", historyTitle: "Transaction History"
+                repExp: "Total Expense", repBal: "Balance", repTx: "Transactions", historyTitle: "Transaction History",
+                langBtn: "తెలుగు"
             },
             te: {
                 totalBal: "మొత్తం బ్యాలెన్స్", inc: "ఆదాయం", exp: "ఖర్చులు", receiveTitle: "డబ్బు పొందేందుకు",
@@ -224,19 +242,20 @@
                 payShopTitle: "షాప్ లో పే చేయండి", payShopSub: "షాప్ QR స్కాన్ చేసి UPI యాప్ ద్వారా పే చేయండి.",
                 scanQr: "షాప్ QR స్కాన్ చేయి", addExpTitle: "ఖర్చు నమోదు", addExpBtn: "ఖర్చు యాడ్ చేయి",
                 totalPayTitle: "మొత్తం చెల్లింపులు", reportsTitle: "రిపోర్ట్‌లు", repInc: "మొత్తం ఆదాయం",
-                repExp: "మొత్తం ఖర్చు", repBal: "మిగిలిన బ్యాలెన్స్", repTx: "లావాదేవీలు", historyTitle: "లావాదేవీల హిస్టరీ"
+                repExp: "మొత్తం ఖర్చు", repBal: "మిగిలిన బ్యాలెన్స్", repTx: "లావాదేవీలు", historyTitle: "లావాదేవీల హిస్టరీ",
+                langBtn: "English"
             }
         };
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'te' : 'en';
-            document.getElementById('langBtnText').innerText = currentLang === 'en' ? 'తెలుగు' : 'English';
             applyTranslations();
             renderApp();
         }
 
         function applyTranslations() {
             const t = i18n[currentLang];
+            document.getElementById('langBtnText').innerText = t.langBtn;
             document.getElementById('lblTotalBalance').innerText = t.totalBal;
             document.getElementById('lblIncomeCard').innerText = t.inc;
             document.getElementById('lblExpenseCard').innerText = t.exp;
@@ -259,6 +278,19 @@
             document.getElementById('lblHistoryTitle').innerText = t.historyTitle;
         }
 
+        function handleReportFilterChange() {
+            const filter = document.getElementById('reportFilter').value;
+            const customBox = document.getElementById('customDateRange');
+            if (filter === 'custom') {
+                customBox.classList.remove('hidden');
+                customBox.classList.add('grid');
+            } else {
+                customBox.classList.add('hidden');
+                customBox.classList.remove('grid');
+            }
+            renderApp();
+        }
+
         function addIncome(e) {
             e.preventDefault();
             const type = document.getElementById('incomeType').value;
@@ -268,6 +300,7 @@
             if (!amt || amt <= 0) return;
 
             const now = new Date();
+            const isoDate = now.toISOString().split('T')[0];
             const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             transactions.unshift({
@@ -276,7 +309,9 @@
                 category: type,
                 amount: amt,
                 note: note || '',
-                date: dateStr
+                date: dateStr,
+                isoDate: isoDate,
+                timestamp: now.getTime()
             });
 
             saveData();
@@ -294,6 +329,7 @@
             if (!amt || amt <= 0) return;
 
             const now = new Date();
+            const isoDate = now.toISOString().split('T')[0];
             const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             transactions.unshift({
@@ -302,7 +338,9 @@
                 category: cat,
                 amount: amt,
                 note: note || '',
-                date: dateStr
+                date: dateStr,
+                isoDate: isoDate,
+                timestamp: now.getTime()
             });
 
             saveData();
@@ -315,70 +353,33 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
         }
 
-        function renderApp() {
-            let totalInc = 0;
-            let totalExp = 0;
-            let categoryTotals = {};
-            categories.forEach(c => categoryTotals[c] = 0);
+        function filterTransactions() {
+            const filter = document.getElementById('reportFilter').value;
+            const now = new Date();
 
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
+            return transactions.filter(tx => {
+                const txDate = new Date(tx.timestamp || Date.now());
 
-            transactions.forEach(tx => {
-                const amt = Number(tx.amount) || 0;
-                if (tx.type === 'income') {
-                    totalInc += amt;
-                } else {
-                    totalExp += amt;
-                    if (categoryTotals[tx.category] !== undefined) {
-                        categoryTotals[tx.category] += amt;
-                    }
+                if (filter === 'all') return true;
+
+                if (filter === 'weekly') {
+                    const startOfWeek = new Date(now);
+                    startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
+                    startOfWeek.setHours(0,0,0,0);
+
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+                    endOfWeek.setHours(23,59,59,999);
+
+                    return txDate >= startOfWeek && txDate <= endOfWeek;
                 }
 
-                // Render Clean History (No Undefined)
-                const item = document.createElement('div');
-                item.className = 'py-2 border-b border-slate-100 flex justify-between items-center text-sm';
-                
-                const noteText = tx.note ? ` • ${tx.note}` : '';
-                item.innerHTML = `
-                    <div>
-                        <p class="font-medium text-slate-700">${tx.category}${noteText}</p>
-                        <p class="text-xs text-gray-400">${tx.date}</p>
-                    </div>
-                    <span class="font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
-                        ${tx.type === 'income' ? '+' : '-'} ₹${amt}
-                    </span>
-                `;
-                historyList.appendChild(item);
-            });
+                if (filter === 'monthly') {
+                    return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+                }
 
-            if (transactions.length === 0) {
-                historyList.innerHTML = '<p class="text-center text-xs text-gray-400 py-3">No transactions found</p>';
-            }
+                if (filter === 'yearly_2026') {
+                    return txDate.getFullYear() === 2026;
+                }
 
-            // Dashboard & Reports
-            const bal = totalInc - totalExp;
-            document.getElementById('totalBalance').innerText = `₹${bal}`;
-            document.getElementById('totalIncome').innerText = totalInc;
-            document.getElementById('totalExpense').innerText = totalExp;
-
-            document.getElementById('repIncome').innerText = totalInc;
-            document.getElementById('repExpense').innerText = totalExp;
-            document.getElementById('repBalance').innerText = bal;
-            document.getElementById('repTxCount').innerText = transactions.length;
-
-            // Render Payment Category Grid
-            const grid = document.getElementById('categoryGrid');
-            grid.innerHTML = '';
-            categories.forEach(cat => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-100';
-                card.innerHTML = `
-                    <p class="text-xs text-gray-600 font-medium">${cat}</p>
-                    <p class="text-sm font-bold text-slate-800 mt-1">₹${categoryTotals[cat]}</p>
-                `;
-                grid.appendChild(card);
-            });
-
-            lucide.createIcons();
-        }
+                if (filter === 
