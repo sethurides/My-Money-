@@ -3,320 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Money Dashboard</title>
-    
-    <!-- ఐకాన్స్ స్పష్టంగా కనిపించడానికి Font Awesome లింక్ -->
-    <link rel="stylesheet" href="https://cloudflare.com">
-    
-    <!-- కెమెరా ద్వారా క్యూఆర్ కోడ్ స్కాన్ చేయడానికి వెబ్ స్కానర్ లైబ్రరీ -->
-    <script src="https://unpkg.com" type="text/javascript"></script>
-
+    <title>Finance Tracker PWA</title>
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22FinanceTracker%22,%22short_name%22:%22Finance%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%234f46e5%22}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #0066ff;
-            --primary-dark: #0044cc;
-            --income: #2e7d32;
-            --expense: #d32f2f;
-            --dark: #333;
-            --light: #f4f7fe;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: var(--light); color: var(--dark); }
-        .premium-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 30px 20px 50px 20px; border-radius: 0 0 32px 32px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .header-title h1 { margin: 0; font-size: 26px; font-weight: bold; }
-        .header-title p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.8; }
-        .lang-btn { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .balance-card { background: white; border-radius: 24px; padding: 20px; margin: -30px 20px 20px 20px; box-shadow: 0 10px 25px rgba(0, 102, 255, 0.1); text-align: center; position: relative; z-index: 10; }
-        .balance-card h4 { margin: 0; color: #666; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-card .main-amount { font-size: 38px; font-weight: 800; color: var(--primary); margin: 5px 0 15px 0; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #f0f0f0; padding-top: 15px; }
-        .stat-box { background: #f8fafe; padding: 12px; border-radius: 16px; text-align: center; }
-        .stat-box span { font-size: 12px; color: #777; display: block; margin-bottom: 4px; }
-        .stat-box p { margin: 0; font-size: 18px; font-weight: bold; }
-        .stat-income { color: var(--income); }
-        .stat-expense { color: var(--expense); }
-        .container { padding: 0 20px; }
-        .card { background: white; padding: 22px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 20px; }
-        h2 { font-size: 18px; margin-top: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #222; }
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; box-sizing: border-box; }
-        .btn-scanner { background: #e6f0ff; color: var(--primary); border: 2px solid var(--primary); }
-        .scanner-container { display: none; margin-top: 15px; border: 2px dashed var(--primary); border-radius: 16px; padding: 10px; background: #fafafa; overflow: hidden; }
-        .input-group { margin-top: 15px; }
-        .input-group input { width: 100%; padding: 14px; border: 1px solid #e0e0e0; border-radius: 12px; box-sizing: border-box; font-size: 16px; background: #f9f9f9; }
-        .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .tab { background: #e4e8ef; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; font-weight: 600; color: #666; }
-        .tab.active { background: var(--primary); color: white; }
-        .history-list { list-style: none; padding: 0; margin: 0; }
-        .history-item { background: #f8fafe; padding: 14px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ccc; }
-        .history-item.income-type { border-left-color: var(--income); }
-        .history-item.expense-type { border-left-color: var(--expense); }
+        body { font-family: system-ui, -apple-system, sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen pb-10">
 
-    <div class="premium-header">
-        <div class="header-top">
-            <div class="header-title">
-                <h1 id="lblTitle">My Money</h1>
-                <p id="lblSubTitle">Income & Expenses</p>
+    <!-- Header & Dashboard -->
+    <div class="bg-indigo-600 text-white p-6 rounded-b-3xl shadow-lg">
+        <h1 class="text-xl font-bold mb-4 text-center">ఫైనాన్స్ డ్యాష్‌బోర్డ్ (Finance Tracker)</h1>
+        <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-indigo-700 p-3 rounded-xl">
+                <p class="text-xs text-indigo-200">టోటల్ బ్యాలెన్స్</p>
+                <p class="text-lg font-bold mt-1" id="totalBalance">₹0</p>
             </div>
-            <button class="lang-btn" onclick="toggleLanguage()"><i class="fa-solid fa-language"></i> <span id="btnLangText">తెలుగు</span></button>
-        </div>
-    </div>
-
-    <div class="balance-card">
-        <h4 id="lblTotalBalance"><i class="fa-solid fa-scale-balanced"></i> Total Balance</h4>
-        <p id="totalBalance" class="main-amount">₹0.00</p>
-        <div class="stats-grid">
-            <div class="stat-box">
-                <span id="lblIncome">Income</span>
-                <p id="totalIncome" class="stat-income">₹0.00</p>
+            <div class="bg-green-600 p-3 rounded-xl">
+                <p class="text-xs text-green-200">ఇన్కమ్</p>
+                <p class="text-lg font-bold mt-1" id="totalIncome">₹0</p>
             </div>
-            <div class="stat-box">
-                <span id="lblExpenses">Expenses</span>
-                <p id="totalExpense" class="stat-expense">₹0.00</p>
+            <div class="bg-red-600 p-3 rounded-xl">
+                <p class="text-xs text-red-200">ఎక్స్‌పెన్స్</p>
+                <p class="text-lg font-bold mt-1" id="totalExpense">₹0</p>
             </div>
         </div>
     </div>
-        <div class="container">
-        <!-- Receive Money విభాగం -->
-        <div class="card">
-            <h2 id="lblReceiveMoneyTitle"><i class="fa-solid fa-money-bill-trend-up" style="color: var(--income);"></i> 💰 Receive Money</h2>
-            <p id="lblReceiveDesc" style="font-size: 13px; color: #666; margin: 0 0 15px 0;">Scan sender QR code to add income automatically without manual typing.</p>
-            <button class="btn btn-scanner" onclick="startScanner('income')"><i class="fa-solid fa-qrcode"></i> <span id="btnScanIncome">Scan QR to Add Income</span></button>
-            <div class="scanner-container" id="incomeScannerBox">
-                <div id="incomeReader" style="width: 100%; min-height: 250px; background: black; border-radius: 12px;"></div>
-                <button class="btn" style="background:#555;" onclick="stopScanner('income')">Close Camera</button>
+
+    <!-- Main Content -->
+    <div class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- Quick UPI Actions -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-600 mb-3">యూపిఐ (UPI) క్విక్ యాక్షన్స్</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="upi://pay" class="bg-purple-50 text-purple-700 font-medium p-3 rounded-xl text-center border border-purple-200 hover:bg-purple-100 flex items-center justify-center gap-2">
+                    <span>Scan Shop QR</span>
+                </a>
+                <button onclick="toggleModal('qrModal')" class="bg-blue-50 text-blue-700 font-medium p-3 rounded-xl text-center border border-blue-200 hover:bg-blue-100">
+                    Show My QR
+                </button>
             </div>
         </div>
 
-        <!-- Pay Shop విభాగం -->
-        <div class="card">
-            <h2 id="lblPayShopTitle"><i class="fa-solid fa-camera" style="color: var(--primary);"></i> 📷 Pay Shop</h2>
-            <p id="lblPayDesc" style="font-size: 13px; color: #666; margin: 0 0 10px 0;">Enter amount and scan shop QR. App auto-detects name and sets category dynamically.</p>
-            <div class="input-group">
-                <input type="number" id="payAmount" placeholder="Enter amount to pay (₹)">
-            </div>
-            <button class="btn" onclick="startScanner('expense')"><i class="fa-solid fa-camera"></i> <span id="btnScanPay">Open Camera & Scan Shop QR</span></button>
-            <div class="scanner-container" id="expenseScannerBox">
-                <div id="expenseReader" style="width: 100%; min-height: 250px; background: black; border-radius: 12px;"></div>
-                <button class="btn" style="background:#555;" onclick="stopScanner('expense')">Close Camera</button>
-            </div>
+        <!-- Add Transaction Form -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-600 mb-3">కొత్త లావాదేవీ నమోదు చేయండి</h2>
+            <form id="txForm" onsubmit="addTransaction(event)" class="space-y-3">
+                <div>
+                    <input type="number" id="amount" placeholder="అమౌంట్ (₹)" required class="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="type" class="p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="expense">Expense (ఖర్చు)</option>
+                        <option value="income">Income (ఆదాయం)</option>
+                    </select>
+                    <select id="category" class="p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-semibold p-3 rounded-xl hover:bg-indigo-700">యాడ్ చేయండి</button>
+            </form>
         </div>
 
-        <!-- Reports విభాగం -->
-        <div class="card">
-            <h2 id="lblReportsTitle"><i class="fa-solid fa-chart-line" style="color: #333;"></i> 📈 Reports</h2>
-            <div class="tabs">
-                <button class="tab active" onclick="filterReport('all')">All Time</button>
-                <button class="tab" onclick="filterReport('today')">Today</button>
-                <button class="tab" onclick="filterReport('weekly')">Weekly</button>
-                <button class="tab" onclick="filterReport('monthly')">Monthly</button>
-            </div>
-            <div style="font-size: 14px; line-height: 2.2; color: #444;">
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f5f5f5;"><span id="lblRepInc">Total Income:</span> <span id="repIncome" class="txt-income" style="font-weight:bold;">₹0.00</span></div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f5f5f5;"><span id="lblRepExp">Total Expense:</span> <span id="repExpense" class="txt-expense" style="font-weight:bold;">₹0.00</span></div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f5f5f5;"><span id="lblRepBal">Net Balance:</span> <span id="repBalance" style="font-weight:bold;">₹0.00</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>Transactions:</span> <span id="repCount" style="font-weight:bold;">0</span></div>
+        <!-- Transaction History -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-600 mb-3">రీసెంట్ హిస్టరీ</h2>
+            <div id="historyList" class="space-y-3">
+                <!-- Data renders dynamically -->
             </div>
         </div>
+    </div>
 
-        <!-- Transaction History విభాగం -->
-        <div class="card">
-            <h2 id="lblHistoryTitle"><i class="fa-solid fa-clock-rotate-left"></i> 🧾 Transaction History</h2>
-            <ul class="history-list" id="historyList"></ul>
+    <!-- Show My QR Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 text-center max-w-xs w-full space-y-4">
+            <h3 class="font-bold text-gray-800">మీ బ్యాంక్ QR కోడ్</h3>
+            <div class="bg-gray-200 w-48 h-48 mx-auto rounded-xl flex items-center justify-center border">
+                <span class="text-gray-500 text-xs">QR Image Here<br>(సొంత QR Image ని Replace చేసుకోండి)</span>
+            </div>
+            <button onclick="toggleModal('qrModal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl text-sm w-full">క్లోజ్</button>
         </div>
-        </div>
-            <script>
-        let currentLang = 'te'; 
-        let transactions = [];
-        let html5QrScanner = null;
+    </div>
 
-        const languages = {
-            en: {
-                title: "My Money", subTitle: "Income & Expenses", langBtn: "తెలుగు",
-                totBal: "<i class='fa-solid fa-scale-balanced'></i> Total Balance", inc: "Income", exp: "Expenses",
-                recTitle: "<i class='fa-solid fa-money-bill-trend-up'></i> 💰 Receive Money",
-                recDesc: "Scan sender QR code to add income automatically without manual typing.",
-                btnScanInc: "Scan QR to Add Income",
-                payTitle: "<i class='fa-solid fa-camera'></i> 📷 Pay Shop",
-                payDesc: "Enter amount and scan shop QR. App auto-detects name and sets category dynamically.",
-                payHolder: "Enter amount to pay (₹)",
-                btnScanPay: "Open Camera & Scan Shop QR",
-                repTitle: "<i class='fa-solid fa-chart-line'></i> 📈 Reports",
-                repInc: "Total Income:", repExp: "Total Expense:", repBal: "Net Balance:",
-                histTitle: "<i class='fa-solid fa-clock-rotate-left'></i> 🧾 Transaction History",
-                noTx: "No transactions available yet."
-            },
-            te: {
-                title: "మై మనీ", subTitle: "ఆదాయం & ఖర్చులు", langBtn: "English",
-                totBal: "<i class='fa-solid fa-scale-balanced'></i> మొత్తం బ్యాలెన్స్", inc: "ఆదాయం", exp: "ఖర్చులు",
-                recTitle: "<i class='fa-solid fa-money-bill-trend-up'></i> 💰 డబ్బు పొందండి",
-                recDesc: "చేత్తో టైప్ చేయకుండా, పంపిన వారి QR కోడ్ స్కాన్ చేసి ఆటోమేటిక్‌గా ఆదాయాన్ని యాడ్ చేయండి.",
-                btnScanInc: "ఆదాయాన్ని యాడ్ చేయడానికి QR స్కాన్ చేయి",
-                payTitle: "<i class='fa-solid fa-camera'></i> 📷 షాప్ పేమెంట్",
-                payDesc: "అమౌంట్ ఎంటర్ చేసి షాప్ QR స్కాన్ చేయండి. యాప్ ఆటోమేటిక్‌గా షాప్ పేరు ఆధారంగా కేటగిరీని గుర్తిస్తుంది.",
-                payHolder: "చేల్లించాల్సిన అమౌంట్ ఎంటర్ చేయండి (₹)",
-                btnScanPay: "కెమెరా ఓపెన్ చేసి షాప్ QR స్కాన్ చేయి",
-                repTitle: "<i class='fa-solid fa-chart-line'></i> 📈 రిపోర్ట్స్",
-                repInc: "మొత్తం ఆదాయం:", repExp: "మొత్తం ఖర్చులు:", repBal: "నికర బ్యాలెన్స్:",
-                histTitle: "<i class='fa-solid fa-clock-rotate-left'></i> 🧾 లావాదేవీల చరిత్ర",
-                noTx: "ఇంకా ఎలాంటి లావాదేవీలు లేవు."
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('pwa_tx_data')) || [];
+
+        function updateUI() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            let income = 0;
+            let expense = 0;
+
+            if (transactions.length === 0) {
+                historyList.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">రికార్డులు ఏవీ లేవు</p>';
             }
-        };
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'te' ? 'en' : 'te';
-            const data = languages[currentLang];
-            document.getElementById('lblTitle').innerText = data.title;
-            document.getElementById('lblSubTitle').innerText = data.subTitle;
-            document.getElementById('btnLangText').innerText = data.langBtn;
-            document.getElementById('lblTotalBalance').innerHTML = data.totBal;
-            document.getElementById('lblIncome').innerText = data.inc;
-            document.getElementById('lblExpenses').innerText = data.exp;
-            document.getElementById('lblReceiveMoneyTitle').innerHTML = data.recTitle;
-            document.getElementById('lblReceiveDesc').innerText = data.recDesc;
-            document.getElementById('btnScanIncome').innerText = data.btnScanInc;
-            document.getElementById('lblPayShopTitle').innerHTML = data.payTitle;
-            document.getElementById('lblPayDesc').innerText = data.payDesc;
-            document.getElementById('payAmount').placeholder = data.payHolder;
-            document.getElementById('btnScanPay').innerText = data.btnScanPay;
-            document.getElementById('lblReportsTitle').innerHTML = data.repTitle;
-            document.getElementById('lblRepInc').innerText = data.repInc;
-            document.getElementById('lblRepExp').innerText = data.repExp;
-            document.getElementById('lblRepBal').innerText = data.repBal;
-            document.getElementById('lblHistoryTitle').innerHTML = data.histTitle;
-            updateDashboard();
-        }
+            transactions.forEach((tx) => {
+                const amt = Number(tx.amount) || 0;
+                if (tx.type === 'income') income += amt;
+                if (tx.type === 'expense') expense += amt;
 
-        function startScanner(mode) {
-            let amount = 0;
-            if (mode === 'expense') {
-                const amtVal = document.getElementById('payAmount').value.trim();
-                if (!amtVal || isNaN(amtVal) || parseFloat(amtVal) <= 0) {
-                    alert(currentLang === 'te' ? "దయచేసి ముందుగా సరైన అమౌంట్ ఎంటర్ చేయండి!" : "Please enter a valid amount first!");
-                    return;
-                }
-                amount = parseFloat(amtVal);
-            }
-            if(html5QrScanner) { html5QrScanner.clear(); }
-            const targetBox = mode === 'income' ? 'incomeScannerBox' : 'expenseScannerBox';
-            const readerId = mode === 'income' ? 'incomeReader' : 'expenseReader';
-            document.getElementById(targetBox).style.display = 'block';
-            html5QrScanner = new Html5Qrcode(readerId);
-            html5QrScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                (qrText) => {
-                    html5QrScanner.stop().then(() => {
-                        document.getElementById(targetBox).style.display = 'none';
-                        processQRData(mode, qrText, amount);
-                    });
-                },
-                (errorMessage) => { }
-            ).catch(err => {
-                alert("Camera error or permission denied!");
-                document.getElementById(targetBox).style.display = 'none';
-            });
-        }
-
-        function stopScanner(mode) {
-            const targetBox = mode === 'income' ? 'incomeScannerBox' : 'expenseScannerBox';
-            if(html5QrScanner) {
-                html5QrScanner.stop().then(() => { document.getElementById(targetBox).style.display = 'none'; })
-                .catch(()=>{ document.getElementById(targetBox).style.display = 'none'; });
-            } else { document.getElementById(targetBox).style.display = 'none'; }
-        }
-                        function processQRData(mode, qrText, amount) {
-            let name = "UPI Merchant";
-            let category = "Other";
-            if(qrText.includes("pn=")) {
-                const urlParams = new URLSearchParams(qrText.split('?'));
-                if(urlParams.has('pn')) name = urlParams.get('pn');
-                if(urlParams.has('am') && mode === 'income') amount = parseFloat(urlParams.get('am')) || 0;
-            } else { name = qrText.substring(0, 20); }
-            
-            if(mode === 'income' && amount === 0) { amount = 500; }
-
-            if(mode === 'expense') {
-                const lowercaseName = name.toLowerCase();
-                if(lowercaseName.includes("hotel") || lowercaseName.includes("food") || lowercaseName.includes("tiffin") || lowercaseName.includes("canteen")) { category = "🍔 Food"; }
-                else if(lowercaseName.includes("travel") || lowercaseName.includes("auto") || lowercaseName.includes("petrol") || lowercaseName.includes("fuel")) { category = "🚗 Travel"; }
-                else if(lowercaseName.includes("mart") || lowercaseName.includes("store") || lowercaseName.includes("shopping") || lowercaseName.includes("cloth")) { category = "🛍 Shopping"; }
-                else if(lowercaseName.includes("bill") || lowercaseName.includes("electric") || lowercaseName.includes("recharge")) { category = "📄 Bills"; }
-                else if(lowercaseName.includes("medical") || lowercaseName.includes("hospital") || lowercaseName.includes("pharma")) { category = "🏥 Medical"; }
-                else if(lowercaseName.includes("grocery") || lowercaseName.includes("super")) { category = "🍏 Groceries"; }
-                else { category = "🪙 " + (currentLang === 'te' ? "ఇతర ఖర్చులు" : "Other"); }
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100';
                 
-                window.location.href = qrText.includes("upi://") ? qrText : `upi://pay?pa=merchant@upi&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR`;
-            } else { category = "💰 " + (currentLang === 'te' ? "క్యూఆర్ ఆదాయం" : "QR Income"); }
+                const isInc = tx.type === 'income';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-gray-800 text-sm">${tx.category || 'General'}</p>
+                        <p class="text-xs text-gray-400">${tx.dateTime || ''}</p>
+                    </div>
+                    <span class="font-bold text-sm ${isInc ? 'text-green-600' : 'text-red-600'}">
+                        ${isInc ? '+' : '-'}₹${amt.toLocaleString('en-IN')}
+                    </span>
+                `;
+                historyList.appendChild(item);
+            });
+
+            document.getElementById('totalIncome').innerText = `₹${income.toLocaleString('en-IN')}`;
+            document.getElementById('totalExpense').innerText = `₹${expense.toLocaleString('en-IN')}`;
+            document.getElementById('totalBalance').innerText = `₹${(income - expense).toLocaleString('en-IN')}`;
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+            const amountVal = document.getElementById('amount').value;
+            const typeVal = document.getElementById('type').value;
+            const categoryVal = document.getElementById('category').value;
+
+            if (!amountVal || amountVal <= 0) return;
 
             const now = new Date();
-            const dateStr = now.toLocaleDateString('te-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const formattedDate = `${now.toLocaleDateString('en-IN')} ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+
+            const newTx = {
+                id: Date.now(),
+                amount: parseFloat(amountVal),
+                type: typeVal,
+                category: categoryVal,
+                dateTime: formattedDate
+            };
+
+            transactions.unshift(newTx);
+            localStorage.setItem('pwa_tx_data', JSON.stringify(transactions));
             
-            transactions.unshift({ type: mode, amount: amount, category: category, name: name, date: dateStr, time: timeStr, timestamp: now.getTime() });
-            updateDashboard();
+            document.getElementById('amount').value = '';
+            updateUI();
         }
 
-        let currentFilter = 'all';
-        function filterReport(filterType) {
-            currentFilter = filterType;
-            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updateDashboard();
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
         }
 
-        function updateDashboard() {
-            let balance = 0, income = 0, expense = 0, count = 0;
-            const listElement = document.getElementById('historyList');
-            if (!listElement) return;
-            listElement.innerHTML = "";
-            const now = new Date();
-
-            transactions.forEach(tx => {
-                if (tx.type === 'income') { income += tx.amount; balance += tx.amount; }
-                else { expense += tx.amount; balance -= tx.amount; }
-            });
-
-            let filteredIncome = 0, filteredExpense = 0;
-            const filteredList = transactions.filter(tx => {
-                if (currentFilter === 'all') return true;
-                const txDate = new Date(tx.timestamp);
-                if (currentFilter === 'today') return txDate.toDateString() === now.toDateString();
-                if (currentFilter === 'weekly') return txDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                if (currentFilter === 'monthly') return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-                return true;
-            });
-
-            filteredList.forEach(tx => {
-                count++;
-                if (tx.type === 'income') filteredIncome += tx.amount;
-                else filteredExpense += tx.amount;
-            });
-
-            if (filteredList.length === 0) {
-                listElement.innerHTML = `<p style="color:#888; text-align:center; font-size:14px; margin: 15px 0;">${languages[currentLang].noTx}</p>`;
-            }
-
-            filteredList.forEach(tx => {
-                const li = document.createElement('li');
-                li.className = `history-item ${tx.type}-type`;
-                li.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div><p style="margin:0; font-weight:bold; color:#222;">${tx.category} (${tx.name})</p><small style="color:#888; font-size:11px;">${tx.date} | ${tx.time}</small></div><div style="font-weight:bold; font-size:16px; color: ${tx.type === 'income' ? 'var(--income)' : 'var(--expense)'}">${tx.type === 'income' ? '+' : '-'} ₹${tx.amount.toFixed(2)}</div></div>`;
-                listElement.appendChild(li);
-            });
-
-            document.getElementById('totalBalance').innerText = `₹${balance.toFixed(2)}`;
-            document.getElementById('totalIncome').innerText = `₹${income.toFixed(2)}`;
-            document.getElementById('totalExpense').innerText = `₹${expense.toFixed(2)}`;
-            document.getElementById('repIncome').innerText = `₹${filteredIncome.toFixed(2)}`;
-            document.getElementById('repExpense').innerText = `₹${filteredExpense.toFixed(2)}`;
-            document.getElementById('repBalance').innerText = `₹${(filteredIncome - filteredExpense).toFixed(2)}`;
-            document.getElementById('repCount').innerText = count;
+        // Service Worker Registration for PWA functionality
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
         }
 
-        toggleLanguage(); 
-        toggleLanguage();
+        // Initial Load
+        updateUI();
     </script>
 </body>
 </html>
