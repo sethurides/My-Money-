@@ -1,406 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4b400">
+<meta name="mobile-web-app-capable" content="yes">
 
-  <meta name="theme-color" content="#f4b400">
-  <meta name="description" content="Rapido Bike Ride Tracker">
+<link rel="manifest" href="manifest.json">
 
-  <link rel="manifest" href="manifest.json">
+<title>Bike Tracker</title>
 
-  <title>Rapido Bike Tracker</title>
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+body{
+  background:#f5f5f5;
+  color:#222;
+  padding-bottom:30px;
+}
 
-    body {
-      background: #f5f5f5;
-      color: #222;
-    }
+/* HEADER */
+.header{
+  background:#f4b400;
+  padding:16px;
+  color:#111;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  transition:.2s;
+}
 
-    .header {
-      background: linear-gradient(135deg,#f4b400,#ffd54f);
-      padding: 25px 18px;
-      text-align: center;
-      border-radius: 0 0 25px 25px;
-    }
+.header.danger{
+  background:#d60000;
+  color:#fff;
+}
 
-    .header h1 {
-      font-size: 25px;
-      margin-bottom: 6px;
-    }
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .container {
-      max-width: 620px;
-      margin: auto;
-      padding: 15px;
-    }
+.title{
+  font-size:21px;
+  font-weight:800;
+}
 
-    .card {
-      background: white;
-      padding: 18px;
-      border-radius: 18px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
-    }
+.gps-status{
+  font-size:12px;
+  font-weight:bold;
+  margin-top:6px;
+}
 
-    .status {
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      background: #eee;
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
+.speed-box{
+  text-align:right;
+}
 
-    .running {
-      background: #dcfce7;
-      color: #166534;
-    }
+.speed-label{
+  font-size:11px;
+  font-weight:bold;
+}
 
-    .stopped {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+.speed{
+  font-size:34px;
+  line-height:36px;
+  font-weight:900;
+}
 
-    .range {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 22px;
-      border-radius: 20px;
-      margin-bottom: 15px;
-    }
+.speed-unit{
+  font-size:11px;
+  font-weight:bold;
+}
 
-    .range strong {
-      display: block;
-      font-size: 38px;
-      margin: 8px 0;
-    }
+.danger-text{
+  display:none;
+  font-size:13px;
+  font-weight:900;
+  margin-top:3px;
+}
 
-    .range.low {
-      background: #b91c1c;
-    }
+.header.danger .danger-text{
+  display:block;
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+/* CONTAINER */
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:14px;
+}
 
-    .stat {
-      background: white;
-      border-radius: 16px;
-      padding: 17px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.07);
-    }
+/* CARDS */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:17px;
+  margin-bottom:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
 
-    .stat small {
-      display: block;
-      color: #777;
-      margin-bottom: 7px;
-    }
+.card-title{
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:12px;
+}
 
-    .stat strong {
-      font-size: 22px;
-    }
+/* RANGE */
+.range-card{
+  text-align:center;
+}
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+.range-label{
+  font-size:13px;
+  color:#666;
+}
 
-    input {
-      width: 100%;
-      padding: 13px;
-      margin-top: 7px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 16px;
-    }
+.range{
+  font-size:48px;
+  font-weight:900;
+  margin:5px 0;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: bold;
-    }
+.range-unit{
+  font-size:14px;
+  color:#666;
+}
 
-    .start {
-      background: #16a34a;
-      color: white;
-    }
+.range.low{
+  color:#d60000;
+}
 
-    .stop {
-      background: #dc2626;
-      color: white;
-    }
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-    .save {
-      background: #2563eb;
-      color: white;
-    }
+.stat{
+  background:#fafafa;
+  border-radius:12px;
+  padding:13px;
+}
 
-    .petrol {
-      background: #f4b400;
-    }
+.stat-label{
+  font-size:11px;
+  color:#777;
+}
 
-    .dark {
-      background: #111;
-      color: white;
-    }
+.stat-value{
+  font-size:21px;
+  font-weight:800;
+  margin-top:4px;
+}
 
-    .hidden {
-      display: none;
-    }
+/* BUTTONS */
+button{
+  border:0;
+  border-radius:12px;
+  padding:13px 15px;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+}
 
-    .green {
-      color: #16a34a;
-    }
+.start-btn{
+  width:100%;
+  background:#16a34a;
+  color:#fff;
+  margin-bottom:9px;
+}
 
-    .red {
-      color: #dc2626;
-    }
+.stop-btn{
+  width:100%;
+  background:#333;
+  color:#fff;
+}
 
-    .ride {
-      padding: 13px 0;
-      border-bottom: 1px solid #eee;
-    }
+.notification-btn{
+  width:100%;
+  background:#f4b400;
+  color:#111;
+  margin-top:10px;
+}
 
-    .ride:last-child {
-      border-bottom: none;
-    }
+/* GPS */
+.gps-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-    .big {
-      font-size: 26px;
-      font-weight: bold;
-    }
+.gps-item{
+  background:#f7f7f7;
+  border-radius:12px;
+  padding:12px;
+}
 
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: #777;
-      font-size: 12px;
-    }
-  </style>
+.gps-label{
+  font-size:11px;
+  color:#777;
+}
+
+.gps-value{
+  font-size:20px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+/* FUEL */
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+  margin-bottom:10px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#f4b400;
+}
+
+.fuel-btn{
+  width:100%;
+  background:#f4b400;
+  color:#111;
+}
+
+/* LOW FUEL */
+.low-alert{
+  display:none;
+  background:#ffe1e1;
+  color:#b00000;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+  font-weight:800;
+  text-align:center;
+}
+
+.low-alert.show{
+  display:block;
+}
+
+/* HISTORY */
+.history-item{
+  background:#fafafa;
+  border-radius:12px;
+  padding:12px;
+  margin-top:8px;
+}
+
+.history-top{
+  display:flex;
+  justify-content:space-between;
+  font-weight:800;
+}
+
+.history-details{
+  color:#666;
+  font-size:12px;
+  margin-top:5px;
+}
+
+/* EMPTY */
+.empty{
+  color:#777;
+  text-align:center;
+  padding:15px;
+  font-size:13px;
+}
+
+/* RUNNING */
+.running{
+  color:#16a34a;
+}
+
+.stopped{
+  color:#d60000;
+}
+</style>
 </head>
 
 <body>
 
-<div class="header">
-  <h1>🛵 Rapido Bike Tracker</h1>
-  <p>GPS • Petrol • Rides • Income</p>
-</div>
+<!-- HEADER -->
+<header class="header" id="header">
+
+  <div class="header-top">
+
+    <div>
+      <div class="title">🛵 Bike Tracker</div>
+
+      <div class="gps-status" id="gpsStatus">
+        GPS Tracking Stopped
+      </div>
+    </div>
+
+    <div class="speed-box">
+
+      <div class="speed-label">LIVE SPEED</div>
+
+      <div class="speed" id="speedDisplay">
+        0
+      </div>
+
+      <div class="speed-unit">
+        km/h
+      </div>
+
+      <div class="danger-text">
+        ⚠️ DANGER
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
 
 <div class="container">
 
-  <div id="status" class="status stopped">
-    🔴 Tracking Stopped
-  </div>
+  <!-- RANGE -->
+  <div class="card range-card">
 
-  <div id="rangeBox" class="range">
-
-    ⛽ Remaining Petrol Range
-
-    <strong>
-      <span id="remainingRange">0.0</span> km
-    </strong>
-
-    <span>
-      Mileage: 70 km/L
-    </span>
-
-  </div>
-
-  <div class="stats">
-
-    <div class="stat">
-      <small>Today's Rides</small>
-      <strong id="todayRides">0</strong>
+    <div class="range-label">
+      REMAINING PETROL RANGE
     </div>
 
-    <div class="stat">
-      <small>Today's Distance</small>
-      <strong>
-        <span id="todayDistance">0.0</span> km
-      </strong>
+    <div class="range" id="remainingRange">
+      0
     </div>
 
-    <div class="stat">
-      <small>Today's Income</small>
-      <strong>
-        ₹<span id="todayIncome">0.00</span>
-      </strong>
+    <div class="range-unit">
+      km
     </div>
 
-    <div class="stat">
-      <small>Petrol Expense</small>
-      <strong>
-        ₹<span id="todayFuel">0.00</span>
-      </strong>
+    <div class="low-alert" id="lowAlert">
+      ⚠️ LOW RANGE — 15 KM OR LESS
     </div>
 
   </div>
 
-  <br>
 
+  <!-- TODAY -->
   <div class="card">
 
-    <h3>🛵 Rapido Tracking</h3>
+    <div class="card-title">
+      📊 Today's Summary
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-label">
+          DISTANCE
+        </div>
+        <div class="stat-value">
+          <span id="todayDistance">0</span> km
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">
+          RIDES
+        </div>
+        <div class="stat-value">
+          <span id="todayRides">0</span>
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">
+          INCOME
+        </div>
+        <div class="stat-value">
+          ₹<span id="todayIncome">0</span>
+        </div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">
+          PETROL EXPENSE
+        </div>
+        <div class="stat-value">
+          ₹<span id="todayFuelExpense">0</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- GPS TRACKING -->
+  <div class="card">
+
+    <div class="card-title">
+      📍 Bike GPS Tracking
+    </div>
 
     <button
-      id="startButton"
-      class="start"
+      class="start-btn"
+      id="startBtn"
       onclick="startTracking()">
-      🟢 Start Rapido
+      ▶ Start Tracking
     </button>
 
     <button
-      id="stopButton"
-      class="stop hidden"
+      class="stop-btn"
+      id="stopBtn"
       onclick="stopTracking()">
-      🔴 Stop Tracking
+      ■ Stop Tracking
     </button>
 
-    <p style="margin-top:12px;">
-      GPS Distance:
-      <b><span id="sessionDistance">0.00</span> km</b>
-    </p>
+    <div class="gps-grid" style="margin-top:12px;">
 
-    <p style="margin-top:6px;">
-      GPS Speed:
-      <b><span id="speed">0.0</span> km/h</b>
-    </p>
+      <div class="gps-item">
+
+        <div class="gps-label">
+          CURRENT DISTANCE
+        </div>
+
+        <div class="gps-value">
+          <span id="sessionDistance">0</span> km
+        </div>
+
+      </div>
+
+      <div class="gps-item">
+
+        <div class="gps-label">
+          CURRENT SPEED
+        </div>
+
+        <div class="gps-value">
+          <span id="gpsSpeed">0</span> km/h
+        </div>
+
+      </div>
+
+    </div>
 
   </div>
 
+
+  <!-- PETROL -->
   <div class="card">
 
-    <h3>⛽ Current Petrol</h3>
-
-    <label>
-      Current Petrol (Litres)
-    </label>
+    <div class="card-title">
+      ⛽ Current Petrol
+    </div>
 
     <input
+      type="number"
       id="fuelInput"
-      type="number"
-      step="0.01"
-      placeholder="Example: 3">
+      min="0"
+      step="0.1"
+      placeholder="Enter petrol litres">
 
     <button
-      class="petrol"
+      class="fuel-btn"
       onclick="setFuel()">
-      ⛽ Set / Refill Petrol
+      Set Petrol
     </button>
 
-    <p style="margin-top:10px;">
-      Petrol rate: <b>₹120/L</b>
-    </p>
-
-    <p>
-      Fuel cost: <b>₹1.71/km</b>
-    </p>
+    <div style="margin-top:10px;font-size:13px;color:#666;">
+      Mileage: <b>70 km/L</b>
+      <br>
+      Petrol Rate: <b>₹120/L</b>
+      <br>
+      Cost per km: <b>₹1.71</b>
+    </div>
 
   </div>
 
+
+  <!-- NOTIFICATION -->
   <div class="card">
 
-    <h3>🏁 Current Rapido Ride</h3>
-
-    <p style="margin-top:8px;">
-      Current ride distance:
-      <b><span id="currentRideDistance">0.00</span> km</b>
-    </p>
-
-    <label>
-      Rapido Ride Income (₹)
-    </label>
-
-    <input
-      id="rideIncome"
-      type="number"
-      placeholder="Example: 180">
+    <div class="card-title">
+      🔔 Notifications
+    </div>
 
     <button
-      class="save"
-      onclick="completeRide()">
-      ✅ Complete Ride & Save
-    </button>
-
-  </div>
-
-  <div class="card">
-
-    <h3>🔔 Low Petrol Notification</h3>
-
-    <p style="margin-top:8px;">
-      Alert when remaining range reaches
-      <b>15 km</b>.
-    </p>
-
-    <button
-      class="dark"
+      class="notification-btn"
       onclick="enableNotifications()">
-      🔔 Enable Notification
+      Enable Low Range Alert
     </button>
 
   </div>
 
+
+  <!-- HISTORY -->
   <div class="card">
 
-    <h3>📊 Today's Summary</h3>
-
-    <p style="margin-top:10px;">
-      Distance:
-      <b><span id="summaryDistance">0.00</span> km</b>
-    </p>
-
-    <p style="margin-top:7px;">
-      Income:
-      <b>₹<span id="summaryIncome">0.00</span></b>
-    </p>
-
-    <p style="margin-top:7px;">
-      Petrol:
-      <b>₹<span id="summaryFuel">0.00</span></b>
-    </p>
-
-    <p style="margin-top:10px;">
-      Net Income:
-      <span class="big green">
-        ₹<span id="summaryNet">0.00</span>
-      </span>
-    </p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>📜 Ride History</h3>
+    <div class="card-title">
+      📜 Tracking History
+    </div>
 
     <div id="history">
-      No rides yet.
+      <div class="empty">
+        No tracking history yet
+      </div>
     </div>
 
   </div>
 
 </div>
 
-<div class="footer">
-  Rapido Bike Tracker
-</div>
 
 <script>
 
@@ -408,65 +522,104 @@ const MILEAGE = 70;
 const PETROL_RATE = 120;
 const LOW_RANGE = 15;
 
-let data =
-  JSON.parse(
-    localStorage.getItem("rapidoBikeTracker")
-    || "null"
-  );
+let watchId = null;
+let tracking = false;
 
-if (!data) {
+let data = {
+  remainingRange: 0,
 
-  data = {
-    fuelLitres: 0,
-    remainingRange: 0,
-    rides: [],
-    totalDistance: 0,
-    tracking: false,
-    sessionDistance: 0,
-    currentRideDistance: 0,
-    lastPosition: null,
-    watchId: null,
-    lowNotificationSent: false
-  };
+  fuelLitres: 0,
 
+  totalDistance: 0,
+
+  sessionDistance: 0,
+
+  todayDistance: 0,
+
+  todayRides: 0,
+
+  todayIncome: 0,
+
+  todayFuelExpense: 0,
+
+  speed: 0,
+
+  lastPosition: null,
+
+  history: [],
+
+  lastDate: ""
+};
+
+
+function loadData(){
+
+  const saved =
+    localStorage.getItem("bikeTrackerData");
+
+  if(saved){
+
+    try{
+      data = {
+        ...data,
+        ...JSON.parse(saved)
+      };
+    }catch(e){
+      console.log(e);
+    }
+
+  }
+
+  checkNewDay();
+
+  updateUI();
 }
 
-let watchId = null;
 
-function save() {
-
-  const copy = {
-    fuelLitres: data.fuelLitres,
-    remainingRange: data.remainingRange,
-    rides: data.rides,
-    totalDistance: data.totalDistance,
-    tracking: data.tracking,
-    sessionDistance: data.sessionDistance,
-    currentRideDistance: data.currentRideDistance,
-    lastPosition: data.lastPosition,
-    lowNotificationSent: data.lowNotificationSent
-  };
+function saveData(){
 
   localStorage.setItem(
-    "rapidoBikeTracker",
-    JSON.stringify(copy)
+    "bikeTrackerData",
+    JSON.stringify(data)
   );
 
 }
 
-function today() {
 
-  const d = new Date();
+function checkNewDay(){
 
-  return d.getFullYear()
-    + "-"
-    + String(d.getMonth()+1).padStart(2,"0")
-    + "-"
-    + String(d.getDate()).padStart(2,"0");
+  const today =
+    new Date().toISOString().slice(0,10);
+
+  if(!data.lastDate){
+
+    data.lastDate = today;
+
+  }
+
+  if(data.lastDate !== today){
+
+    data.todayDistance = 0;
+    data.todayRides = 0;
+    data.todayIncome = 0;
+    data.todayFuelExpense = 0;
+
+    data.lastDate = today;
+
+    saveData();
+  }
 
 }
 
-function distanceBetween(lat1,lon1,lat2,lon2) {
+
+/* DISTANCE CALCULATION */
+
+function distanceBetween(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+){
 
   const R = 6371;
 
@@ -478,14 +631,12 @@ function distanceBetween(lat1,lon1,lat2,lon2) {
 
   const a =
     Math.sin(dLat/2) *
-    Math.sin(dLat/2)
-    +
-    Math.cos(lat1*Math.PI/180)
-    *
-    Math.cos(lat2*Math.PI/180)
-    *
-    Math.sin(dLon/2)
-    *
+    Math.sin(dLat/2) +
+
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+
+    Math.sin(dLon/2) *
     Math.sin(dLon/2);
 
   const c =
@@ -495,92 +646,101 @@ function distanceBetween(lat1,lon1,lat2,lon2) {
     );
 
   return R*c;
-
 }
 
-function startTracking() {
 
-  if (!navigator.geolocation) {
+/* START */
+
+function startTracking(){
+
+  if(!navigator.geolocation){
 
     alert(
-      "This phone/browser does not support GPS."
+      "This browser does not support GPS."
     );
 
     return;
   }
 
-  if (data.remainingRange <= 0) {
-
-    alert(
-      "First enter your current petrol litres."
-    );
-
-    return;
-  }
-
-  if (watchId !== null) {
-
-    alert("GPS tracking is already running.");
+  if(tracking){
 
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
 
-    function(position) {
-
-      data.tracking = true;
-
-      data.sessionDistance = 0;
-
-      data.currentRideDistance = 0;
+    function(position){
 
       data.lastPosition = {
         lat: position.coords.latitude,
         lon: position.coords.longitude
       };
 
-      save();
+      tracking = true;
 
-      updateUI();
+      data.sessionDistance = 0;
+
+      saveData();
 
       watchId =
         navigator.geolocation.watchPosition(
-
           handlePosition,
-
           handleLocationError,
-
           {
-            enableHighAccuracy: true,
-            maximumAge: 2000,
-            timeout: 10000
+            enableHighAccuracy:true,
+            maximumAge:1000,
+            timeout:10000
           }
-
         );
 
-    },
+      updateStatus();
 
-    function(error) {
-
-      alert(
-        "GPS permission required.\n\n" +
-        "Please allow Location permission for this app."
-      );
+      updateUI();
 
     },
+
+    handleLocationError,
 
     {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:0
     }
 
   );
 
 }
 
-function handlePosition(position) {
+
+/* STOP */
+
+function stopTracking(){
+
+  if(watchId !== null){
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+    watchId = null;
+
+  }
+
+  tracking = false;
+
+  data.lastPosition = null;
+
+  saveData();
+
+  updateStatus();
+  updateUI();
+
+}
+
+
+/* GPS POSITION */
+
+function handlePosition(position){
 
   const lat =
     position.coords.latitude;
@@ -591,30 +751,66 @@ function handlePosition(position) {
   const accuracy =
     position.coords.accuracy;
 
-  const currentSpeed =
+  let gpsSpeed =
     position.coords.speed;
 
-  document.getElementById("speed")
-    .textContent =
-      currentSpeed !== null
-      ? (currentSpeed * 3.6).toFixed(1)
-      : "0.0";
 
-  if (!data.lastPosition) {
+  if(accuracy > 50){
+
+    return;
+  }
+
+
+  /*
+    GPS speed:
+    metres/second → km/hour
+  */
+
+  if(
+    gpsSpeed !== null &&
+    Number.isFinite(gpsSpeed)
+  ){
+
+    gpsSpeed =
+      Math.max(
+        0,
+        gpsSpeed * 3.6
+      );
+
+  }else{
+
+    gpsSpeed = 0;
+
+  }
+
+
+  /*
+    Header live speed
+  */
+
+  data.speed =
+    Math.round(gpsSpeed);
+
+
+  updateSpeedUI();
+
+
+  /*
+    First GPS position
+  */
+
+  if(!data.lastPosition){
 
     data.lastPosition = {
-      lat: lat,
-      lon: lon
+      lat,
+      lon
     };
 
-    save();
+    saveData();
 
     return;
   }
 
-  if (accuracy > 50) {
-    return;
-  }
 
   const km =
     distanceBetween(
@@ -624,38 +820,91 @@ function handlePosition(position) {
       lon
     );
 
+
   /*
-    Ignore tiny GPS jumps.
-    This prevents petrol range decreasing
-    while the bike is actually stationary.
+    Ignore GPS noise.
+    Less than 5 metres = stopped.
   */
 
-  if (km < 0.005) {
+  if(km < 0.005){
+
+    data.lastPosition = {
+      lat,
+      lon
+    };
+
+    updateSpeedUI();
+
     return;
   }
+
 
   /*
     Ignore impossible GPS jumps.
-    Anything above 2 km between two fixes
-    is treated as GPS error.
   */
 
-  if (km > 2) {
+  if(km > 2){
+
     data.lastPosition = {
-      lat: lat,
-      lon: lon
+      lat,
+      lon
     };
 
-    save();
+    saveData();
 
     return;
   }
 
+
+  /*
+    Count only actual movement.
+
+    If GPS speed is available,
+    require at least about 2 km/h.
+
+    If speed is unavailable,
+    accurate distance movement is used.
+  */
+
+  const movingBySpeed =
+    gpsSpeed >= 2;
+
+  const speedUnavailable =
+    position.coords.speed === null;
+
+
+  if(
+    !movingBySpeed &&
+    !speedUnavailable
+  ){
+
+    data.lastPosition = {
+      lat,
+      lon
+    };
+
+    saveData();
+
+    updateUI();
+
+    return;
+  }
+
+
+  /*
+    BIKE IS MOVING
+  */
+
   data.sessionDistance += km;
 
-  data.currentRideDistance += km;
-
   data.totalDistance += km;
+
+  data.todayDistance += km;
+
+
+  /*
+    REMAINING RANGE DECREASES
+  */
 
   data.remainingRange =
     Math.max(
@@ -663,15 +912,22 @@ function handlePosition(position) {
       data.remainingRange - km
     );
 
+
+  /*
+    Keep litres equivalent updated
+  */
+
   data.fuelLitres =
     data.remainingRange / MILEAGE;
 
+
   data.lastPosition = {
-    lat: lat,
-    lon: lon
+    lat,
+    lon
   };
 
-  save();
+
+  saveData();
 
   checkLowFuel();
 
@@ -679,200 +935,264 @@ function handlePosition(position) {
 
 }
 
-function handleLocationError(error) {
 
-  if (error.code === 1) {
+/* GPS ERROR */
 
-    alert(
-      "Location permission denied.\n" +
-      "Please enable Location permission."
+function handleLocationError(error){
+
+  console.log(
+    "GPS error:",
+    error
+  );
+
+  tracking = false;
+
+  updateStatus();
+
+}
+
+
+/* STATUS */
+
+function updateStatus(){
+
+  const status =
+    document.getElementById(
+      "gpsStatus"
     );
 
-  } else if (error.code === 2) {
+  if(tracking){
 
-    alert(
-      "GPS location unavailable."
+    status.textContent =
+      "● GPS Tracking Running";
+
+    status.className =
+      "gps-status running";
+
+  }else{
+
+    status.textContent =
+      "● GPS Tracking Stopped";
+
+    status.className =
+      "gps-status stopped";
+
+  }
+
+}
+
+
+/* SPEED UI */
+
+function updateSpeedUI(){
+
+  const speed =
+    Math.round(
+      Number(data.speed) || 0
     );
 
-  } else if (error.code === 3) {
+  document.getElementById(
+    "speedDisplay"
+  ).textContent = speed;
 
-    alert(
-      "GPS request timed out. Retrying..."
+  document.getElementById(
+    "gpsSpeed"
+  ).textContent = speed;
+
+
+  const header =
+    document.getElementById(
+      "header"
+    );
+
+
+  /*
+    MORE THAN 50 = DANGER
+  */
+
+  if(speed > 50){
+
+    header.classList.add(
+      "danger"
+    );
+
+  }else{
+
+    header.classList.remove(
+      "danger"
     );
 
   }
 
 }
 
-function stopTracking() {
 
-  if (watchId !== null) {
+/* UI */
 
-    navigator.geolocation.clearWatch(
-      watchId
+function updateUI(){
+
+  checkNewDay();
+
+
+  document.getElementById(
+    "remainingRange"
+  ).textContent =
+    data.remainingRange.toFixed(1);
+
+
+  const rangeElement =
+    document.getElementById(
+      "remainingRange"
     );
 
-    watchId = null;
+
+  if(
+    data.remainingRange <= LOW_RANGE &&
+    data.remainingRange > 0
+  ){
+
+    rangeElement.classList.add(
+      "low"
+    );
+
+  }else{
+
+    rangeElement.classList.remove(
+      "low"
+    );
 
   }
 
-  data.tracking = false;
 
-  data.lastPosition = null;
+  document.getElementById(
+    "sessionDistance"
+  ).textContent =
+    data.sessionDistance.toFixed(2);
 
-  save();
 
-  updateUI();
+  document.getElementById(
+    "todayDistance"
+  ).textContent =
+    data.todayDistance.toFixed(2);
+
+
+  document.getElementById(
+    "todayRides"
+  ).textContent =
+    data.todayRides;
+
+
+  document.getElementById(
+    "todayIncome"
+  ).textContent =
+    Number(data.todayIncome || 0)
+      .toFixed(2);
+
+
+  document.getElementById(
+    "todayFuelExpense"
+  ).textContent =
+    Number(data.todayFuelExpense || 0)
+      .toFixed(2);
+
+
+  updateSpeedUI();
+
+  updateStatus();
+
+  renderHistory();
 
 }
 
-function setFuel() {
+
+/* PETROL */
+
+function setFuel(){
+
+  const input =
+    document.getElementById(
+      "fuelInput"
+    );
 
   const litres =
-    Number(
-      document.getElementById("fuelInput").value
-    );
+    parseFloat(input.value);
 
-  if (!litres || litres <= 0) {
+
+  if(
+    isNaN(litres) ||
+    litres < 0
+  ){
 
     alert(
-      "Enter petrol litres."
+      "Please enter valid petrol litres."
     );
 
     return;
   }
 
-  data.fuelLitres = litres;
+
+  data.fuelLitres =
+    litres;
+
 
   data.remainingRange =
     litres * MILEAGE;
 
-  data.lowNotificationSent = false;
 
-  save();
-
-  document.getElementById(
-    "fuelInput"
-  ).value = "";
+  saveData();
 
   updateUI();
 
+  input.value = "";
+
+
   alert(
-    "⛽ Petrol updated.\n\n" +
-    "Petrol: " +
-    litres.toFixed(2) +
-    " L\n" +
-    "Range: " +
+    "Petrol range updated: " +
     data.remainingRange.toFixed(1) +
     " km"
   );
 
 }
 
-function completeRide() {
 
-  if (!data.tracking) {
+/* LOW FUEL */
 
-    alert(
-      "First press Start Rapido."
-    );
+function checkLowFuel(){
 
-    return;
+  if(
+    data.remainingRange <= LOW_RANGE &&
+    data.remainingRange > 0
+  ){
+
+    if(
+      "Notification" in window &&
+      Notification.permission === "granted"
+    ){
+
+      new Notification(
+        "⚠️ Low Petrol Range",
+        {
+          body:
+            "Only " +
+            data.remainingRange.toFixed(1) +
+            " km remaining."
+        }
+      );
+
+    }
+
   }
-
-  const income =
-    Number(
-      document.getElementById(
-        "rideIncome"
-      ).value
-    );
-
-  if (!income || income <= 0) {
-
-    alert(
-      "Enter Rapido ride income."
-    );
-
-    return;
-  }
-
-  const distance =
-    data.currentRideDistance;
-
-  if (distance <= 0) {
-
-    alert(
-      "No GPS distance recorded yet."
-    );
-
-    return;
-  }
-
-  const fuelUsed =
-    distance / MILEAGE;
-
-  const fuelExpense =
-    fuelUsed * PETROL_RATE;
-
-  const net =
-    income - fuelExpense;
-
-  const now = new Date();
-
-  const ride = {
-
-    id: Date.now(),
-
-    rideNumber:
-      data.rides.length + 1,
-
-    date: today(),
-
-    time:
-      now.toLocaleTimeString(),
-
-    distance: distance,
-
-    income: income,
-
-    fuelUsed: fuelUsed,
-
-    fuelExpense: fuelExpense,
-
-    net: net
-
-  };
-
-  data.rides.unshift(ride);
-
-  data.currentRideDistance = 0;
-
-  document.getElementById(
-    "rideIncome"
-  ).value = "";
-
-  save();
-
-  updateUI();
-
-  alert(
-    "✅ Ride Saved!\n\n" +
-    "Distance: " +
-    distance.toFixed(2) +
-    " km\n" +
-    "Income: ₹" +
-    income.toFixed(2) +
-    "\nPetrol: ₹" +
-    fuelExpense.toFixed(2) +
-    "\nNet: ₹" +
-    net.toFixed(2)
-  );
 
 }
 
-async function enableNotifications() {
 
-  if (!("Notification" in window)) {
+/* NOTIFICATION */
+
+async function enableNotifications(){
+
+  if(
+    !("Notification" in window)
+  ){
 
     alert(
       "Notifications are not supported."
@@ -881,286 +1201,188 @@ async function enableNotifications() {
     return;
   }
 
+
   const permission =
     await Notification.requestPermission();
 
-  if (permission === "granted") {
+
+  if(permission === "granted"){
 
     alert(
-      "🔔 Notification enabled."
+      "Low range notifications enabled."
     );
 
     checkLowFuel();
 
-  } else {
+  }else{
 
     alert(
-      "Notification permission was not granted."
+      "Notification permission was not allowed."
     );
 
   }
 
 }
 
-function checkLowFuel() {
 
-  if (
-    data.remainingRange <= LOW_RANGE &&
-    data.remainingRange > 0 &&
-    !data.lowNotificationSent
-  ) {
+/* HISTORY */
 
-    if (
-      "Notification" in window &&
-      Notification.permission === "granted"
-    ) {
-
-      new Notification(
-        "⛽ Petrol Low",
-        {
-          body:
-            "Only " +
-            data.remainingRange.toFixed(1) +
-            " km petrol range remaining."
-        }
-      );
-
-    }
-
-    data.lowNotificationSent = true;
-
-    save();
-
-  }
-
-  if (data.remainingRange > LOW_RANGE) {
-
-    data.lowNotificationSent = false;
-
-    save();
-
-  }
-
-}
-
-function updateUI() {
-
-  document.getElementById(
-    "remainingRange"
-  ).textContent =
-    data.remainingRange.toFixed(1);
-
-  document.getElementById(
-    "sessionDistance"
-  ).textContent =
-    data.sessionDistance.toFixed(2);
-
-  document.getElementById(
-    "currentRideDistance"
-  ).textContent =
-    data.currentRideDistance.toFixed(2);
-
-  const rangeBox =
-    document.getElementById("rangeBox");
-
-  if (
-    data.remainingRange <= LOW_RANGE &&
-    data.remainingRange > 0
-  ) {
-
-    rangeBox.classList.add("low");
-
-  } else {
-
-    rangeBox.classList.remove("low");
-
-  }
-
-  const status =
-    document.getElementById("status");
-
-  const startButton =
-    document.getElementById("startButton");
-
-  const stopButton =
-    document.getElementById("stopButton");
-
-  if (watchId !== null) {
-
-    status.textContent =
-      "🟢 GPS Tracking Running";
-
-    status.className =
-      "status running";
-
-    startButton.classList.add(
-      "hidden"
-    );
-
-    stopButton.classList.remove(
-      "hidden"
-    );
-
-  } else {
-
-    status.textContent =
-      "🔴 Tracking Stopped";
-
-    status.className =
-      "status stopped";
-
-    startButton.classList.remove(
-      "hidden"
-    );
-
-    stopButton.classList.add(
-      "hidden"
-    );
-
-  }
-
-  const todayDate = today();
-
-  const todayRides =
-    data.rides.filter(
-      r => r.date === todayDate
-    );
-
-  const todayDistance =
-    todayRides.reduce(
-      (s,r) => s+r.distance,
-      0
-    );
-
-  const todayIncome =
-    todayRides.reduce(
-      (s,r) => s+r.income,
-      0
-    );
-
-  const todayFuel =
-    todayRides.reduce(
-      (s,r) => s+r.fuelExpense,
-      0
-    );
-
-  document.getElementById(
-    "todayRides"
-  ).textContent =
-    todayRides.length;
-
-  document.getElementById(
-    "todayDistance"
-  ).textContent =
-    todayDistance.toFixed(2);
-
-  document.getElementById(
-    "todayIncome"
-  ).textContent =
-    todayIncome.toFixed(2);
-
-  document.getElementById(
-    "todayFuel"
-  ).textContent =
-    todayFuel.toFixed(2);
-
-  document.getElementById(
-    "summaryDistance"
-  ).textContent =
-    todayDistance.toFixed(2);
-
-  document.getElementById(
-    "summaryIncome"
-  ).textContent =
-    todayIncome.toFixed(2);
-
-  document.getElementById(
-    "summaryFuel"
-  ).textContent =
-    todayFuel.toFixed(2);
-
-  document.getElementById(
-    "summaryNet"
-  ).textContent =
-    (todayIncome - todayFuel)
-      .toFixed(2);
-
-  updateHistory();
-
-}
-
-function updateHistory() {
+function renderHistory(){
 
   const box =
-    document.getElementById("history");
+    document.getElementById(
+      "history"
+    );
 
-  if (data.rides.length === 0) {
+
+  if(
+    !data.history ||
+    data.history.length === 0
+  ){
 
     box.innerHTML =
-      "No rides yet.";
+      '<div class="empty">No tracking history yet</div>';
 
     return;
   }
 
+
   box.innerHTML =
-    data.rides.map(r => {
+    data.history
+      .slice()
+      .reverse()
+      .map(item => {
 
-      return `
-        <div class="ride">
+        return `
+          <div class="history-item">
 
-          <b>Ride #${r.rideNumber}</b>
+            <div class="history-top">
+              <span>${item.date}</span>
+              <span>${item.distance} km</span>
+            </div>
 
-          <br>
+            <div class="history-details">
+              Petrol expense: ₹${item.fuelExpense}
+            </div>
 
-          📅 ${r.date}
-          &nbsp;
-          🕐 ${r.time}
+          </div>
+        `;
 
-          <br>
-
-          📍 Distance:
-          ${r.distance.toFixed(2)} km
-
-          <br>
-
-          💰 Income:
-          ₹${r.income.toFixed(2)}
-
-          <br>
-
-          ⛽ Petrol:
-          ₹${r.fuelExpense.toFixed(2)}
-
-          <br>
-
-          <span class="green">
-            ✅ Net:
-            ₹${r.net.toFixed(2)}
-          </span>
-
-        </div>
-      `;
-
-    }).join("");
+      })
+      .join("");
 
 }
 
-if ("serviceWorker" in navigator) {
+
+/*
+  Save a tracking session to history
+  only when user presses Stop Tracking.
+
+  It does NOT automatically start another ride.
+*/
+
+function saveTrackingSession(){
+
+  if(
+    data.sessionDistance <= 0
+  ){
+
+    return;
+  }
+
+
+  const now =
+    new Date();
+
+
+  const fuelExpense =
+    data.sessionDistance *
+    (PETROL_RATE / MILEAGE);
+
+
+  data.todayFuelExpense +=
+    fuelExpense;
+
+
+  data.history.push({
+
+    date:
+      now.toLocaleString(),
+
+    distance:
+      data.sessionDistance.toFixed(2),
+
+    fuelExpense:
+      fuelExpense.toFixed(2)
+
+  });
+
+
+  /*
+    No automatic next ride.
+  */
+
+  data.sessionDistance = 0;
+
+  saveData();
+
+  updateUI();
+
+}
+
+
+/*
+  Replace normal Stop behavior
+  with save + stop.
+*/
+
+const originalStopTracking =
+  stopTracking;
+
+
+stopTracking = function(){
+
+  if(!tracking){
+
+    return;
+  }
+
+
+  originalStopTracking();
+
+  saveTrackingSession();
+
+};
+
+
+/* INITIAL LOAD */
+
+loadData();
+
+
+/* SERVICE WORKER */
+
+if(
+  "serviceWorker" in navigator
+){
 
   window.addEventListener(
     "load",
-    function() {
+    () => {
 
       navigator.serviceWorker
-        .register("sw.js")
-        .catch(function() {});
+        .register("./sw.js")
+        .catch(error => {
+          console.log(
+            "Service Worker Error:",
+            error
+          );
+        });
 
     }
   );
 
 }
-
-updateUI();
 
 </script>
 
