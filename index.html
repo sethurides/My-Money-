@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta name="theme-color" content="#f4b400">
-  <meta name="description" content="Rapido Ride Income, Petrol and Ride Tracker">
+  <meta name="description" content="Rapido Bike Ride Tracker">
 
   <link rel="manifest" href="manifest.json">
 
-  <title>Rapido Tracker</title>
+  <title>Rapido Bike Tracker</title>
 
   <style>
     * {
@@ -24,23 +25,19 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #f4b400, #ffcc33);
-      padding: 22px 18px;
+      background: linear-gradient(135deg,#f4b400,#ffd54f);
+      padding: 25px 18px;
       text-align: center;
       border-radius: 0 0 25px 25px;
     }
 
     .header h1 {
       font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .header p {
-      font-size: 14px;
+      margin-bottom: 6px;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 620px;
       margin: auto;
       padding: 15px;
     }
@@ -48,9 +45,47 @@
     .card {
       background: white;
       padding: 18px;
-      margin-bottom: 15px;
       border-radius: 18px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      margin-bottom: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .status {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: #eee;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .running {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .stopped {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .range {
+      background: #222;
+      color: white;
+      text-align: center;
+      padding: 22px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+
+    .range strong {
+      display: block;
+      font-size: 38px;
+      margin: 8px 0;
+    }
+
+    .range.low {
+      background: #b91c1c;
     }
 
     .stats {
@@ -60,11 +95,11 @@
     }
 
     .stat {
-      background: #fff;
-      padding: 17px;
+      background: white;
       border-radius: 16px;
+      padding: 17px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
     }
 
     .stat small {
@@ -77,30 +112,29 @@
       font-size: 22px;
     }
 
-    .range {
-      text-align: center;
-      padding: 20px;
-      border-radius: 18px;
-      background: #222;
-      color: white;
-      margin-bottom: 15px;
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
-    .range strong {
-      display: block;
-      font-size: 34px;
-      margin: 8px 0;
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
     }
 
     button {
       width: 100%;
-      border: none;
       padding: 15px;
+      margin-top: 10px;
+      border: none;
       border-radius: 14px;
       font-size: 16px;
       font-weight: bold;
-      margin-top: 10px;
-      cursor: pointer;
     }
 
     .start {
@@ -108,52 +142,27 @@
       color: white;
     }
 
-    .complete {
+    .stop {
+      background: #dc2626;
+      color: white;
+    }
+
+    .save {
       background: #2563eb;
       color: white;
     }
 
     .petrol {
       background: #f4b400;
-      color: #111;
     }
 
-    .notify {
+    .dark {
       background: #111;
       color: white;
     }
 
-    .danger {
-      background: #dc2626;
-      color: white;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      margin-top: 7px;
-      margin-bottom: 12px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-
-    label {
-      font-weight: bold;
-      font-size: 14px;
-    }
-
     .hidden {
       display: none;
-    }
-
-    .ride-item {
-      border-bottom: 1px solid #eee;
-      padding: 12px 0;
-    }
-
-    .ride-item:last-child {
-      border-bottom: none;
     }
 
     .green {
@@ -164,8 +173,17 @@
       color: #dc2626;
     }
 
-    .net {
-      font-size: 24px;
+    .ride {
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .ride:last-child {
+      border-bottom: none;
+    }
+
+    .big {
+      font-size: 26px;
       font-weight: bold;
     }
 
@@ -180,141 +198,209 @@
 
 <body>
 
-  <div class="header">
-    <h1>🛵 Rapido Tracker</h1>
-    <p>Ride • Fuel • Income • Expense</p>
+<div class="header">
+  <h1>🛵 Rapido Bike Tracker</h1>
+  <p>GPS • Petrol • Rides • Income</p>
+</div>
+
+<div class="container">
+
+  <div id="status" class="status stopped">
+    🔴 Tracking Stopped
   </div>
 
-  <div class="container">
+  <div id="rangeBox" class="range">
 
-    <div class="stats">
-      <div class="stat">
-        <small>Today's Rides</small>
-        <strong id="rideCount">0</strong>
-      </div>
+    ⛽ Remaining Petrol Range
 
-      <div class="stat">
-        <small>Today's Income</small>
-        <strong>₹<span id="todayIncome">0.00</span></strong>
-      </div>
+    <strong>
+      <span id="remainingRange">0.0</span> km
+    </strong>
 
-      <div class="stat">
-        <small>Petrol Expense</small>
-        <strong>₹<span id="todayFuelExpense">0.00</span></strong>
-      </div>
+    <span>
+      Mileage: 70 km/L
+    </span>
 
-      <div class="stat">
-        <small>Net Income</small>
-        <strong class="green">₹<span id="todayNet">0.00</span></strong>
-      </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <small>Today's Rides</small>
+      <strong id="todayRides">0</strong>
     </div>
 
-    <br>
-
-    <div class="range">
-      <div>⛽ Remaining Petrol Range</div>
-      <strong><span id="remainingRange">0</span> km</strong>
-      <div>Based on 70 km/L</div>
+    <div class="stat">
+      <small>Today's Distance</small>
+      <strong>
+        <span id="todayDistance">0.0</span> km
+      </strong>
     </div>
 
-    <div class="card">
-      <h3>🛵 Rapido Control</h3>
-
-      <button class="start" onclick="startRapido()">
-        🟢 Start Rapido
-      </button>
-
-      <button class="complete" onclick="openRideForm()">
-        🏁 Complete Ride
-      </button>
+    <div class="stat">
+      <small>Today's Income</small>
+      <strong>
+        ₹<span id="todayIncome">0.00</span>
+      </strong>
     </div>
 
-    <div class="card hidden" id="rideForm">
-
-      <h3>🏁 Ride Details</h3>
-
-      <label>Ride Income (₹)</label>
-      <input id="rideIncome" type="number" placeholder="Example: 180">
-
-      <label>Ride Distance (km)</label>
-      <input id="rideDistance" type="number" placeholder="Example: 25">
-
-      <button class="complete" onclick="completeRide()">
-        Save Ride
-      </button>
-
-      <button class="danger" onclick="closeRideForm()">
-        Cancel
-      </button>
-
-    </div>
-
-    <div class="card">
-
-      <h3>⛽ Petrol / Fuel</h3>
-
-      <label>Petrol Added (Litres)</label>
-      <input id="petrolLitres" type="number" placeholder="Example: 2">
-
-      <button class="petrol" onclick="addPetrol()">
-        ⛽ Add Petrol
-      </button>
-
-      <p style="margin-top:10px;">
-        Mileage: <b>70 km/L</b><br>
-        Petrol Rate: <b>₹120/L</b><br>
-        Cost per km: <b>₹1.71</b>
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h3>🔔 Notifications</h3>
-
-      <p style="margin-top:8px;">
-        Notification will be triggered when remaining petrol range reaches
-        <b>15 km</b>.
-      </p>
-
-      <button class="notify" onclick="enableNotifications()">
-        🔔 Enable Notification
-      </button>
-
-    </div>
-
-    <div class="card">
-
-      <h3>📊 Ride History</h3>
-
-      <div id="history">
-        No rides yet.
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>📈 Overall Summary</h3>
-
-      <p>Total Rides: <b id="totalRides">0</b></p>
-      <p>Total Income: <b>₹<span id="totalIncome">0.00</span></b></p>
-      <p>Total Petrol Expense: <b>₹<span id="totalFuel">0.00</span></b></p>
-
-      <p style="margin-top:10px;">
-        Net:
-        <span class="net green">
-          ₹<span id="totalNet">0.00</span>
-        </span>
-      </p>
-
+    <div class="stat">
+      <small>Petrol Expense</small>
+      <strong>
+        ₹<span id="todayFuel">0.00</span>
+      </strong>
     </div>
 
   </div>
 
-  <div class="footer">
-    Rapido Tracker PWA
+  <br>
+
+  <div class="card">
+
+    <h3>🛵 Rapido Tracking</h3>
+
+    <button
+      id="startButton"
+      class="start"
+      onclick="startTracking()">
+      🟢 Start Rapido
+    </button>
+
+    <button
+      id="stopButton"
+      class="stop hidden"
+      onclick="stopTracking()">
+      🔴 Stop Tracking
+    </button>
+
+    <p style="margin-top:12px;">
+      GPS Distance:
+      <b><span id="sessionDistance">0.00</span> km</b>
+    </p>
+
+    <p style="margin-top:6px;">
+      GPS Speed:
+      <b><span id="speed">0.0</span> km/h</b>
+    </p>
+
   </div>
+
+  <div class="card">
+
+    <h3>⛽ Current Petrol</h3>
+
+    <label>
+      Current Petrol (Litres)
+    </label>
+
+    <input
+      id="fuelInput"
+      type="number"
+      step="0.01"
+      placeholder="Example: 3">
+
+    <button
+      class="petrol"
+      onclick="setFuel()">
+      ⛽ Set / Refill Petrol
+    </button>
+
+    <p style="margin-top:10px;">
+      Petrol rate: <b>₹120/L</b>
+    </p>
+
+    <p>
+      Fuel cost: <b>₹1.71/km</b>
+    </p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>🏁 Current Rapido Ride</h3>
+
+    <p style="margin-top:8px;">
+      Current ride distance:
+      <b><span id="currentRideDistance">0.00</span> km</b>
+    </p>
+
+    <label>
+      Rapido Ride Income (₹)
+    </label>
+
+    <input
+      id="rideIncome"
+      type="number"
+      placeholder="Example: 180">
+
+    <button
+      class="save"
+      onclick="completeRide()">
+      ✅ Complete Ride & Save
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h3>🔔 Low Petrol Notification</h3>
+
+    <p style="margin-top:8px;">
+      Alert when remaining range reaches
+      <b>15 km</b>.
+    </p>
+
+    <button
+      class="dark"
+      onclick="enableNotifications()">
+      🔔 Enable Notification
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h3>📊 Today's Summary</h3>
+
+    <p style="margin-top:10px;">
+      Distance:
+      <b><span id="summaryDistance">0.00</span> km</b>
+    </p>
+
+    <p style="margin-top:7px;">
+      Income:
+      <b>₹<span id="summaryIncome">0.00</span></b>
+    </p>
+
+    <p style="margin-top:7px;">
+      Petrol:
+      <b>₹<span id="summaryFuel">0.00</span></b>
+    </p>
+
+    <p style="margin-top:10px;">
+      Net Income:
+      <span class="big green">
+        ₹<span id="summaryNet">0.00</span>
+      </span>
+    </p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>📜 Ride History</h3>
+
+    <div id="history">
+      No rides yet.
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  Rapido Bike Tracker
+</div>
 
 <script>
 
@@ -322,109 +408,414 @@ const MILEAGE = 70;
 const PETROL_RATE = 120;
 const LOW_RANGE = 15;
 
-let appData = JSON.parse(
-  localStorage.getItem("rapidoTrackerData") || "null"
-);
+let data =
+  JSON.parse(
+    localStorage.getItem("rapidoBikeTracker")
+    || "null"
+  );
 
-if (!appData) {
-  appData = {
-    rides: [],
+if (!data) {
+
+  data = {
     fuelLitres: 0,
     remainingRange: 0,
-    rapidoRunning: false,
-    lowFuelNotified: false
+    rides: [],
+    totalDistance: 0,
+    tracking: false,
+    sessionDistance: 0,
+    currentRideDistance: 0,
+    lastPosition: null,
+    watchId: null,
+    lowNotificationSent: false
   };
+
 }
 
-function saveData() {
+let watchId = null;
+
+function save() {
+
+  const copy = {
+    fuelLitres: data.fuelLitres,
+    remainingRange: data.remainingRange,
+    rides: data.rides,
+    totalDistance: data.totalDistance,
+    tracking: data.tracking,
+    sessionDistance: data.sessionDistance,
+    currentRideDistance: data.currentRideDistance,
+    lastPosition: data.lastPosition,
+    lowNotificationSent: data.lowNotificationSent
+  };
+
   localStorage.setItem(
-    "rapidoTrackerData",
-    JSON.stringify(appData)
+    "rapidoBikeTracker",
+    JSON.stringify(copy)
   );
+
 }
 
-function todayString() {
+function today() {
+
   const d = new Date();
 
-  return d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0") + "-" +
-    String(d.getDate()).padStart(2, "0");
+  return d.getFullYear()
+    + "-"
+    + String(d.getMonth()+1).padStart(2,"0")
+    + "-"
+    + String(d.getDate()).padStart(2,"0");
+
 }
 
-function startRapido() {
+function distanceBetween(lat1,lon1,lat2,lon2) {
 
-  if (appData.rapidoRunning) {
-    alert("Rapido already started.");
-    return;
-  }
+  const R = 6371;
 
-  appData.rapidoRunning = true;
+  const dLat =
+    (lat2-lat1) * Math.PI / 180;
 
-  saveData();
+  const dLon =
+    (lon2-lon1) * Math.PI / 180;
 
-  alert("🛵 Rapido Started!");
+  const a =
+    Math.sin(dLat/2) *
+    Math.sin(dLat/2)
+    +
+    Math.cos(lat1*Math.PI/180)
+    *
+    Math.cos(lat2*Math.PI/180)
+    *
+    Math.sin(dLon/2)
+    *
+    Math.sin(dLon/2);
 
-  updateUI();
+  const c =
+    2 * Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1-a)
+    );
+
+  return R*c;
+
 }
 
-function openRideForm() {
+function startTracking() {
 
-  if (!appData.rapidoRunning) {
-    alert("First press Start Rapido.");
-    return;
-  }
-
-  document
-    .getElementById("rideForm")
-    .classList.remove("hidden");
-}
-
-function closeRideForm() {
-
-  document
-    .getElementById("rideForm")
-    .classList.add("hidden");
-}
-
-function completeRide() {
-
-  const income = Number(
-    document.getElementById("rideIncome").value
-  );
-
-  const distance = Number(
-    document.getElementById("rideDistance").value
-  );
-
-  if (!income || income <= 0) {
-    alert("Enter ride income.");
-    return;
-  }
-
-  if (!distance || distance <= 0) {
-    alert("Enter ride distance.");
-    return;
-  }
-
-  if (appData.remainingRange < distance) {
+  if (!navigator.geolocation) {
 
     alert(
-      "⛽ Petrol range is not enough for this ride."
+      "This phone/browser does not support GPS."
     );
 
     return;
   }
 
-  const fuelUsed = distance / MILEAGE;
+  if (data.remainingRange <= 0) {
 
-  const fuelExpense = fuelUsed * PETROL_RATE;
+    alert(
+      "First enter your current petrol litres."
+    );
 
-  const net = income - fuelExpense;
+    return;
+  }
 
-  appData.remainingRange -= distance;
+  if (watchId !== null) {
 
-  appData.fuelLitres =
-    appData.remainingRange / MILEAGE;
+    alert("GPS tracking is already running.");
+
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      data.tracking = true;
+
+      data.sessionDistance = 0;
+
+      data.currentRideDistance = 0;
+
+      data.lastPosition = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      };
+
+      save();
+
+      updateUI();
+
+      watchId =
+        navigator.geolocation.watchPosition(
+
+          handlePosition,
+
+          handleLocationError,
+
+          {
+            enableHighAccuracy: true,
+            maximumAge: 2000,
+            timeout: 10000
+          }
+
+        );
+
+    },
+
+    function(error) {
+
+      alert(
+        "GPS permission required.\n\n" +
+        "Please allow Location permission for this app."
+      );
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+
+  );
+
+}
+
+function handlePosition(position) {
+
+  const lat =
+    position.coords.latitude;
+
+  const lon =
+    position.coords.longitude;
+
+  const accuracy =
+    position.coords.accuracy;
+
+  const currentSpeed =
+    position.coords.speed;
+
+  document.getElementById("speed")
+    .textContent =
+      currentSpeed !== null
+      ? (currentSpeed * 3.6).toFixed(1)
+      : "0.0";
+
+  if (!data.lastPosition) {
+
+    data.lastPosition = {
+      lat: lat,
+      lon: lon
+    };
+
+    save();
+
+    return;
+  }
+
+  if (accuracy > 50) {
+    return;
+  }
+
+  const km =
+    distanceBetween(
+      data.lastPosition.lat,
+      data.lastPosition.lon,
+      lat,
+      lon
+    );
+
+  /*
+    Ignore tiny GPS jumps.
+    This prevents petrol range decreasing
+    while the bike is actually stationary.
+  */
+
+  if (km < 0.005) {
+    return;
+  }
+
+  /*
+    Ignore impossible GPS jumps.
+    Anything above 2 km between two fixes
+    is treated as GPS error.
+  */
+
+  if (km > 2) {
+    data.lastPosition = {
+      lat: lat,
+      lon: lon
+    };
+
+    save();
+
+    return;
+  }
+
+  data.sessionDistance += km;
+
+  data.currentRideDistance += km;
+
+  data.totalDistance += km;
+
+  data.remainingRange =
+    Math.max(
+      0,
+      data.remainingRange - km
+    );
+
+  data.fuelLitres =
+    data.remainingRange / MILEAGE;
+
+  data.lastPosition = {
+    lat: lat,
+    lon: lon
+  };
+
+  save();
+
+  checkLowFuel();
+
+  updateUI();
+
+}
+
+function handleLocationError(error) {
+
+  if (error.code === 1) {
+
+    alert(
+      "Location permission denied.\n" +
+      "Please enable Location permission."
+    );
+
+  } else if (error.code === 2) {
+
+    alert(
+      "GPS location unavailable."
+    );
+
+  } else if (error.code === 3) {
+
+    alert(
+      "GPS request timed out. Retrying..."
+    );
+
+  }
+
+}
+
+function stopTracking() {
+
+  if (watchId !== null) {
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+    watchId = null;
+
+  }
+
+  data.tracking = false;
+
+  data.lastPosition = null;
+
+  save();
+
+  updateUI();
+
+}
+
+function setFuel() {
+
+  const litres =
+    Number(
+      document.getElementById("fuelInput").value
+    );
+
+  if (!litres || litres <= 0) {
+
+    alert(
+      "Enter petrol litres."
+    );
+
+    return;
+  }
+
+  data.fuelLitres = litres;
+
+  data.remainingRange =
+    litres * MILEAGE;
+
+  data.lowNotificationSent = false;
+
+  save();
+
+  document.getElementById(
+    "fuelInput"
+  ).value = "";
+
+  updateUI();
+
+  alert(
+    "⛽ Petrol updated.\n\n" +
+    "Petrol: " +
+    litres.toFixed(2) +
+    " L\n" +
+    "Range: " +
+    data.remainingRange.toFixed(1) +
+    " km"
+  );
+
+}
+
+function completeRide() {
+
+  if (!data.tracking) {
+
+    alert(
+      "First press Start Rapido."
+    );
+
+    return;
+  }
+
+  const income =
+    Number(
+      document.getElementById(
+        "rideIncome"
+      ).value
+    );
+
+  if (!income || income <= 0) {
+
+    alert(
+      "Enter Rapido ride income."
+    );
+
+    return;
+  }
+
+  const distance =
+    data.currentRideDistance;
+
+  if (distance <= 0) {
+
+    alert(
+      "No GPS distance recorded yet."
+    );
+
+    return;
+  }
+
+  const fuelUsed =
+    distance / MILEAGE;
+
+  const fuelExpense =
+    fuelUsed * PETROL_RATE;
+
+  const net =
+    income - fuelExpense;
 
   const now = new Date();
 
@@ -433,96 +824,60 @@ function completeRide() {
     id: Date.now(),
 
     rideNumber:
-      appData.rides.length + 1,
+      data.rides.length + 1,
 
-    income: income,
+    date: today(),
+
+    time:
+      now.toLocaleTimeString(),
 
     distance: distance,
+
+    income: income,
 
     fuelUsed: fuelUsed,
 
     fuelExpense: fuelExpense,
 
-    net: net,
-
-    date: todayString(),
-
-    time: now.toLocaleTimeString(),
-
-    day: now.toLocaleDateString(
-      "en-IN",
-      { weekday: "long" }
-    ),
-
-    month:
-      now.getMonth() + 1,
-
-    year:
-      now.getFullYear()
+    net: net
 
   };
 
-  appData.rides.unshift(ride);
+  data.rides.unshift(ride);
 
-  appData.rapidoRunning = false;
+  data.currentRideDistance = 0;
 
-  saveData();
+  document.getElementById(
+    "rideIncome"
+  ).value = "";
 
-  document.getElementById("rideIncome").value = "";
-  document.getElementById("rideDistance").value = "";
-
-  closeRideForm();
-
-  checkLowFuel();
+  save();
 
   updateUI();
 
   alert(
-    "✅ Ride saved!\n\n" +
-    "Income: ₹" + income.toFixed(2) +
-    "\nPetrol: ₹" + fuelExpense.toFixed(2) +
-    "\nNet: ₹" + net.toFixed(2)
+    "✅ Ride Saved!\n\n" +
+    "Distance: " +
+    distance.toFixed(2) +
+    " km\n" +
+    "Income: ₹" +
+    income.toFixed(2) +
+    "\nPetrol: ₹" +
+    fuelExpense.toFixed(2) +
+    "\nNet: ₹" +
+    net.toFixed(2)
   );
-}
 
-function addPetrol() {
-
-  const litres = Number(
-    document.getElementById("petrolLitres").value
-  );
-
-  if (!litres || litres <= 0) {
-    alert("Enter petrol litres.");
-    return;
-  }
-
-  appData.fuelLitres += litres;
-
-  appData.remainingRange +=
-    litres * MILEAGE;
-
-  appData.lowFuelNotified = false;
-
-  saveData();
-
-  document.getElementById("petrolLitres").value = "";
-
-  updateUI();
-
-  alert(
-    "⛽ Petrol added.\n" +
-    "Range added: " +
-    (litres * MILEAGE).toFixed(1) +
-    " km"
-  );
 }
 
 async function enableNotifications() {
 
   if (!("Notification" in window)) {
+
     alert(
-      "This browser does not support notifications."
+      "Notifications are not supported."
     );
+
     return;
   }
 
@@ -540,17 +895,19 @@ async function enableNotifications() {
   } else {
 
     alert(
-      "Notification permission denied."
+      "Notification permission was not granted."
     );
+
   }
+
 }
 
 function checkLowFuel() {
 
   if (
-    appData.remainingRange <= LOW_RANGE &&
-    appData.remainingRange > 0 &&
-    !appData.lowFuelNotified
+    data.remainingRange <= LOW_RANGE &&
+    data.remainingRange > 0 &&
+    !data.lowNotificationSent
   ) {
 
     if (
@@ -563,21 +920,27 @@ function checkLowFuel() {
         {
           body:
             "Only " +
-            appData.remainingRange.toFixed(1) +
-            " km range remaining. Please refill petrol."
+            data.remainingRange.toFixed(1) +
+            " km petrol range remaining."
         }
       );
+
     }
 
-    appData.lowFuelNotified = true;
+    data.lowNotificationSent = true;
 
-    saveData();
+    save();
+
   }
 
-  if (appData.remainingRange > LOW_RANGE) {
-    appData.lowFuelNotified = false;
-    saveData();
+  if (data.remainingRange > LOW_RANGE) {
+
+    data.lowNotificationSent = false;
+
+    save();
+
   }
+
 }
 
 function updateUI() {
@@ -585,84 +948,145 @@ function updateUI() {
   document.getElementById(
     "remainingRange"
   ).textContent =
-    appData.remainingRange.toFixed(1);
-
-  const today = todayString();
-
-  const todayRides =
-    appData.rides.filter(
-      r => r.date === today
-    );
-
-  const income =
-    todayRides.reduce(
-      (sum, r) => sum + r.income,
-      0
-    );
-
-  const fuel =
-    todayRides.reduce(
-      (sum, r) => sum + r.fuelExpense,
-      0
-    );
-
-  const net = income - fuel;
+    data.remainingRange.toFixed(1);
 
   document.getElementById(
-    "rideCount"
+    "sessionDistance"
+  ).textContent =
+    data.sessionDistance.toFixed(2);
+
+  document.getElementById(
+    "currentRideDistance"
+  ).textContent =
+    data.currentRideDistance.toFixed(2);
+
+  const rangeBox =
+    document.getElementById("rangeBox");
+
+  if (
+    data.remainingRange <= LOW_RANGE &&
+    data.remainingRange > 0
+  ) {
+
+    rangeBox.classList.add("low");
+
+  } else {
+
+    rangeBox.classList.remove("low");
+
+  }
+
+  const status =
+    document.getElementById("status");
+
+  const startButton =
+    document.getElementById("startButton");
+
+  const stopButton =
+    document.getElementById("stopButton");
+
+  if (watchId !== null) {
+
+    status.textContent =
+      "🟢 GPS Tracking Running";
+
+    status.className =
+      "status running";
+
+    startButton.classList.add(
+      "hidden"
+    );
+
+    stopButton.classList.remove(
+      "hidden"
+    );
+
+  } else {
+
+    status.textContent =
+      "🔴 Tracking Stopped";
+
+    status.className =
+      "status stopped";
+
+    startButton.classList.remove(
+      "hidden"
+    );
+
+    stopButton.classList.add(
+      "hidden"
+    );
+
+  }
+
+  const todayDate = today();
+
+  const todayRides =
+    data.rides.filter(
+      r => r.date === todayDate
+    );
+
+  const todayDistance =
+    todayRides.reduce(
+      (s,r) => s+r.distance,
+      0
+    );
+
+  const todayIncome =
+    todayRides.reduce(
+      (s,r) => s+r.income,
+      0
+    );
+
+  const todayFuel =
+    todayRides.reduce(
+      (s,r) => s+r.fuelExpense,
+      0
+    );
+
+  document.getElementById(
+    "todayRides"
   ).textContent =
     todayRides.length;
 
   document.getElementById(
+    "todayDistance"
+  ).textContent =
+    todayDistance.toFixed(2);
+
+  document.getElementById(
     "todayIncome"
   ).textContent =
-    income.toFixed(2);
+    todayIncome.toFixed(2);
 
   document.getElementById(
-    "todayFuelExpense"
+    "todayFuel"
   ).textContent =
-    fuel.toFixed(2);
+    todayFuel.toFixed(2);
 
   document.getElementById(
-    "todayNet"
+    "summaryDistance"
   ).textContent =
-    net.toFixed(2);
-
-  const totalIncome =
-    appData.rides.reduce(
-      (sum, r) => sum + r.income,
-      0
-    );
-
-  const totalFuel =
-    appData.rides.reduce(
-      (sum, r) => sum + r.fuelExpense,
-      0
-    );
+    todayDistance.toFixed(2);
 
   document.getElementById(
-    "totalRides"
+    "summaryIncome"
   ).textContent =
-    appData.rides.length;
+    todayIncome.toFixed(2);
 
   document.getElementById(
-    "totalIncome"
+    "summaryFuel"
   ).textContent =
-    totalIncome.toFixed(2);
+    todayFuel.toFixed(2);
 
   document.getElementById(
-    "totalFuel"
+    "summaryNet"
   ).textContent =
-    totalFuel.toFixed(2);
-
-  document.getElementById(
-    "totalNet"
-  ).textContent =
-    (totalIncome - totalFuel).toFixed(2);
+    (todayIncome - todayFuel)
+      .toFixed(2);
 
   updateHistory();
 
-  checkLowFuel();
 }
 
 function updateHistory() {
@@ -670,7 +1094,7 @@ function updateHistory() {
   const box =
     document.getElementById("history");
 
-  if (appData.rides.length === 0) {
+  if (data.rides.length === 0) {
 
     box.innerHTML =
       "No rides yet.";
@@ -679,59 +1103,61 @@ function updateHistory() {
   }
 
   box.innerHTML =
-    appData.rides
-      .map(r => {
+    data.rides.map(r => {
 
-        return `
-          <div class="ride-item">
+      return `
+        <div class="ride">
 
-            <b>Ride #${r.rideNumber}</b><br>
+          <b>Ride #${r.rideNumber}</b>
 
-            📅 ${r.date}
-            &nbsp;
-            🕐 ${r.time}
+          <br>
 
-            <br>
+          📅 ${r.date}
+          &nbsp;
+          🕐 ${r.time}
 
-            📍 Distance:
-            ${r.distance.toFixed(1)} km
+          <br>
 
-            <br>
+          📍 Distance:
+          ${r.distance.toFixed(2)} km
 
-            💰 Income:
-            ₹${r.income.toFixed(2)}
+          <br>
 
-            <br>
+          💰 Income:
+          ₹${r.income.toFixed(2)}
 
-            ⛽ Petrol:
-            ₹${r.fuelExpense.toFixed(2)}
+          <br>
 
-            <br>
+          ⛽ Petrol:
+          ₹${r.fuelExpense.toFixed(2)}
 
-            <span class="green">
-              ✅ Net:
-              ₹${r.net.toFixed(2)}
-            </span>
+          <br>
 
-          </div>
-        `;
+          <span class="green">
+            ✅ Net:
+            ₹${r.net.toFixed(2)}
+          </span>
 
-      })
-      .join("");
+        </div>
+      `;
+
+    }).join("");
+
 }
 
 if ("serviceWorker" in navigator) {
 
   window.addEventListener(
     "load",
-    () => {
+    function() {
 
       navigator.serviceWorker
         .register("sw.js")
-        .catch(() => {});
+        .catch(function() {});
 
     }
   );
+
 }
 
 updateUI();
@@ -739,4 +1165,4 @@ updateUI();
 </script>
 
 </body>
-    </html>
+</html>
