@@ -1,385 +1,742 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Money</title>
-    <meta name="theme-color" content="#0d6efd">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4b400">
+  <meta name="description" content="Rapido Ride Income, Petrol and Ride Tracker">
+
+  <link rel="manifest" href="manifest.json">
+
+  <title>Rapido Tracker</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #f4b400, #ffcc33);
+      padding: 22px 18px;
+      text-align: center;
+      border-radius: 0 0 25px 25px;
+    }
+
+    .header h1 {
+      font-size: 25px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 15px;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #fff;
+      padding: 17px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+
+    .stat small {
+      display: block;
+      color: #777;
+      margin-bottom: 7px;
+    }
+
+    .stat strong {
+      font-size: 22px;
+    }
+
+    .range {
+      text-align: center;
+      padding: 20px;
+      border-radius: 18px;
+      background: #222;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .range strong {
+      display: block;
+      font-size: 34px;
+      margin: 8px 0;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .start {
+      background: #16a34a;
+      color: white;
+    }
+
+    .complete {
+      background: #2563eb;
+      color: white;
+    }
+
+    .petrol {
+      background: #f4b400;
+      color: #111;
+    }
+
+    .notify {
+      background: #111;
+      color: white;
+    }
+
+    .danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .ride-item {
+      border-bottom: 1px solid #eee;
+      padding: 12px 0;
+    }
+
+    .ride-item:last-child {
+      border-bottom: none;
+    }
+
+    .green {
+      color: #16a34a;
+    }
+
+    .red {
+      color: #dc2626;
+    }
+
+    .net {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 12px;
+    }
+  </style>
 </head>
-<body class="bg-blue-50/40 min-h-screen pb-12">
 
-    <!-- Header Section -->
-    <header class="bg-blue-600 text-white p-5 shadow-md">
-        <div class="flex justify-between items-center max-w-md mx-auto">
-            <div>
-                <h1 class="text-3xl font-extrabold tracking-tight">My Money</h1>
-                <p class="text-xs text-blue-100 font-medium">Income & Expenses</p>
-            </div>
-            <!-- Language Switcher Button -->
-            <button onclick="toggleLanguage()" class="bg-white text-blue-700 font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:bg-blue-50 transition active:scale-95">
-                <span id="langBtnText">తెలుగు</span>
-            </button>
-        </div>
-    </header>
+<body>
 
-    <!-- Main Container -->
-    <main class="max-w-md mx-auto p-4 space-y-4">
+  <div class="header">
+    <h1>🛵 Rapido Tracker</h1>
+    <p>Ride • Fuel • Income • Expense</p>
+  </div>
 
-        <!-- Total Balance Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center">
-            <p class="text-gray-600 font-medium text-sm mb-1" id="lblTotalBalance">Total Balance</p>
-            <h2 class="text-3xl font-bold text-blue-600 mb-4" id="totalBalance">₹0</h2>
+  <div class="container">
 
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                    <p class="text-xs font-semibold text-gray-600" id="lblIncomeCard">Income</p>
-                    <p class="text-sm font-bold text-emerald-600 mt-1">₹<span id="totalIncome">0</span></p>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                    <p class="text-xs font-semibold text-gray-600" id="lblExpenseCard">Expenses</p>
-                    <p class="text-sm font-bold text-rose-600 mt-1">₹<span id="totalExpense">0</span></p>
-                </div>
-            </div>
-        </section>
+    <div class="stats">
+      <div class="stat">
+        <small>Today's Rides</small>
+        <strong id="rideCount">0</strong>
+      </div>
 
-        <!-- Receive Money Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-2xl">💰</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblReceiveTitle">Receive Money</h3>
-            </div>
-            <p class="text-xs text-gray-500 mb-4 leading-relaxed" id="lblReceiveSub">Show your QR and receive money directly to your UPI-linked bank account.</p>
-            
-            <button onclick="toggleModal('qrModal')" class="w-full bg-blue-600 text-white font-bold py-3 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md shadow-blue-200">
-                <span>📱</span>
-                <span id="btnShowQr">Show My QR</span>
-            </button>
-        </section>
+      <div class="stat">
+        <small>Today's Income</small>
+        <strong>₹<span id="todayIncome">0.00</span></strong>
+      </div>
 
-        <!-- Add Income Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl font-bold text-slate-700">➕</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblAddIncomeTitle">Add Income</h3>
-            </div>
+      <div class="stat">
+        <small>Petrol Expense</small>
+        <strong>₹<span id="todayFuelExpense">0.00</span></strong>
+      </div>
 
-            <form onsubmit="addIncome(event)" class="space-y-3">
-                <select id="incomeType" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 focus:ring-2 focus:ring-blue-600 text-sm">
-                    <option value="QR / UPI Income">QR / UPI Income</option>
-                    <option value="Cash Income">Cash Income</option>
-                    <option value="Other Income">Other Income</option>
-                </select>
-
-                <input type="number" id="incomeAmount" placeholder="Amount ₹" required class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
-
-                <input type="text" id="incomeNote" placeholder="Income note" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
-
-                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-2xl hover:bg-emerald-700 transition shadow-md shadow-emerald-100" id="btnAddIncome">
-                    Add Income
-                </button>
-            </form>
-        </section>
-
-        <!-- Pay Shop Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-2xl">📷</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblPayShopTitle">Pay Shop</h3>
-            </div>
-            <p class="text-xs text-gray-500 mb-4" id="lblPayShopSub">Scan shop UPI QR and pay using a UPI app.</p>
-            
-            <a href="upi://pay" class="w-full bg-blue-600 text-white font-bold py-3 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md shadow-blue-200">
-                <span>📷</span>
-                <span id="btnScanQr">Scan Shop QR</span>
-            </a>
-        </section>
-
-        <!-- Add Expense Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl font-bold text-slate-700">➖</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblAddExpenseTitle">Add Expense</h3>
-            </div>
-
-            <form onsubmit="addExpense(event)" class="space-y-3">
-                <input type="number" id="expenseAmount" placeholder="Amount ₹" required class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
-
-                <select id="expenseCategory" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 focus:ring-2 focus:ring-blue-600 text-sm">
-                    <option value="Food">🍔 Food</option>
-                    <option value="Travel">🚗 Travel</option>
-                    <option value="Shopping">🛍️ Shopping</option>
-                    <option value="Bills">🧾 Bills</option>
-                    <option value="Education">🎓 Education</option>
-                    <option value="Medical">🏥 Medical</option>
-                    <option value="Groceries">🛒 Groceries</option>
-                    <option value="Other">⚙️ Other</option>
-                </select>
-
-                <input type="text" id="expenseNote" placeholder="Expense note" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm">
-
-                <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-2xl hover:bg-rose-700 transition shadow-md shadow-rose-100" id="btnAddExpense">
-                    Add Expense
-                </button>
-            </form>
-        </section>
-
-        <!-- Total Payment Grid -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="text-2xl">📊</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblTotalPaymentTitle">Total Payment</h3>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 text-slate-700" id="categoryGrid">
-                <!-- Dynamic Category Cards -->
-            </div>
-        </section>
-
-        <!-- Reports Card with Dynamic Options -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl">📈</span>
-                <h3 class="text-xl font-bold text-slate-800" id="lblReportsTitle">Reports</h3>
-            </div>
-
-            <!-- Report Options Dropdown -->
-            <select id="reportFilter" onchange="handleReportFilterChange()" class="w-full p-3 bg-gray-100 rounded-xl border-none font-medium text-slate-700 text-sm focus:ring-2 focus:ring-blue-600">
-                <option value="all">All Time</option>
-                <option value="custom">Date Range (1-30 Days Custom)</option>
-                <option value="weekly">Weekly (Sunday to Saturday)</option>
-                <option value="monthly">Monthly (Current Month)</option>
-                <option value="yearly_2026">Yearly (2026)</option>
-                <option value="yearly_2027">Yearly (2027)</option>
-            </select>
-
-            <!-- Custom Date Selector Inputs (Hidden by default) -->
-            <div id="customDateRange" class="hidden grid-cols-2 gap-2 pt-2">
-                <div>
-                    <label class="text-[10px] text-gray-500 font-bold block mb-1">FROM DATE</label>
-                    <input type="date" id="startDate" onchange="renderApp()" class="w-full p-2 border border-slate-200 rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="text-[10px] text-gray-500 font-bold block mb-1">TO DATE</label>
-                    <input type="date" id="endDate" onchange="renderApp()" class="w-full p-2 border border-slate-200 rounded-xl text-xs">
-                </div>
-            </div>
-
-            <div class="space-y-2 text-sm pt-2 border-t border-slate-100">
-                <div class="flex justify-between font-medium">
-                    <span class="text-gray-600" id="lblReportInc">Total Income</span>
-                    <span class="text-emerald-600 font-bold">₹<span id="repIncome">0</span></span>
-                </div>
-                <div class="flex justify-between font-medium">
-                    <span class="text-gray-600" id="lblReportExp">Total Expense</span>
-                    <span class="text-rose-600 font-bold">₹<span id="repExpense">0</span></span>
-                </div>
-                <div class="flex justify-between font-medium">
-                    <span class="text-gray-600" id="lblReportBal">Balance</span>
-                    <span class="text-slate-800 font-bold">₹<span id="repBalance">0</span></span>
-                </div>
-                <div class="flex justify-between font-medium">
-                    <span class="text-gray-600" id="lblReportTx">Transactions</span>
-                    <span class="text-slate-800 font-bold" id="repTxCount">0</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Transaction History Card -->
-        <section class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-3">
-            <div class="flex justify-between items-center mb-1">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">🧾</span>
-                    <h3 class="text-xl font-bold text-slate-800" id="lblHistoryTitle">Transaction History</h3>
-                </div>
-                <button onclick="clearHistory()" class="text-xs text-rose-500 font-semibold hover:underline">Clear</button>
-            </div>
-
-            <div id="historyList" class="space-y-3 pt-2">
-                <!-- History Items Render Here -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Bank QR Modal -->
-    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 backdrop-blur-sm z-50">
-        <div class="bg-white rounded-3xl p-6 text-center max-w-xs w-full space-y-4 shadow-2xl">
-            <h3 class="font-bold text-slate-800">My Bank QR</h3>
-            <div class="bg-slate-100 p-6 rounded-2xl flex items-center justify-center border">
-                <i data-lucide="qr-code" class="w-32 h-32 text-slate-700"></i>
-            </div>
-            <button onclick="toggleModal('qrModal')" class="bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm w-full">Close</button>
-        </div>
+      <div class="stat">
+        <small>Net Income</small>
+        <strong class="green">₹<span id="todayNet">0.00</span></strong>
+      </div>
     </div>
 
-    <script>
-        let currentLang = 'en';
-        const STORAGE_KEY = 'mymoney_app_db_v2';
-        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    <br>
 
-        const categories = ['Food', 'Travel', 'Shopping', 'Bills', 'Education', 'Medical', 'Groceries', 'Other'];
+    <div class="range">
+      <div>⛽ Remaining Petrol Range</div>
+      <strong><span id="remainingRange">0</span> km</strong>
+      <div>Based on 70 km/L</div>
+    </div>
 
-        const i18n = {
-            en: {
-                totalBal: "Total Balance", inc: "Income", exp: "Expenses", receiveTitle: "Receive Money",
-                receiveSub: "Show your QR and receive money directly to your UPI-linked bank account.",
-                showQr: "Show My QR", addIncTitle: "Add Income", addIncBtn: "Add Income",
-                payShopTitle: "Pay Shop", payShopSub: "Scan shop UPI QR and pay using a UPI app.",
-                scanQr: "Scan Shop QR", addExpTitle: "Add Expense", addExpBtn: "Add Expense",
-                totalPayTitle: "Total Payment", reportsTitle: "Reports", repInc: "Total Income",
-                repExp: "Total Expense", repBal: "Balance", repTx: "Transactions", historyTitle: "Transaction History",
-                langBtn: "తెలుగు"
-            },
-            te: {
-                totalBal: "మొత్తం బ్యాలెన్స్", inc: "ఆదాయం", exp: "ఖర్చులు", receiveTitle: "డబ్బు పొందేందుకు",
-                receiveSub: "మీ UPI కి లింక్ అయిన బ్యాంక్ అకౌంట్ కి డబ్బు పొందేందుకు QR చూపించండి.",
-                showQr: "నా QR చూపించు", addIncTitle: "ఆదాయం నమోదు", addIncBtn: "ఆదాయం యాడ్ చేయి",
-                payShopTitle: "షాప్ లో పే చేయండి", payShopSub: "షాప్ QR స్కాన్ చేసి UPI యాప్ ద్వారా పే చేయండి.",
-                scanQr: "షాప్ QR స్కాన్ చేయి", addExpTitle: "ఖర్చు నమోదు", addExpBtn: "ఖర్చు యాడ్ చేయి",
-                totalPayTitle: "మొత్తం చెల్లింపులు", reportsTitle: "రిపోర్ట్‌లు", repInc: "మొత్తం ఆదాయం",
-                repExp: "మొత్తం ఖర్చు", repBal: "మిగిలిన బ్యాలెన్స్", repTx: "లావాదేవీలు", historyTitle: "లావాదేవీల హిస్టరీ",
-                langBtn: "English"
-            }
-        };
+    <div class="card">
+      <h3>🛵 Rapido Control</h3>
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'te' : 'en';
-            applyTranslations();
-            renderApp();
+      <button class="start" onclick="startRapido()">
+        🟢 Start Rapido
+      </button>
+
+      <button class="complete" onclick="openRideForm()">
+        🏁 Complete Ride
+      </button>
+    </div>
+
+    <div class="card hidden" id="rideForm">
+
+      <h3>🏁 Ride Details</h3>
+
+      <label>Ride Income (₹)</label>
+      <input id="rideIncome" type="number" placeholder="Example: 180">
+
+      <label>Ride Distance (km)</label>
+      <input id="rideDistance" type="number" placeholder="Example: 25">
+
+      <button class="complete" onclick="completeRide()">
+        Save Ride
+      </button>
+
+      <button class="danger" onclick="closeRideForm()">
+        Cancel
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>⛽ Petrol / Fuel</h3>
+
+      <label>Petrol Added (Litres)</label>
+      <input id="petrolLitres" type="number" placeholder="Example: 2">
+
+      <button class="petrol" onclick="addPetrol()">
+        ⛽ Add Petrol
+      </button>
+
+      <p style="margin-top:10px;">
+        Mileage: <b>70 km/L</b><br>
+        Petrol Rate: <b>₹120/L</b><br>
+        Cost per km: <b>₹1.71</b>
+      </p>
+
+    </div>
+
+    <div class="card">
+
+      <h3>🔔 Notifications</h3>
+
+      <p style="margin-top:8px;">
+        Notification will be triggered when remaining petrol range reaches
+        <b>15 km</b>.
+      </p>
+
+      <button class="notify" onclick="enableNotifications()">
+        🔔 Enable Notification
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>📊 Ride History</h3>
+
+      <div id="history">
+        No rides yet.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h3>📈 Overall Summary</h3>
+
+      <p>Total Rides: <b id="totalRides">0</b></p>
+      <p>Total Income: <b>₹<span id="totalIncome">0.00</span></b></p>
+      <p>Total Petrol Expense: <b>₹<span id="totalFuel">0.00</span></b></p>
+
+      <p style="margin-top:10px;">
+        Net:
+        <span class="net green">
+          ₹<span id="totalNet">0.00</span>
+        </span>
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Rapido Tracker PWA
+  </div>
+
+<script>
+
+const MILEAGE = 70;
+const PETROL_RATE = 120;
+const LOW_RANGE = 15;
+
+let appData = JSON.parse(
+  localStorage.getItem("rapidoTrackerData") || "null"
+);
+
+if (!appData) {
+  appData = {
+    rides: [],
+    fuelLitres: 0,
+    remainingRange: 0,
+    rapidoRunning: false,
+    lowFuelNotified: false
+  };
+}
+
+function saveData() {
+  localStorage.setItem(
+    "rapidoTrackerData",
+    JSON.stringify(appData)
+  );
+}
+
+function todayString() {
+  const d = new Date();
+
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+
+function startRapido() {
+
+  if (appData.rapidoRunning) {
+    alert("Rapido already started.");
+    return;
+  }
+
+  appData.rapidoRunning = true;
+
+  saveData();
+
+  alert("🛵 Rapido Started!");
+
+  updateUI();
+}
+
+function openRideForm() {
+
+  if (!appData.rapidoRunning) {
+    alert("First press Start Rapido.");
+    return;
+  }
+
+  document
+    .getElementById("rideForm")
+    .classList.remove("hidden");
+}
+
+function closeRideForm() {
+
+  document
+    .getElementById("rideForm")
+    .classList.add("hidden");
+}
+
+function completeRide() {
+
+  const income = Number(
+    document.getElementById("rideIncome").value
+  );
+
+  const distance = Number(
+    document.getElementById("rideDistance").value
+  );
+
+  if (!income || income <= 0) {
+    alert("Enter ride income.");
+    return;
+  }
+
+  if (!distance || distance <= 0) {
+    alert("Enter ride distance.");
+    return;
+  }
+
+  if (appData.remainingRange < distance) {
+
+    alert(
+      "⛽ Petrol range is not enough for this ride."
+    );
+
+    return;
+  }
+
+  const fuelUsed = distance / MILEAGE;
+
+  const fuelExpense = fuelUsed * PETROL_RATE;
+
+  const net = income - fuelExpense;
+
+  appData.remainingRange -= distance;
+
+  appData.fuelLitres =
+    appData.remainingRange / MILEAGE;
+
+  const now = new Date();
+
+  const ride = {
+
+    id: Date.now(),
+
+    rideNumber:
+      appData.rides.length + 1,
+
+    income: income,
+
+    distance: distance,
+
+    fuelUsed: fuelUsed,
+
+    fuelExpense: fuelExpense,
+
+    net: net,
+
+    date: todayString(),
+
+    time: now.toLocaleTimeString(),
+
+    day: now.toLocaleDateString(
+      "en-IN",
+      { weekday: "long" }
+    ),
+
+    month:
+      now.getMonth() + 1,
+
+    year:
+      now.getFullYear()
+
+  };
+
+  appData.rides.unshift(ride);
+
+  appData.rapidoRunning = false;
+
+  saveData();
+
+  document.getElementById("rideIncome").value = "";
+  document.getElementById("rideDistance").value = "";
+
+  closeRideForm();
+
+  checkLowFuel();
+
+  updateUI();
+
+  alert(
+    "✅ Ride saved!\n\n" +
+    "Income: ₹" + income.toFixed(2) +
+    "\nPetrol: ₹" + fuelExpense.toFixed(2) +
+    "\nNet: ₹" + net.toFixed(2)
+  );
+}
+
+function addPetrol() {
+
+  const litres = Number(
+    document.getElementById("petrolLitres").value
+  );
+
+  if (!litres || litres <= 0) {
+    alert("Enter petrol litres.");
+    return;
+  }
+
+  appData.fuelLitres += litres;
+
+  appData.remainingRange +=
+    litres * MILEAGE;
+
+  appData.lowFuelNotified = false;
+
+  saveData();
+
+  document.getElementById("petrolLitres").value = "";
+
+  updateUI();
+
+  alert(
+    "⛽ Petrol added.\n" +
+    "Range added: " +
+    (litres * MILEAGE).toFixed(1) +
+    " km"
+  );
+}
+
+async function enableNotifications() {
+
+  if (!("Notification" in window)) {
+    alert(
+      "This browser does not support notifications."
+    );
+    return;
+  }
+
+  const permission =
+    await Notification.requestPermission();
+
+  if (permission === "granted") {
+
+    alert(
+      "🔔 Notification enabled."
+    );
+
+    checkLowFuel();
+
+  } else {
+
+    alert(
+      "Notification permission denied."
+    );
+  }
+}
+
+function checkLowFuel() {
+
+  if (
+    appData.remainingRange <= LOW_RANGE &&
+    appData.remainingRange > 0 &&
+    !appData.lowFuelNotified
+  ) {
+
+    if (
+      "Notification" in window &&
+      Notification.permission === "granted"
+    ) {
+
+      new Notification(
+        "⛽ Petrol Low",
+        {
+          body:
+            "Only " +
+            appData.remainingRange.toFixed(1) +
+            " km range remaining. Please refill petrol."
         }
+      );
+    }
 
-        function applyTranslations() {
-            const t = i18n[currentLang];
-            document.getElementById('langBtnText').innerText = t.langBtn;
-            document.getElementById('lblTotalBalance').innerText = t.totalBal;
-            document.getElementById('lblIncomeCard').innerText = t.inc;
-            document.getElementById('lblExpenseCard').innerText = t.exp;
-            document.getElementById('lblReceiveTitle').innerText = t.receiveTitle;
-            document.getElementById('lblReceiveSub').innerText = t.receiveSub;
-            document.getElementById('btnShowQr').innerText = t.showQr;
-            document.getElementById('lblAddIncomeTitle').innerText = t.addIncTitle;
-            document.getElementById('btnAddIncome').innerText = t.addIncBtn;
-            document.getElementById('lblPayShopTitle').innerText = t.payShopTitle;
-            document.getElementById('lblPayShopSub').innerText = t.payShopSub;
-            document.getElementById('btnScanQr').innerText = t.scanQr;
-            document.getElementById('lblAddExpenseTitle').innerText = t.addExpTitle;
-            document.getElementById('btnAddExpense').innerText = t.addExpBtn;
-            document.getElementById('lblTotalPaymentTitle').innerText = t.totalPayTitle;
-            document.getElementById('lblReportsTitle').innerText = t.reportsTitle;
-            document.getElementById('lblReportInc').innerText = t.repInc;
-            document.getElementById('lblReportExp').innerText = t.repExp;
-            document.getElementById('lblReportBal').innerText = t.repBal;
-            document.getElementById('lblReportTx').innerText = t.repTx;
-            document.getElementById('lblHistoryTitle').innerText = t.historyTitle;
-        }
+    appData.lowFuelNotified = true;
 
-        function handleReportFilterChange() {
-            const filter = document.getElementById('reportFilter').value;
-            const customBox = document.getElementById('customDateRange');
-            if (filter === 'custom') {
-                customBox.classList.remove('hidden');
-                customBox.classList.add('grid');
-            } else {
-                customBox.classList.add('hidden');
-                customBox.classList.remove('grid');
-            }
-            renderApp();
-        }
+    saveData();
+  }
 
-        function addIncome(e) {
-            e.preventDefault();
-            const type = document.getElementById('incomeType').value;
-            const amt = parseFloat(document.getElementById('incomeAmount').value);
-            const note = document.getElementById('incomeNote').value.trim();
+  if (appData.remainingRange > LOW_RANGE) {
+    appData.lowFuelNotified = false;
+    saveData();
+  }
+}
 
-            if (!amt || amt <= 0) return;
+function updateUI() {
 
-            const now = new Date();
-            const isoDate = now.toISOString().split('T')[0];
-            const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+  document.getElementById(
+    "remainingRange"
+  ).textContent =
+    appData.remainingRange.toFixed(1);
 
-            transactions.unshift({
-                id: Date.now(),
-                type: 'income',
-                category: type,
-                amount: amt,
-                note: note || '',
-                date: dateStr,
-                isoDate: isoDate,
-                timestamp: now.getTime()
-            });
+  const today = todayString();
 
-            saveData();
-            document.getElementById('incomeAmount').value = '';
-            document.getElementById('incomeNote').value = '';
-            renderApp();
-        }
+  const todayRides =
+    appData.rides.filter(
+      r => r.date === today
+    );
 
-        function addExpense(e) {
-            e.preventDefault();
-            const amt = parseFloat(document.getElementById('expenseAmount').value);
-            const cat = document.getElementById('expenseCategory').value;
-            const note = document.getElementById('expenseNote').value.trim();
+  const income =
+    todayRides.reduce(
+      (sum, r) => sum + r.income,
+      0
+    );
 
-            if (!amt || amt <= 0) return;
+  const fuel =
+    todayRides.reduce(
+      (sum, r) => sum + r.fuelExpense,
+      0
+    );
 
-            const now = new Date();
-            const isoDate = now.toISOString().split('T')[0];
-            const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+  const net = income - fuel;
 
-            transactions.unshift({
-                id: Date.now(),
-                type: 'expense',
-                category: cat,
-                amount: amt,
-                note: note || '',
-                date: dateStr,
-                isoDate: isoDate,
-                timestamp: now.getTime()
-            });
+  document.getElementById(
+    "rideCount"
+  ).textContent =
+    todayRides.length;
 
-            saveData();
-            document.getElementById('expenseAmount').value = '';
-            document.getElementById('expenseNote').value = '';
-            renderApp();
-        }
+  document.getElementById(
+    "todayIncome"
+  ).textContent =
+    income.toFixed(2);
 
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-        }
+  document.getElementById(
+    "todayFuelExpense"
+  ).textContent =
+    fuel.toFixed(2);
 
-        function filterTransactions() {
-            const filter = document.getElementById('reportFilter').value;
-            const now = new Date();
+  document.getElementById(
+    "todayNet"
+  ).textContent =
+    net.toFixed(2);
 
-            return transactions.filter(tx => {
-                const txDate = new Date(tx.timestamp || Date.now());
+  const totalIncome =
+    appData.rides.reduce(
+      (sum, r) => sum + r.income,
+      0
+    );
 
-                if (filter === 'all') return true;
+  const totalFuel =
+    appData.rides.reduce(
+      (sum, r) => sum + r.fuelExpense,
+      0
+    );
 
-                if (filter === 'weekly') {
-                    const startOfWeek = new Date(now);
-                    startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
-                    startOfWeek.setHours(0,0,0,0);
+  document.getElementById(
+    "totalRides"
+  ).textContent =
+    appData.rides.length;
 
-                    const endOfWeek = new Date(startOfWeek);
-                    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
-                    endOfWeek.setHours(23,59,59,999);
+  document.getElementById(
+    "totalIncome"
+  ).textContent =
+    totalIncome.toFixed(2);
 
-                    return txDate >= startOfWeek && txDate <= endOfWeek;
-                }
+  document.getElementById(
+    "totalFuel"
+  ).textContent =
+    totalFuel.toFixed(2);
 
-                if (filter === 'monthly') {
-                    return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-                }
+  document.getElementById(
+    "totalNet"
+  ).textContent =
+    (totalIncome - totalFuel).toFixed(2);
 
-                if (filter === 'yearly_2026') {
-                    return txDate.getFullYear() === 2026;
-                }
+  updateHistory();
 
-                if (filter === 
+  checkLowFuel();
+}
+
+function updateHistory() {
+
+  const box =
+    document.getElementById("history");
+
+  if (appData.rides.length === 0) {
+
+    box.innerHTML =
+      "No rides yet.";
+
+    return;
+  }
+
+  box.innerHTML =
+    appData.rides
+      .map(r => {
+
+        return `
+          <div class="ride-item">
+
+            <b>Ride #${r.rideNumber}</b><br>
+
+            📅 ${r.date}
+            &nbsp;
+            🕐 ${r.time}
+
+            <br>
+
+            📍 Distance:
+            ${r.distance.toFixed(1)} km
+
+            <br>
+
+            💰 Income:
+            ₹${r.income.toFixed(2)}
+
+            <br>
+
+            ⛽ Petrol:
+            ₹${r.fuelExpense.toFixed(2)}
+
+            <br>
+
+            <span class="green">
+              ✅ Net:
+              ₹${r.net.toFixed(2)}
+            </span>
+
+          </div>
+        `;
+
+      })
+      .join("");
+}
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker
+        .register("sw.js")
+        .catch(() => {});
+
+    }
+  );
+}
+
+updateUI();
+
+</script>
+
+</body>
+    </html>
