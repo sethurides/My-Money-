@@ -4,317 +4,197 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f4b400">
-<meta name="mobile-web-app-capable" content="yes">
-
 <link rel="manifest" href="manifest.json">
-
 <title>Bike Tracker</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f5f7;color:#222;padding-bottom:30px}
 
-body{
-  background:#f5f5f5;
-  color:#222;
-  padding-bottom:30px;
-}
-
-/* HEADER */
 .header{
   background:#f4b400;
-  padding:16px;
-  color:#111;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-  transition:.2s;
+  padding:14px;
+  box-shadow:0 2px 8px #0002;
 }
+.header.danger{background:#d90000;color:white}
 
-.header.danger{
-  background:#d60000;
-  color:#fff;
-}
-
-.header-top{
+.header-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
-.title{
-  font-size:21px;
-  font-weight:800;
-}
-
-.gps-status{
-  font-size:12px;
-  font-weight:bold;
-  margin-top:6px;
-}
+.title{font-size:21px;font-weight:900}
+.status{font-size:12px;margin-top:5px;font-weight:bold}
 
 .speed-box{
-  text-align:right;
-}
-
-.speed-label{
-  font-size:11px;
-  font-weight:bold;
-}
-
-.speed{
-  font-size:34px;
-  line-height:36px;
-  font-weight:900;
-}
-
-.speed-unit{
-  font-size:11px;
-  font-weight:bold;
-}
-
-.danger-text{
-  display:none;
-  font-size:13px;
-  font-weight:900;
-  margin-top:3px;
-}
-
-.header.danger .danger-text{
-  display:block;
-}
-
-/* CONTAINER */
-.container{
-  max-width:600px;
-  margin:auto;
-  padding:14px;
-}
-
-/* CARDS */
-.card{
+  min-width:125px;
+  padding:10px 13px;
+  border-radius:15px;
   background:#fff;
-  border-radius:16px;
-  padding:17px;
+  color:#111;
+  text-align:center;
+  box-shadow:0 3px 10px #0003;
+}
+.speed-box.danger{
+  background:#b00000;
+  color:#fff;
+  animation:dangerPulse .8s infinite alternate;
+}
+@keyframes dangerPulse{
+  from{transform:scale(1)}
+  to{transform:scale(1.04)}
+}
+.speed-label{font-size:10px;font-weight:900}
+.speed{font-size:36px;line-height:38px;font-weight:900}
+.speed-unit{font-size:10px;font-weight:bold}
+.danger-label{display:none;font-weight:900;font-size:12px}
+.speed-box.danger .danger-label{display:block}
+
+.container{max-width:600px;margin:auto;padding:14px}
+
+.card{
+  background:white;
+  border-radius:17px;
+  padding:16px;
   margin-bottom:14px;
-  box-shadow:0 2px 10px rgba(0,0,0,.08);
+  box-shadow:0 2px 10px #00000012;
 }
 
 .card-title{
   font-size:16px;
-  font-weight:800;
+  font-weight:900;
   margin-bottom:12px;
 }
 
-/* RANGE */
-.range-card{
-  text-align:center;
-}
+.range-card{text-align:center}
+.range-label{font-size:12px;color:#777;font-weight:bold}
+.range{font-size:48px;font-weight:900;margin:4px}
+.range.low{color:#d00000}
+.range-unit{font-size:13px;color:#777}
 
-.range-label{
-  font-size:13px;
-  color:#666;
-}
-
-.range{
-  font-size:48px;
-  font-weight:900;
-  margin:5px 0;
-}
-
-.range-unit{
-  font-size:14px;
-  color:#666;
-}
-
-.range.low{
-  color:#d60000;
-}
-
-/* STATS */
 .stats{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
-
 .stat{
-  background:#fafafa;
-  border-radius:12px;
+  background:#f8f8f8;
   padding:13px;
+  border-radius:12px;
 }
+.stat-label{font-size:11px;color:#777}
+.stat-value{font-size:21px;font-weight:900;margin-top:4px}
 
-.stat-label{
-  font-size:11px;
-  color:#777;
+.cost-box{
+  background:#fff8dc;
+  border:2px solid #f4b400;
+  border-radius:15px;
+  padding:15px;
+  text-align:center;
 }
+.cost-title{font-size:12px;font-weight:bold;color:#777}
+.cost-value{font-size:34px;font-weight:900;color:#c48100}
+.cost-sub{font-size:12px;color:#666;margin-top:3px}
 
-.stat-value{
-  font-size:21px;
-  font-weight:800;
-  margin-top:4px;
+.location-box{
+  background:#f5f5f5;
+  border-radius:14px;
+  padding:14px;
 }
+.location-label{font-size:11px;color:#777;font-weight:bold}
+.location-name{font-size:21px;font-weight:900;margin-top:5px}
 
-/* BUTTONS */
 button{
+  width:100%;
   border:0;
   border-radius:12px;
-  padding:13px 15px;
+  padding:14px;
   font-size:15px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.start-btn{
-  width:100%;
-  background:#16a34a;
-  color:#fff;
+  font-weight:900;
   margin-bottom:9px;
 }
+.start{background:#16a34a;color:#fff}
+.stop{background:#333;color:#fff}
+.notify{background:#f4b400;color:#111}
 
-.stop-btn{
-  width:100%;
-  background:#333;
-  color:#fff;
-}
-
-.notification-btn{
-  width:100%;
-  background:#f4b400;
-  color:#111;
-  margin-top:10px;
-}
-
-/* GPS */
 .gps-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
-
 .gps-item{
   background:#f7f7f7;
-  border-radius:12px;
   padding:12px;
+  border-radius:12px;
 }
+.gps-label{font-size:10px;color:#777}
+.gps-value{font-size:20px;font-weight:900;margin-top:4px}
 
-.gps-label{
-  font-size:11px;
-  color:#777;
-}
-
-.gps-value{
-  font-size:20px;
-  font-weight:800;
-  margin-top:4px;
-}
-
-/* FUEL */
 input{
   width:100%;
   padding:13px;
   border:1px solid #ddd;
   border-radius:10px;
   font-size:16px;
-  margin-bottom:10px;
-  outline:none;
+  margin-bottom:9px;
 }
 
-input:focus{
-  border-color:#f4b400;
-}
-
-.fuel-btn{
-  width:100%;
-  background:#f4b400;
-  color:#111;
-}
-
-/* LOW FUEL */
-.low-alert{
+.alert{
   display:none;
-  background:#ffe1e1;
+  background:#ffe0e0;
   color:#b00000;
-  padding:12px;
+  padding:11px;
   border-radius:10px;
   margin-top:10px;
-  font-weight:800;
   text-align:center;
+  font-weight:bold;
 }
+.alert.show{display:block}
 
-.low-alert.show{
-  display:block;
-}
-
-/* HISTORY */
 .history-item{
-  background:#fafafa;
-  border-radius:12px;
+  background:#f8f8f8;
   padding:12px;
+  border-radius:11px;
   margin-top:8px;
 }
-
 .history-top{
   display:flex;
   justify-content:space-between;
-  font-weight:800;
+  font-weight:bold;
 }
-
-.history-details{
-  color:#666;
-  font-size:12px;
-  margin-top:5px;
-}
-
-/* EMPTY */
-.empty{
-  color:#777;
-  text-align:center;
-  padding:15px;
-  font-size:13px;
-}
-
-/* RUNNING */
-.running{
-  color:#16a34a;
-}
-
-.stopped{
-  color:#d60000;
-}
+.history-details{font-size:12px;color:#666;margin-top:5px}
+.empty{text-align:center;color:#777;font-size:13px;padding:10px}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header class="header" id="header">
 
-  <div class="header-top">
+  <div class="header-row">
 
     <div>
       <div class="title">🛵 Bike Tracker</div>
-
-      <div class="gps-status" id="gpsStatus">
-        GPS Tracking Stopped
+      <div class="status" id="status">
+        ● GPS Tracking Stopped
       </div>
     </div>
 
-    <div class="speed-box">
+    <!-- SEPARATE ATTRACTIVE SPEED BOX -->
+    <div class="speed-box" id="speedBox">
 
       <div class="speed-label">LIVE SPEED</div>
 
-      <div class="speed" id="speedDisplay">
+      <div class="speed" id="speed">
         0
       </div>
 
       <div class="speed-unit">
-        km/h
+        KM/H
       </div>
 
-      <div class="danger-text">
+      <div class="danger-label">
         ⚠️ DANGER
       </div>
 
@@ -327,23 +207,67 @@ input:focus{
 
 <div class="container">
 
-  <!-- RANGE -->
+  <!-- REMAINING RANGE -->
   <div class="card range-card">
 
     <div class="range-label">
       REMAINING PETROL RANGE
     </div>
 
-    <div class="range" id="remainingRange">
+    <div class="range" id="range">
       0
     </div>
 
     <div class="range-unit">
-      km
+      KM
     </div>
 
-    <div class="low-alert" id="lowAlert">
-      ⚠️ LOW RANGE — 15 KM OR LESS
+    <div class="alert" id="lowAlert">
+      ⚠️ LOW PETROL RANGE
+    </div>
+
+  </div>
+
+
+  <!-- COST PER KM -->
+  <div class="card">
+
+    <div class="cost-box">
+
+      <div class="cost-title">
+        PETROL COST FOR TRAVELLED DISTANCE
+      </div>
+
+      <div class="cost-value">
+        ₹<span id="travelCost">0.00</span>
+      </div>
+
+      <div class="cost-sub">
+        ₹1.71 per KM
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- CURRENT LOCATION -->
+  <div class="card">
+
+    <div class="card-title">
+      📍 Current Location
+    </div>
+
+    <div class="location-box">
+
+      <div class="location-label">
+        VILLAGE / AREA
+      </div>
+
+      <div class="location-name" id="locationName">
+        Waiting for GPS...
+      </div>
+
     </div>
 
   </div>
@@ -359,38 +283,16 @@ input:focus{
     <div class="stats">
 
       <div class="stat">
-        <div class="stat-label">
-          DISTANCE
-        </div>
+        <div class="stat-label">DISTANCE</div>
         <div class="stat-value">
           <span id="todayDistance">0</span> km
         </div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">
-          RIDES
-        </div>
+        <div class="stat-label">PETROL COST</div>
         <div class="stat-value">
-          <span id="todayRides">0</span>
-        </div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">
-          INCOME
-        </div>
-        <div class="stat-value">
-          ₹<span id="todayIncome">0</span>
-        </div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">
-          PETROL EXPENSE
-        </div>
-        <div class="stat-value">
-          ₹<span id="todayFuelExpense">0</span>
+          ₹<span id="todayCost">0.00</span>
         </div>
       </div>
 
@@ -399,51 +301,43 @@ input:focus{
   </div>
 
 
-  <!-- GPS TRACKING -->
+  <!-- GPS -->
   <div class="card">
 
     <div class="card-title">
-      📍 Bike GPS Tracking
+      📡 GPS Tracking
     </div>
 
     <button
-      class="start-btn"
-      id="startBtn"
+      class="start"
       onclick="startTracking()">
       ▶ Start Tracking
     </button>
 
     <button
-      class="stop-btn"
-      id="stopBtn"
+      class="stop"
       onclick="stopTracking()">
       ■ Stop Tracking
     </button>
 
-    <div class="gps-grid" style="margin-top:12px;">
+    <div class="gps-grid">
 
       <div class="gps-item">
-
         <div class="gps-label">
-          CURRENT DISTANCE
+          TRIP DISTANCE
         </div>
-
         <div class="gps-value">
-          <span id="sessionDistance">0</span> km
+          <span id="tripDistance">0</span> km
         </div>
-
       </div>
 
       <div class="gps-item">
-
         <div class="gps-label">
-          CURRENT SPEED
+          SPEED
         </div>
-
         <div class="gps-value">
           <span id="gpsSpeed">0</span> km/h
         </div>
-
       </div>
 
     </div>
@@ -455,28 +349,26 @@ input:focus{
   <div class="card">
 
     <div class="card-title">
-      ⛽ Current Petrol
+      ⛽ Set Current Petrol
     </div>
 
     <input
       type="number"
       id="fuelInput"
-      min="0"
       step="0.1"
-      placeholder="Enter petrol litres">
+      min="0"
+      placeholder="Petrol litres">
 
     <button
-      class="fuel-btn"
+      class="start"
       onclick="setFuel()">
-      Set Petrol
+      Set Petrol Range
     </button>
 
-    <div style="margin-top:10px;font-size:13px;color:#666;">
-      Mileage: <b>70 km/L</b>
-      <br>
-      Petrol Rate: <b>₹120/L</b>
-      <br>
-      Cost per km: <b>₹1.71</b>
+    <div style="font-size:12px;color:#666">
+      Mileage: <b>70 km/L</b><br>
+      Petrol rate: <b>₹120/L</b><br>
+      Cost: <b>₹1.71/km</b>
     </div>
 
   </div>
@@ -485,14 +377,10 @@ input:focus{
   <!-- NOTIFICATION -->
   <div class="card">
 
-    <div class="card-title">
-      🔔 Notifications
-    </div>
-
     <button
-      class="notification-btn"
+      class="notify"
       onclick="enableNotifications()">
-      Enable Low Range Alert
+      🔔 Enable Low Range Alert
     </button>
 
   </div>
@@ -518,14 +406,44 @@ input:focus{
 
 <script>
 
+/*
+=================================================
+IMPORTANT
+=================================================
+
+OLD DATA IS PRESERVED.
+
+We use the SAME localStorage key:
+"bikeTrackerData"
+
+We DO NOT use:
+localStorage.clear()
+
+We DO NOT delete existing history.
+
+New fields are added only if missing.
+=================================================
+*/
+
+
 const MILEAGE = 70;
 const PETROL_RATE = 120;
+
+const COST_PER_KM =
+  PETROL_RATE / MILEAGE;
+
 const LOW_RANGE = 15;
 
 let watchId = null;
 let tracking = false;
 
+
+/*
+DEFAULT DATA
+*/
+
 let data = {
+
   remainingRange: 0,
 
   fuelLitres: 0,
@@ -548,33 +466,108 @@ let data = {
 
   history: [],
 
-  lastDate: ""
+  lastDate: "",
+
+  /* NEW */
+  currentVillage: "",
+
+  totalTravelCost: 0,
+
+  todayTravelCost: 0
+
 };
 
 
+/*
+LOAD OLD DATA
+*/
+
 function loadData(){
 
-  const saved =
-    localStorage.getItem("bikeTrackerData");
+  const oldData =
+    localStorage.getItem(
+      "bikeTrackerData"
+    );
 
-  if(saved){
+  if(oldData){
 
     try{
+
+      const parsed =
+        JSON.parse(oldData);
+
+      /*
+        Preserve ALL old properties.
+      */
+
       data = {
         ...data,
-        ...JSON.parse(saved)
+        ...parsed
       };
-    }catch(e){
-      console.log(e);
+
+    }catch(error){
+
+      console.log(
+        "Old data read error:",
+        error
+      );
+
     }
 
   }
 
+
+  /*
+    Only add NEW fields if missing.
+    Existing values are NOT replaced.
+  */
+
+  if(
+    typeof data.currentVillage !== "string"
+  ){
+
+    data.currentVillage = "";
+
+  }
+
+  if(
+    typeof data.totalTravelCost !== "number"
+  ){
+
+    data.totalTravelCost = 0;
+
+  }
+
+  if(
+    typeof data.todayTravelCost !== "number"
+  ){
+
+    data.todayTravelCost = 0;
+
+  }
+
+
+  if(
+    !Array.isArray(data.history)
+  ){
+
+    data.history = [];
+
+  }
+
+
   checkNewDay();
 
+  saveData();
+
   updateUI();
+
 }
 
+
+/*
+SAVE
+*/
 
 function saveData(){
 
@@ -586,10 +579,20 @@ function saveData(){
 }
 
 
+/*
+NEW DAY
+
+Old history remains.
+Only today's counters reset.
+*/
+
 function checkNewDay(){
 
   const today =
-    new Date().toISOString().slice(0,10);
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
 
   if(!data.lastDate){
 
@@ -597,22 +600,27 @@ function checkNewDay(){
 
   }
 
+
   if(data.lastDate !== today){
 
     data.todayDistance = 0;
-    data.todayRides = 0;
-    data.todayIncome = 0;
+
     data.todayFuelExpense = 0;
+
+    data.todayTravelCost = 0;
 
     data.lastDate = today;
 
     saveData();
+
   }
 
 }
 
 
-/* DISTANCE CALCULATION */
+/*
+DISTANCE
+*/
 
 function distanceBetween(
   lat1,
@@ -624,61 +632,79 @@ function distanceBetween(
   const R = 6371;
 
   const dLat =
-    (lat2-lat1) * Math.PI / 180;
+    (lat2-lat1) *
+    Math.PI / 180;
 
   const dLon =
-    (lon2-lon1) * Math.PI / 180;
+    (lon2-lon1) *
+    Math.PI / 180;
 
   const a =
-    Math.sin(dLat/2) *
-    Math.sin(dLat/2) +
+    Math.sin(dLat/2) ** 2 +
 
-    Math.cos(lat1*Math.PI/180) *
-    Math.cos(lat2*Math.PI/180) *
+    Math.cos(
+      lat1 * Math.PI / 180
+    ) *
 
-    Math.sin(dLon/2) *
-    Math.sin(dLon/2);
+    Math.cos(
+      lat2 * Math.PI / 180
+    ) *
 
-  const c =
-    2 * Math.atan2(
+    Math.sin(dLon/2) ** 2;
+
+  return R *
+    2 *
+    Math.atan2(
       Math.sqrt(a),
       Math.sqrt(1-a)
     );
 
-  return R*c;
 }
 
 
-/* START */
+/*
+START GPS
+*/
 
 function startTracking(){
 
   if(!navigator.geolocation){
 
     alert(
-      "This browser does not support GPS."
+      "GPS is not supported."
     );
 
     return;
+
   }
+
 
   if(tracking){
 
     return;
+
   }
+
 
   navigator.geolocation.getCurrentPosition(
 
     function(position){
 
       data.lastPosition = {
-        lat: position.coords.latitude,
-        lon: position.coords.longitude
+
+        lat:
+          position.coords.latitude,
+
+        lon:
+          position.coords.longitude
+
       };
+
 
       tracking = true;
 
       data.sessionDistance = 0;
+
 
       saveData();
 
@@ -693,9 +719,20 @@ function startTracking(){
           }
         );
 
+
       updateStatus();
 
       updateUI();
+
+
+      /*
+        First village lookup
+      */
+
+      updateVillageName(
+        position.coords.latitude,
+        position.coords.longitude
+      );
 
     },
 
@@ -712,7 +749,9 @@ function startTracking(){
 }
 
 
-/* STOP */
+/*
+STOP
+*/
 
 function stopTracking(){
 
@@ -733,12 +772,13 @@ function stopTracking(){
   saveData();
 
   updateStatus();
-  updateUI();
 
 }
 
 
-/* GPS POSITION */
+/*
+GPS POSITION
+*/
 
 function handlePosition(position){
 
@@ -751,64 +791,64 @@ function handlePosition(position){
   const accuracy =
     position.coords.accuracy;
 
-  let gpsSpeed =
-    position.coords.speed;
-
 
   if(accuracy > 50){
 
     return;
+
   }
 
 
   /*
-    GPS speed:
-    metres/second → km/hour
+    SPEED
   */
 
+  let speed =
+    position.coords.speed;
+
+
   if(
-    gpsSpeed !== null &&
-    Number.isFinite(gpsSpeed)
+    speed !== null &&
+    Number.isFinite(speed)
   ){
 
-    gpsSpeed =
+    speed =
       Math.max(
         0,
-        gpsSpeed * 3.6
+        speed * 3.6
       );
 
   }else{
 
-    gpsSpeed = 0;
+    speed = 0;
 
   }
 
 
-  /*
-    Header live speed
-  */
-
   data.speed =
-    Math.round(gpsSpeed);
+    Math.round(speed);
 
 
   updateSpeedUI();
 
 
   /*
-    First GPS position
+    LOCATION NAME
+    Only request after movement
+    / periodically.
   */
 
-  if(!data.lastPosition){
+  if(
+    !data.lastPosition
+  ){
 
     data.lastPosition = {
       lat,
       lon
     };
 
-    saveData();
-
     return;
+
   }
 
 
@@ -822,25 +862,20 @@ function handlePosition(position){
 
 
   /*
-    Ignore GPS noise.
-    Less than 5 metres = stopped.
+    GPS noise
   */
 
   if(km < 0.005){
 
-    data.lastPosition = {
-      lat,
-      lon
-    };
-
     updateSpeedUI();
 
     return;
+
   }
 
 
   /*
-    Ignore impossible GPS jumps.
+    Impossible jump
   */
 
   if(km > 2){
@@ -853,30 +888,20 @@ function handlePosition(position){
     saveData();
 
     return;
+
   }
 
 
   /*
-    Count only actual movement.
-
-    If GPS speed is available,
-    require at least about 2 km/h.
-
-    If speed is unavailable,
-    accurate distance movement is used.
+    Bike must actually be moving.
   */
 
-  const movingBySpeed =
-    gpsSpeed >= 2;
-
-  const speedUnavailable =
+  const moving =
+    speed >= 2 ||
     position.coords.speed === null;
 
 
-  if(
-    !movingBySpeed &&
-    !speedUnavailable
-  ){
+  if(!moving){
 
     data.lastPosition = {
       lat,
@@ -885,15 +910,17 @@ function handlePosition(position){
 
     saveData();
 
-    updateUI();
-
     return;
+
   }
 
 
   /*
-    BIKE IS MOVING
+  ==========================================
+  BIKE MOVED
+  ==========================================
   */
+
 
   data.sessionDistance += km;
 
@@ -903,7 +930,30 @@ function handlePosition(position){
 
 
   /*
-    REMAINING RANGE DECREASES
+    MAIN POINT:
+    EVERY KM COST = ₹1.71
+  */
+
+  const cost =
+    km * COST_PER_KM;
+
+
+  data.totalTravelCost += cost;
+
+  data.todayTravelCost += cost;
+
+
+  /*
+    Keep old petrol expense field
+    compatible.
+  */
+
+  data.todayFuelExpense =
+    data.todayTravelCost;
+
+
+  /*
+    REMAINING RANGE
   */
 
   data.remainingRange =
@@ -913,76 +963,87 @@ function handlePosition(position){
     );
 
 
-  /*
-    Keep litres equivalent updated
-  */
-
   data.fuelLitres =
-    data.remainingRange / MILEAGE;
+    data.remainingRange /
+    MILEAGE;
 
 
   data.lastPosition = {
+
     lat,
     lon
+
   };
 
 
   saveData();
 
+  updateUI();
+
   checkLowFuel();
 
-  updateUI();
+
+  /*
+    Update village/area
+  */
+
+  updateVillageName(
+    lat,
+    lon
+  );
 
 }
 
 
-/* GPS ERROR */
+/*
+GPS ERROR
+*/
 
 function handleLocationError(error){
 
   console.log(
-    "GPS error:",
+    "GPS Error:",
     error
   );
 
-  tracking = false;
-
-  updateStatus();
+  document.getElementById(
+    "status"
+  ).textContent =
+    "● GPS Error / Check Permission";
 
 }
 
 
-/* STATUS */
+/*
+STATUS
+*/
 
 function updateStatus(){
 
-  const status =
+  const el =
     document.getElementById(
-      "gpsStatus"
+      "status"
     );
+
 
   if(tracking){
 
-    status.textContent =
+    el.textContent =
       "● GPS Tracking Running";
-
-    status.className =
-      "gps-status running";
 
   }else{
 
-    status.textContent =
+    el.textContent =
       "● GPS Tracking Stopped";
-
-    status.className =
-      "gps-status stopped";
 
   }
 
 }
 
 
-/* SPEED UI */
+/*
+SPEED DISPLAY
+*/
 
 function updateSpeedUI(){
 
@@ -991,14 +1052,23 @@ function updateSpeedUI(){
       Number(data.speed) || 0
     );
 
+
   document.getElementById(
-    "speedDisplay"
-  ).textContent = speed;
+    "speed"
+  ).textContent =
+    speed;
+
 
   document.getElementById(
     "gpsSpeed"
-  ).textContent = speed;
+  ).textContent =
+    speed;
 
+
+  const box =
+    document.getElementById(
+      "speedBox"
+    );
 
   const header =
     document.getElementById(
@@ -1007,27 +1077,29 @@ function updateSpeedUI(){
 
 
   /*
-    MORE THAN 50 = DANGER
+    MORE THAN 50
   */
 
   if(speed > 50){
 
-    header.classList.add(
-      "danger"
-    );
+    box.classList.add("danger");
+
+    header.classList.add("danger");
 
   }else{
 
-    header.classList.remove(
-      "danger"
-    );
+    box.classList.remove("danger");
+
+    header.classList.remove("danger");
 
   }
 
 }
 
 
-/* UI */
+/*
+MAIN UI
+*/
 
 function updateUI(){
 
@@ -1035,14 +1107,16 @@ function updateUI(){
 
 
   document.getElementById(
-    "remainingRange"
+    "range"
   ).textContent =
-    data.remainingRange.toFixed(1);
+    Number(
+      data.remainingRange || 0
+    ).toFixed(1);
 
 
-  const rangeElement =
+  const range =
     document.getElementById(
-      "remainingRange"
+      "range"
     );
 
 
@@ -1051,49 +1125,64 @@ function updateUI(){
     data.remainingRange > 0
   ){
 
-    rangeElement.classList.add(
-      "low"
-    );
+    range.classList.add("low");
+
+    document
+      .getElementById("lowAlert")
+      .classList.add("show");
 
   }else{
 
-    rangeElement.classList.remove(
-      "low"
-    );
+    range.classList.remove("low");
+
+    document
+      .getElementById("lowAlert")
+      .classList.remove("show");
 
   }
 
 
   document.getElementById(
-    "sessionDistance"
+    "tripDistance"
   ).textContent =
-    data.sessionDistance.toFixed(2);
+    Number(
+      data.sessionDistance || 0
+    ).toFixed(2);
 
 
   document.getElementById(
     "todayDistance"
   ).textContent =
-    data.todayDistance.toFixed(2);
+    Number(
+      data.todayDistance || 0
+    ).toFixed(2);
+
+
+  /*
+    EVERY KM COST
+  */
+
+  document.getElementById(
+    "travelCost"
+  ).textContent =
+    Number(
+      data.totalTravelCost || 0
+    ).toFixed(2);
 
 
   document.getElementById(
-    "todayRides"
+    "todayCost"
   ).textContent =
-    data.todayRides;
+    Number(
+      data.todayTravelCost || 0
+    ).toFixed(2);
 
 
   document.getElementById(
-    "todayIncome"
+    "locationName"
   ).textContent =
-    Number(data.todayIncome || 0)
-      .toFixed(2);
-
-
-  document.getElementById(
-    "todayFuelExpense"
-  ).textContent =
-    Number(data.todayFuelExpense || 0)
-      .toFixed(2);
+    data.currentVillage ||
+    "Waiting for GPS...";
 
 
   updateSpeedUI();
@@ -1105,7 +1194,9 @@ function updateUI(){
 }
 
 
-/* PETROL */
+/*
+SET PETROL
+*/
 
 function setFuel(){
 
@@ -1113,6 +1204,7 @@ function setFuel(){
     document.getElementById(
       "fuelInput"
     );
+
 
   const litres =
     parseFloat(input.value);
@@ -1124,10 +1216,11 @@ function setFuel(){
   ){
 
     alert(
-      "Please enter valid petrol litres."
+      "Enter valid petrol litres."
     );
 
     return;
+
   }
 
 
@@ -1143,19 +1236,15 @@ function setFuel(){
 
   updateUI();
 
+
   input.value = "";
-
-
-  alert(
-    "Petrol range updated: " +
-    data.remainingRange.toFixed(1) +
-    " km"
-  );
 
 }
 
 
-/* LOW FUEL */
+/*
+LOW PETROL
+*/
 
 function checkLowFuel(){
 
@@ -1173,9 +1262,9 @@ function checkLowFuel(){
         "⚠️ Low Petrol Range",
         {
           body:
-            "Only " +
-            data.remainingRange.toFixed(1) +
-            " km remaining."
+            data.remainingRange
+              .toFixed(1) +
+            " km remaining"
         }
       );
 
@@ -1186,7 +1275,9 @@ function checkLowFuel(){
 }
 
 
-/* NOTIFICATION */
+/*
+NOTIFICATIONS
+*/
 
 async function enableNotifications(){
 
@@ -1195,10 +1286,11 @@ async function enableNotifications(){
   ){
 
     alert(
-      "Notifications are not supported."
+      "Notifications not supported."
     );
 
     return;
+
   }
 
 
@@ -1209,15 +1301,7 @@ async function enableNotifications(){
   if(permission === "granted"){
 
     alert(
-      "Low range notifications enabled."
-    );
-
-    checkLowFuel();
-
-  }else{
-
-    alert(
-      "Notification permission was not allowed."
+      "Low range alert enabled."
     );
 
   }
@@ -1225,7 +1309,165 @@ async function enableNotifications(){
 }
 
 
-/* HISTORY */
+/*
+=================================================
+VILLAGE / AREA NAME
+=================================================
+
+IMPORTANT:
+GPS gives coordinates.
+
+A reverse-geocoding service is needed
+to convert coordinates into a village name.
+
+We don't call it on every GPS update.
+Only after enough movement and with
+a delay, to avoid excessive requests.
+=================================================
+*/
+
+let lastGeocodeTime = 0;
+
+let lastGeocodeLat = null;
+let lastGeocodeLon = null;
+
+
+async function updateVillageName(
+  lat,
+  lon
+){
+
+  const now =
+    Date.now();
+
+
+  /*
+    Wait at least 60 seconds
+    between name lookups.
+  */
+
+  if(
+    now - lastGeocodeTime < 60000
+  ){
+
+    return;
+
+  }
+
+
+  /*
+    Don't repeatedly lookup
+    nearly same location.
+  */
+
+  if(
+    lastGeocodeLat !== null &&
+    lastGeocodeLon !== null
+  ){
+
+    const moved =
+      distanceBetween(
+        lastGeocodeLat,
+        lastGeocodeLon,
+        lat,
+        lon
+      );
+
+    if(moved < 1){
+
+      return;
+
+    }
+
+  }
+
+
+  lastGeocodeTime = now;
+
+  lastGeocodeLat = lat;
+  lastGeocodeLon = lon;
+
+
+  try{
+
+    /*
+      OpenStreetMap Nominatim.
+    */
+
+    const url =
+      "https://nominatim.openstreetmap.org/reverse" +
+      "?format=jsonv2" +
+      "&lat=" +
+      encodeURIComponent(lat) +
+      "&lon=" +
+      encodeURIComponent(lon) +
+      "&zoom=10" +
+      "&addressdetails=1";
+
+
+    const response =
+      await fetch(url, {
+        headers:{
+          "Accept":
+            "application/json"
+        }
+      });
+
+
+    if(!response.ok){
+
+      return;
+
+    }
+
+
+    const result =
+      await response.json();
+
+
+    const address =
+      result.address || {};
+
+
+    /*
+      Prefer village/town/city.
+    */
+
+    const name =
+      address.village ||
+      address.town ||
+      address.city ||
+      address.municipality ||
+      address.county ||
+      "";
+
+
+    if(name){
+
+      data.currentVillage =
+        name;
+
+      saveData();
+
+      updateUI();
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Location name error:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+HISTORY
+*/
 
 function renderHistory(){
 
@@ -1244,6 +1486,7 @@ function renderHistory(){
       '<div class="empty">No tracking history yet</div>';
 
     return;
+
   }
 
 
@@ -1255,16 +1498,15 @@ function renderHistory(){
 
         return `
           <div class="history-item">
-
             <div class="history-top">
-              <span>${item.date}</span>
-              <span>${item.distance} km</span>
+              <span>${item.date || ""}</span>
+              <span>${item.distance || 0} km</span>
             </div>
 
             <div class="history-details">
-              Petrol expense: ₹${item.fuelExpense}
+              Petrol Cost:
+              ₹${item.fuelExpense || 0}
             </div>
-
           </div>
         `;
 
@@ -1275,92 +1517,8 @@ function renderHistory(){
 
 
 /*
-  Save a tracking session to history
-  only when user presses Stop Tracking.
-
-  It does NOT automatically start another ride.
+SERVICE WORKER
 */
-
-function saveTrackingSession(){
-
-  if(
-    data.sessionDistance <= 0
-  ){
-
-    return;
-  }
-
-
-  const now =
-    new Date();
-
-
-  const fuelExpense =
-    data.sessionDistance *
-    (PETROL_RATE / MILEAGE);
-
-
-  data.todayFuelExpense +=
-    fuelExpense;
-
-
-  data.history.push({
-
-    date:
-      now.toLocaleString(),
-
-    distance:
-      data.sessionDistance.toFixed(2),
-
-    fuelExpense:
-      fuelExpense.toFixed(2)
-
-  });
-
-
-  /*
-    No automatic next ride.
-  */
-
-  data.sessionDistance = 0;
-
-  saveData();
-
-  updateUI();
-
-}
-
-
-/*
-  Replace normal Stop behavior
-  with save + stop.
-*/
-
-const originalStopTracking =
-  stopTracking;
-
-
-stopTracking = function(){
-
-  if(!tracking){
-
-    return;
-  }
-
-
-  originalStopTracking();
-
-  saveTrackingSession();
-
-};
-
-
-/* INITIAL LOAD */
-
-loadData();
-
-
-/* SERVICE WORKER */
 
 if(
   "serviceWorker" in navigator
@@ -1368,23 +1526,3 @@ if(
 
   window.addEventListener(
     "load",
-    () => {
-
-      navigator.serviceWorker
-        .register("./sw.js")
-        .catch(error => {
-          console.log(
-            "Service Worker Error:",
-            error
-          );
-        });
-
-    }
-  );
-
-}
-
-</script>
-
-</body>
-</html>
