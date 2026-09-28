@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#f4b400">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.json?v=avgm20260928">
+<title>AVGM Bike Tracker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#222}
+.header{position:sticky;top:0;z-index:10;background:#f4b400;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;box-shadow:0 2px 8px #999}
+.header.danger{background:#d00000;color:#fff}
+.title{font-size:20px;font-weight:bold}
+.sub{font-size:11px;margin-top:3px}
+.datetime{font-size:12px;font-weight:bold;margin-top:7px}
+.speedBox{background:#111;color:#fff;border-radius:14px;padding:6px 10px;min-width:92px;text-align:center}
+.speedLabel{font-size:9px}.speedValue{font-size:27px;font-weight:bold}.dangerText{font-size:9px;font-weight:bold;display:none}
+.speedBox.danger{background:#f00;box-shadow:0 0 18px #f00}.speedBox.danger .dangerText{display:block}
+.container{max-width:650px;margin:auto;padding:12px}
+.card{background:#fff;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #ddd}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:#fafafa;padding:13px;border-radius:13px}
+.label{font-size:11px;color:#777}.big{font-size:25px;font-weight:bold;margin-top:5px}.small{font-size:12px;color:#777}
+.location{font-size:20px;font-weight:bold;text-transform:uppercase}
+.villageBox{background:#ffd83d;border:2px solid #d39e00;text-align:center}
+.villageBox .label{color:#5d4a00}.villageName{font-size:22px;font-weight:bold;text-transform:uppercase;margin-top:5px}
+.tatipaka{background:#111;color:#fff;text-align:center}.tatipaka .label{color:#ddd}
+.costBox{background:#fff3b0;border:2px solid #f4b400;text-align:center}
+.costValue{font-size:30px;font-weight:bold}
+.alert{background:#fff0c2;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:bold}
+.hide{display:none}
+button{width:100%;padding:13px;border:0;border-radius:12px;margin-top:8px;font-size:15px;font-weight:bold}
+.start{background:#198754;color:white}.stop{background:#dc3545;color:white}.save{background:#f4b400}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin-top:7px}
+.status{margin-top:10px;padding:10px;background:#f1f1f1;border-radius:10px;font-size:13px}
+.history{padding:9px 0;border-bottom:1px solid #eee;font-size:13px}
+@media(max-width:430px){.title{font-size:18px}.speedValue{font-size:24px}.villageName{font-size:19px}.grid{gap:8px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div>
+    <div class="title">🏍️ AVGM Bike Tracker</div>
+    <div class="sub">GPS • PETROL • DISTANCE • COST</div>
+    <div class="datetime" id="dateTime">DATE: --/--/---- • TIME: --:--:--</div>
+  </div>
+  <div class="speedBox" id="speedBox">
+    <div class="speedLabel">LIVE SPEED</div>
+    <div class="speedValue" id="speed">0</div>
+    <div class="speedLabel">KM/H</div>
+    <div class="dangerText">⚠️ DANGER</div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="rangeAlert" class="alert hide">⚠️ Petrol range low: <span id="alertValue">0</span> km</div>
+
+  <div class="card villageBox">
+    <div class="label">CURRENT VILLAGE / LOCATION</div>
+    <div class="villageName" id="location">GPS WAITING...</div>
+  </div>
+
+  <div class="card tatipaka">
+    <div class="label">TATIPAKA → CURRENT GPS LOCATION</div>
+    <div class="big"><span id="tatipakaDistance">0.00</span> KM</div>
+  </div>
+
+  <div class="card costBox">
+    <div class="label">EVERY 1 KM COST</div>
+    <div class="costValue">₹<span id="costPerKm">1.71</span></div>
+    <div class="small">Automatic • based on petrol price ÷ mileage</div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <div class="label">RUNNING DISTANCE</div>
+      <div class="big"><span id="tripDistance">0.00</span></div>
+      <div class="small">km</div>
+    </div>
+    <div class="box">
+      <div class="label">RUNNING COST</div>
+      <div class="big">₹<span id="tripCost">0.00</span></div>
+    </div>
+    <div class="box">
+      <div class="label">TODAY DISTANCE</div>
+      <div class="big"><span id="todayDistance">0.00</span></div>
+      <div class="small">km</div>
+    </div>
+    <div class="box">
+      <div class="label">TODAY COST</div>
+      <div class="big">₹<span id="todayCost">0.00</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">⛽ REMAINING PETROL RANGE</div>
+    <div class="big"><span id="range">0.0</span> km</div>
+    <div class="small">Current petrol × mileage</div>
+  </div>
+
+  <div class="card">
+    <div class="label">📍 CURRENT GPS</div>
+    <div class="location" id="gpsLocation">GPS WAITING...</div>
+    <div class="small" id="coords"></div>
+  </div>
+
+  <div class="card">
+    <div class="label">🏍️ CURRENT TRIP</div>
+    <button class="start" onclick="startGPS()">▶ START BIKE TRACKING</button>
+    <button class="stop" onclick="stopGPS()">■ STOP BIKE TRACKING</button>
+    <div class="status" id="status">🔴 GPS Tracking: OFF</div>
+  </div>
+
+  <div class="card">
+    <div class="label">💵 PETROL MONEY ENTRY</div>
+    <input id="petrolMoney" type="number" min="0" step="1" placeholder="Example: ₹100">
+    <button class="save" onclick="addPetrolMoney()">ADD PETROL MONEY</button>
+    <div class="big">₹<span id="totalPetrolMoney">0.00</span></div>
+    <div class="small">Total petrol money entered</div>
+  </div>
+
+  <div class="card">
+    <div class="label">⛽ CURRENT PETROL</div>
+    <input id="fuelLitres" type="number" min="0" step="0.1" placeholder="Current petrol litres">
+    <button class="save" onclick="saveFuel()">SAVE CURRENT PETROL</button>
+  </div>
+
+  <div class="card">
+    <div class="label">📊 SETTINGS</div>
+    <input id="mileage" type="number" min="1" step="0.1" placeholder="Mileage km/L">
+    <button class="save" onclick="saveMileage()">SAVE MILEAGE</button>
+    <input id="petrolRate" type="number" min="1" step="0.01" placeholder="Petrol price ₹/L">
+    <button class="save" onclick="savePetrolRate()">SAVE PETROL PRICE</button>
+  </div>
+
+  <div class="card">
+    <div class="label">📊 TOTAL TRAVEL COST</div>
+    <div class="big">₹<span id="totalCost">0.00</span></div>
+  </div>
+
+  <div class="card">
+    <div class="label">🧾 HISTORY</div>
+    <div id="history">No history yet.</div>
+  </div>
+</div>
+
+<script>
+const APP_VERSION="AVGM-2026-09-28-FINAL-01";
+const KEY="avgmBikeTrackerDataV2";
+const DAY_KEY="avgmBikeTrackerDayV2";
+const DEFAULT_MILEAGE=70;
+const DEFAULT_PETROL_RATE=120;
+const TATIPAKA_LAT=16.7187;
+const TATIPAKA_LON=81.7978;
+
+let data={
+  remainingRange:0,fuelLitres:0,mileage:DEFAULT_MILEAGE,
+  petrolRate:DEFAULT_PETROL_RATE,totalPetrolMoney:0,
+  totalDistance:0,todayDistance:0,sessionDistance:0,
+  totalTravelCost:0,todayTravelCost:0,currentVillage:"GPS WAITING...",
+  lastPosition:null,lastVillageLookup:0,history:[]
+};
+let watchId=null,running=false,wakeLock=null;
+
+function load(){
+  try{
+    const old=localStorage.getItem(KEY);
+    if(old)data=Object.assign(data,JSON.parse(old));
+  }catch(e){console.log(e)}
+  if(!Array.isArray(data.history))data.history=[];
+  if(!Number.isFinite(Number(data.mileage)))data.mileage=DEFAULT_MILEAGE;
+  if(!Number.isFinite(Number(data.petrolRate)))data.petrolRate=DEFAULT_PETROL_RATE;
+  if(!Number.isFinite(Number(data.totalPetrolMoney)))data.totalPetrolMoney=0;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function costPerKm(){return Number(data.petrolRate)/Math.max(1,Number(data.mileage))}
+function localDay(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function checkNewDay(){
+  const day=localDay(),old=localStorage.getItem(DAY_KEY);
+  if(old!==day){
+    data.todayDistance=0;
+    data.todayTravelCost=0;
+    localStorage.setItem(DAY_KEY,day);
+    save();
+  }
+}
+function updateDateTime(){
+  const d=new Date();
+  const date=String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+  const time=[d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,"0")).join(":");
+  document.getElementById("dateTime").textContent="DATE: "+date+" • TIME: "+time;
+  checkNewDay();
+}
+function update(){
+  const c=costPerKm();
+  document.getElementById("range").textContent=Number(data.remainingRange||0).toFixed(1);
+  document.getElementById("todayDistance").textContent=Number(data.todayDistance||0).toFixed(2);
+  document.getElementById("todayCost").textContent=Number(data.todayTravelCost||0).toFixed(2);
+  document.getElementById("tripDistance").textContent=Number(data.sessionDistance||0).toFixed(2);
+  document.getElementById("tripCost").textContent=(Number(data.sessionDistance||0)*c).toFixed(2);
+  document.getElementById("totalCost").textContent=Number(data.totalTravelCost||0).toFixed(2);
+  document.getElementById("totalPetrolMoney").textContent=Number(data.totalPetrolMoney||0).toFixed(2);
+  document.getElementById("costPerKm").textContent=c.toFixed(2);
+  document.getElementById("location").textContent=(data.currentVillage||"GPS WAITING...").toUpperCase();
+  document.getElementById("rangeAlert").classList.toggle("hide",Number(data.remainingRange)>15);
+  document.getElementById("alertValue").textContent=Number(data.remainingRange||0).toFixed(1);
+  renderHistory();
+}
+function getDistance(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function setSpeed(value){
+  value=Number(value)||0;
+  document.getElementById("speed").textContent=value.toFixed(0);
+  document.getElementById("speedBox").classList.toggle("danger",value>50);
+  document.getElementById("header").classList.toggle("danger",value>50);
+}
+function positionSuccess(pos){
+  const c=pos.coords,lat=c.latitude,lon=c.longitude;
+  const speed=(c.speed!==null&&Number.isFinite(c.speed))?Math.max(0,c.speed*3.6):0;
+  setSpeed(speed);
+  document.getElementById("coords").textContent=lat.toFixed(6)+" , "+lon.toFixed(6);
+  document.getElementById("gpsLocation").textContent=lat.toFixed(6)+" , "+lon.toFixed(6);
+  document.getElementById("tatipakaDistance").textContent=getDistance(TATIPAKA_LAT,TATIPAKA_LON,lat,lon).toFixed(2);
+  if(!data.lastPosition){
+    data.lastPosition={lat,lon};save();reverseLocation(lat,lon,true);update();return;
+  }
+  const km=getDistance(data.lastPosition.lat,data.lastPosition.lon,lat,lon);
+  if(km<0.005)return;
+  if(km>2){data.lastPosition={lat,lon};save();return;}
+  if(c.speed!==null&&speed<2)return;
+  data.sessionDistance+=km;data.todayDistance+=km;data.totalDistance+=km;
+  data.remainingRange=Math.max(0,Number(data.remainingRange||0)-km);
+  const cost=km*costPerKm();
+  data.totalTravelCost+=cost;data.todayTravelCost+=cost;
+  data.lastPosition={lat,lon};save();update();
+  reverseLocation(lat,lon,false);
+}
+function positionError(error){
+  const msg=error.code===1?"Location permission denied":error.code===2?"Location unavailable":error.code===3?"GPS timeout":"GPS error";
+  document.getElementById("status").textContent="⚠️ "+msg;
+}
+async function startGPS(){
+  if(!navigator.geolocation){alert("GPS is not supported by this browser.");return}
+  if(running)return;
+  running=true;data.lastPosition=null;data.sessionDistance=0;
+  document.getElementById("status").textContent="🟢 GPS Tracking: ON";
+  await requestWakeLock();
+  watchId=navigator.geolocation.watchPosition(positionSuccess,positionError,{enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+  navigator.geolocation.getCurrentPosition(positionSuccess,positionError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+function stopGPS(){
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}
+  running=false;
+  document.getElementById("status").textContent="🔴 GPS Tracking: OFF";
+  if(data.sessionDistance>0){
+    data.history.unshift({date:new Date().toLocaleString(),distance:Number(data.sessionDistance.toFixed(2)),cost:Number((data.sessionDistance*costPerKm()).toFixed(2))});
+    if(data.history.length>50)data.history.length=50;
+  }
+  data.sessionDistance=0;data.lastPosition=null;save();update();
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}
+}
+async function requestWakeLock(){
+  try{
+    if("wakeLock" in navigator&&running&&document.visibilityState==="visible")wakeLock=await navigator.wakeLock.request("screen");
+  }catch(e){console.log("Wake Lock:",e)}
+}
+function addPetrolMoney(){
+  const amount=Number(document.getElementById("petrolMoney").value);
+  if(!Number.isFinite(amount)||amount<=0){alert("Enter valid petrol money.");return}
+  data.totalPetrolMoney+=amount;save();update();document.getElementById("petrolMoney").value="";
+}
+function saveFuel(){
+  const litres=Number(document.getElementById("fuelLitres").value);
+  if(!Number.isFinite(litres)||litres<0){alert("Enter valid petrol litres.");return}
+  data.fuelLitres=litres;data.remainingRange=litres*Number(data.mileage);save();update();
+}
+function saveMileage(){
+  const mileage=Number(document.getElementById("mileage").value);
+  if(!Number.isFinite(mileage)||mileage<=0){alert("Enter valid mileage.");return}
+  data.mileage=mileage;data.remainingRange=Number(data.fuelLitres||0)*mileage;save();update();document.getElementById("mileage").value="";
+}
+function savePetrolRate(){
+  const rate=Number(document.getElementById("petrolRate").value);
+  if(!Number.isFinite(rate)||rate<=0){alert("Enter valid petrol price.");return}
+  data.petrolRate=rate;save();update();document.getElementById("petrolRate").value="";
+}
+async function reverseLocation(lat,lon,force){
+  const now=Date.now();
+  if(!force&&now-Number(data.lastVillageLookup||0)<30000)return;
+  data.lastVillageLookup=now;save();
+  try{
+    const url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+encodeURIComponent(lat)+"&lon="+encodeURIComponent(lon)+"&zoom=14&addressdetails=1";
+    const response=await fetch(url,{headers:{Accept:"application/json"}});
+    if(!response.ok)return;
+    const result=await response.json(),a=result.address||{};
+    const name=a.village||a.town||a.city||a.municipality||a.suburb||a.county;
+    if(name){data.currentVillage=String(name).toUpperCase();save();update()}
+  }catch(e){console.log("Village lookup failed",e)}
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function renderHistory(){
+  const box=document.getElementById("history");
+  if(!data.history.length){box.textContent="No history yet.";return}
+  box.innerHTML=data.history.map(x=>`<div class="history">📅 ${escapeHTML(x.date)}<br>Distance: <b>${Number(x.distance).toFixed(2)} km</b><br>Cost: <b>₹${Number(x.cost).toFixed(2)}</b></div>`).join("");
+}
+function initialiseInputs(){
+  document.getElementById("mileage").placeholder="Mileage currently "+data.mileage+" km/L";
+  document.getElementById("petrolRate").placeholder="Petrol price currently ₹"+data.petrolRate+"/L";
+}
+document.addEventListener("visibilitychange",async()=>{
+  if(document.visibilityState==="visible"&&running){
+    await requestWakeLock();
+    navigator.geolocation.getCurrentPosition(positionSuccess,positionError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+  }
+});
+setInterval(updateDateTime,1000);
+load();checkNewDay();initialiseInputs();update();updateDateTime();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js?v=avgm20260928final01").then(reg=>reg.update()).catch(e=>console.log("SW error",e));
+  });
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!sessionStorage.getItem("avgm-final-reloaded")){
+      sessionStorage.setItem("avgm-final-reloaded","yes");
+      location.reload();
+    }
+  });
+}
+</script>
+</body>
+</html>
