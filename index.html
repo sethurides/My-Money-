@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4b400">
+<link rel="manifest" href="./manifest.json">
+<title>AVGM Bike Tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#111}
+header{background:#f4b400;padding:12px;text-align:center;font-weight:800;font-size:22px;position:sticky;top:0;z-index:5}
+.wrap{max-width:620px;margin:auto;padding:10px}
+.row{display:flex;gap:8px;align-items:stretch}.box{background:#fff;border-radius:12px;padding:12px;margin:7px 0;box-shadow:0 2px 8px #0001}
+.half{flex:1}.label{font-size:12px;font-weight:700;color:#555}.big{font-size:24px;font-weight:800}.center{text-align:center}
+.speed{background:#111;color:#fff;border-radius:12px;padding:10px;text-align:center;min-width:120px}
+.speed .big{font-size:30px}.yellow{background:#ffe36e;border:2px solid #e0ad00}.green{background:#e8f7df;border:2px solid #7bb35b}
+button{width:100%;padding:13px;border:0;border-radius:10px;font-size:16px;font-weight:800;margin:5px 0;background:#111;color:#fff}
+button.start{background:#16833b}button.stop{background:#b52323}button.secondary{background:#666}
+input{width:100%;padding:11px;border:1px solid #bbb;border-radius:9px;font-size:16px}
+small{color:#666}.value{font-weight:800}.history-item{border-top:1px solid #ddd;padding:9px 0}
+footer{text-align:center;padding:18px;color:#666;font-size:12px}
+</style>
+</head>
+<body>
+<header>🏍️ AVGM Bike Tracker</header>
+<div class="wrap">
+
+<div class="box">
+  <div class="row">
+    <div class="half">
+      <div class="label">DATE</div><div id="date" class="value">--</div>
+      <div class="label" style="margin-top:5px">TIME</div><div id="time" class="value">--</div>
+    </div>
+    <div class="speed">
+      <div class="label" style="color:#fff">SPEED</div>
+      <div id="speed" class="big">0</div><div>KM/H</div>
+    </div>
+  </div>
+</div>
+
+<div class="box yellow center">
+  <div class="label">🟡 CURRENT LOCATION</div>
+  <div id="currentLocation" class="big">WAITING FOR GPS...</div>
+</div>
+
+<div class="box yellow center">
+  <div class="label">TATIPAKA → CURRENT GPS LOCATION</div>
+  <div id="tatipakaDistance" class="big">0.00 KM</div>
+  <small>Straight-line GPS distance</small>
+</div>
+
+<div class="row">
+  <div class="box half center">
+    <div class="label">EVERY 1 KM COST</div>
+    <div id="costPerKm" class="big">₹1.71</div>
+  </div>
+  <div class="box half center">
+    <div class="label">REMAINING PETROL RANGE</div>
+    <div id="remainingRange" class="big">0.00 KM</div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">CURRENT TRIP</div>
+  <div class="row">
+    <div class="half center"><div class="label">DISTANCE</div><div id="sessionDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">COST</div><div id="sessionCost" class="big">₹0.00</div></div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">TODAY</div>
+  <div class="row">
+    <div class="half center"><div class="label">DISTANCE</div><div id="todayDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">COST</div><div id="todayCost" class="big">₹0.00</div></div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">PETROL MONEY</div>
+  <input id="petrolMoney" type="number" min="0" step="1" placeholder="Example: 150">
+  <button onclick="addPetrolMoney()">ADD PETROL MONEY</button>
+  <small>₹ amount is converted to litres using the current petrol price.</small>
+</div>
+
+<div class="box">
+  <div class="label">PETROL / BIKE SETTINGS</div>
+  <div class="row">
+    <div class="half"><small>Current Petrol Litres</small><input id="petrolLitres" type="number" min="0" step="0.01"></div>
+    <div class="half"><small>Mileage KM/L</small><input id="mileage" type="number" min="1" step="0.1"></div>
+  </div>
+  <div style="margin-top:8px"><small>Petrol Price ₹/L</small><input id="petrolPrice" type="number" min="1" step="0.01"></div>
+  <button class="secondary" onclick="saveFuelSettings()">SAVE FUEL SETTINGS</button>
+</div>
+
+<div class="box">
+  <div class="label">GPS</div>
+  <div id="gpsStatus">GPS NOT STARTED</div>
+  <div id="coords">LAT: -- | LNG: --</div>
+  <button class="start" onclick="startGPS()">▶ START TRACKING</button>
+  <button class="stop" onclick="stopGPS()">■ STOP TRACKING</button>
+</div>
+
+<div class="box">
+  <div class="label">TRAVEL TOTAL</div>
+  <div class="row">
+    <div class="half center"><div class="label">TOTAL DISTANCE</div><div id="totalDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">TOTAL COST</div><div id="totalCost" class="big">₹0.00</div></div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">TRIP HISTORY</div>
+  <div id="history">No completed trips yet.</div>
+</div>
+</div>
+<footer>AVGM Bike Tracker</footer>
+
+<script>
+const TATIPAKA={lat:16.7187,lng:81.7978};
+const DATA_KEY="avgmBikeTrackerDataV3";
+const DAY_KEY="avgmBikeTrackerDayV3";
+
+let data=loadData();
+let day=loadDay();
+let watchId=null,lastPosition=null,lastGeoTime=0,wakeLock=null;
+let sessionDistance=0;
+
+function loadData(){
+  const fresh={totalDistance:0,totalCost:0,remainingRange:0,tatipakaDistance:0,history:[],petrolMoneyTotal:0};
+  try{
+    let x=JSON.parse(localStorage.getItem(DATA_KEY)||"null");
+    if(x) return {...fresh,...x};
+    const old=JSON.parse(localStorage.getItem("avgmBikeTrackerDataV2")||localStorage.getItem("bikeTrackerData")||"null");
+    if(old) return {
+      ...fresh,...old,
+      totalDistance:Number(old.totalDistance||old.distance||0),
+      totalCost:Number(old.totalCost||old.cost||0),
+      history:Array.isArray(old.history)?old.history:[]
+    };
+  }catch(e){}
+  return fresh;
+}
+function loadDay(){
+  const today=new Date().toISOString().slice(0,10);
+  try{
+    const x=JSON.parse(localStorage.getItem(DAY_KEY)||"null");
+    if(x && x.date===today)return x;
+  }catch(e){}
+  return {date:today,distance:0,cost:0};
+}
+function save(){localStorage.setItem(DATA_KEY,JSON.stringify(data));localStorage.setItem(DAY_KEY,JSON.stringify(day))}
+function money(n){return "₹"+Number(n||0).toFixed(2)}
+function km(n){return Number(n||0).toFixed(2)}
+function hav(a,b){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad,dLon=(b.lng-a.lng)*rad;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function getCostPerKm(){return Number(data.petrolPrice||120)/Number(data.mileage||70)}
+function render(){
+  document.getElementById("costPerKm").textContent=money(getCostPerKm());
+  document.getElementById("remainingRange").textContent=km(data.remainingRange)+" KM";
+  document.getElementById("tatipakaDistance").textContent=km(data.tatipakaDistance)+" KM";
+  document.getElementById("sessionDistance").textContent=km(sessionDistance);
+  document.getElementById("sessionCost").textContent=money(sessionDistance*getCostPerKm());
+  document.getElementById("todayDistance").textContent=km(day.distance);
+  document.getElementById("todayCost").textContent=money(day.cost);
+  document.getElementById("totalDistance").textContent=km(data.totalDistance);
+  document.getElementById("totalCost").textContent=money(data.totalCost);
+  document.getElementById("petrolLitres").value=data.petrolLitres||"";
+  document.getElementById("mileage").value=data.mileage||70;
+  document.getElementById("petrolPrice").value=data.petrolPrice||120;
+  const h=document.getElementById("history");
+  h.innerHTML=data.history.length?data.history.slice().reverse().map(x=>
+    `<div class="history-item"><b>${x.date}</b><br>${km(x.distance)} KM · ${money(x.cost)}</div>`).join(""):"No completed trips yet.";
+}
+function clock(){
+  const d=new Date();
+  document.getElementById("date").textContent=d.toLocaleDateString("en-IN");
+  document.getElementById("time").textContent=d.toLocaleTimeString("en-IN",{hour12:false});
+}
+setInterval(clock,1000);clock();
+
+function saveFuelSettings(){
+  const litres=Number(document.getElementById("petrolLitres").value||0);
+  data.petrolLitres=litres;
+  data.mileage=Number(document.getElementById("mileage").value||70);
+  data.petrolPrice=Number(document.getElementById("petrolPrice").value||120);
+  data.remainingRange=litres*data.mileage;
+  save();render();
+  alert("Fuel settings saved.");
+}
+function addPetrolMoney(){
+  const moneyValue=Number(document.getElementById("petrolMoney").value||0);
+  if(moneyValue<=0)return alert("Enter petrol money.");
+  data.petrolPrice=Number(data.petrolPrice||120);
+  data.mileage=Number(data.mileage||70);
+  const litres=moneyValue/data.petrolPrice;
+  data.petrolMoneyTotal=Number(data.petrolMoneyTotal||0)+moneyValue;
+  data.petrolLitres=Number(data.petrolLitres||0)+litres;
+  data.remainingRange=Number(data.remainingRange||0)+(litres*data.mileage);
+  document.getElementById("petrolMoney").value="";
+  save();render();
+  alert("₹"+moneyValue.toFixed(2)+" added. Range added: "+(litres*data.mileage).toFixed(2)+" KM");
+}
+async function requestWakeLock(){
+  try{if("wakeLock" in navigator)wakeLock=await navigator.wakeLock.request("screen")}catch(e){}
+}
+function updateLocationName(lat,lng){
+  const now=Date.now();
+  if(now-lastGeoTime<30000)return;
+  lastGeoTime=now;
+  const el=document.getElementById("currentLocation");
+  el.textContent="LOCATING...";
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,{
+    headers:{"Accept":"application/json"}
+  }).then(r=>r.json()).then(j=>{
+    const a=j.address||{};
+    const name=a.village||a.town||a.city||a.municipality||a.suburb||a.county||j.name||"CURRENT LOCATION";
+    el.textContent=String(name).toUpperCase();
+  }).catch(()=>{el.textContent="GPS LOCATION FOUND";});
+}
+function positionSuccess(pos){
+  const lat=pos.coords.latitude,lng=pos.coords.longitude;
+  const speed=Number.isFinite(pos.coords.speed)&&pos.coords.speed>=0?pos.coords.speed*3.6:0;
+  document.getElementById("speed").textContent=speed.toFixed(1);
+  document.getElementById("coords").textContent=`LAT: ${lat.toFixed(6)} | LNG: ${lng.toFixed(6)}`;
+  document.getElementById("gpsStatus").textContent="GPS TRACKING ACTIVE";
+  const current={lat,lng};
+  // ALWAYS calculate Tatipaka → current GPS directly from the current GPS coordinate.
+  data.tatipakaDistance=hav(TATIPAKA,current);
+  updateLocationName(lat,lng);
+
+  if(!lastPosition){lastPosition=current;save();render();return}
+  const moved=hav(lastPosition,current);
+  if(moved>=0.005 && moved<=2){
+    sessionDistance+=moved;
+    day.distance+=moved;
+    data.totalDistance+=moved;
+    const cost=moved*getCostPerKm();
+    day.cost+=cost;
+    data.totalCost+=cost;
+    data.remainingRange=Math.max(0,Number(data.remainingRange||0)-moved);
+    lastPosition=current;
+  }else if(moved>2){
+    // GPS jump: reset baseline, do not add the jump to riding distance.
+    lastPosition=current;
+  }
+  save();render();
+}
+function positionError(err){
+  document.getElementById("gpsStatus").textContent="GPS ERROR: "+(err.message||"PLEASE ALLOW LOCATION");
+}
+function startGPS(){
+  if(!navigator.geolocation)return alert("This device/browser does not support GPS.");
+  if(watchId!==null)return;
+  sessionDistance=0;lastPosition=null;
+  document.getElementById("gpsStatus").textContent="STARTING GPS...";
+  requestWakeLock();
+  watchId=navigator.geolocation.watchPosition(positionSuccess,positionError,{
+    enableHighAccuracy:true,maximumAge:0,timeout:15000
+  });
+}
+function stopGPS(){
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}
+  if(sessionDistance>0){
+    data.history.push({date:new Date().toLocaleString("en-IN"),distance:sessionDistance,cost:sessionDistance*getCostPerKm()});
+    if(data.history.length>100)data.history.shift();
+  }
+  sessionDistance=0;lastPosition=null;
+  document.getElementById("speed").textContent="0.0";
+  document.getElementById("gpsStatus").textContent="GPS STOPPED";
+  save();render();
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&watchId!==null)requestWakeLock()});
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js?v=avgm20260928fix03").catch(()=>{});
+</script>
+</body>
+</html>
