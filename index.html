@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#f4b400">
+<link rel="manifest" href="./manifest.json">
+<title>AVGM Bike Tracker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#222}
+.header{background:#f4b400;padding:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px #999;position:sticky;top:0;z-index:5}
+.title{font-size:20px;font-weight:bold}.sub{font-size:12px;margin-top:3px}
+.speedBox{background:#111;color:#fff;border-radius:14px;padding:7px 12px;min-width:105px;text-align:center}
+.speedLabel{font-size:10px}.speedValue{font-size:27px;font-weight:bold}
+.container{max-width:650px;margin:auto;padding:12px}
+.card{background:#fff;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #ddd}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.box{background:#fafafa;padding:13px;border-radius:13px}
+.label{font-size:11px;color:#777}.big{font-size:25px;font-weight:bold;margin-top:5px}.small{font-size:12px;color:#777}
+.location{font-size:19px;font-weight:bold;text-transform:uppercase}
+.costBox{background:#111;color:#fff;text-align:center;border-radius:16px;padding:16px;margin-bottom:12px}
+.costBox .label{color:#ddd}.costBox .big{font-size:32px;color:#ffd21a}
+.tatipaka{background:#fff7c7;border:2px solid #f4b400;text-align:center}
+.tatipaka .big{font-size:28px}
+.rangeBox{background:#e9f8ed;border:2px solid #198754}
+.rangeBox.low{background:#fff0c2;border-color:#dc9b00}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin-top:7px}
+button{width:100%;padding:13px;border:0;border-radius:12px;margin-top:8px;font-size:15px;font-weight:bold}
+.start{background:#198754;color:#fff}.stop{background:#dc3545;color:#fff}.save{background:#f4b400;color:#111}
+.status{margin-top:10px;padding:10px;background:#f1f1f1;border-radius:10px;font-size:13px}
+.history{padding:9px 0;border-bottom:1px solid #eee;font-size:13px}
+.coords{font-family:monospace;font-size:12px;word-break:break-all}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="title">🏍️ AVGM Bike Tracker</div>
+    <div class="sub" id="datetime">DATE • TIME</div>
+  </div>
+  <div class="speedBox">
+    <div class="speedLabel">LIVE SPEED</div>
+    <div class="speedValue" id="speed">0.0</div>
+    <div class="speedLabel">KM/H</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="costBox">
+    <div class="label">💰 EVERY 1 KM COST</div>
+    <div class="big">₹<span id="costPerKm">1.71</span></div>
+    <div class="small">Petrol ₹<span id="petrolRateText">120</span>/L • Mileage <span id="mileageText">70</span> km/L</div>
+  </div>
+
+  <div class="card tatipaka">
+    <div class="label">📍 TATIPAKA → CURRENT GPS LOCATION</div>
+    <div class="big"><span id="fromTatipaka">0.00</span> KM</div>
+    <div class="small">Straight-line GPS distance from Tatipaka</div>
+  </div>
+
+  <div class="card rangeBox" id="rangeCard">
+    <div class="label">⛽ REMAINING PETROL RANGE</div>
+    <div class="big"><span id="range">0.00</span> KM</div>
+    <div class="small">This KM value decreases as the bike travels.</div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <div class="label">TODAY DISTANCE</div>
+      <div class="big"><span id="todayDistance">0.00</span></div>
+      <div class="small">KM</div>
+    </div>
+    <div class="box">
+      <div class="label">TODAY COST</div>
+      <div class="big">₹<span id="todayCost">0.00</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">📍 CURRENT VILLAGE / LOCATION</div>
+    <div class="location" id="location">GPS WAITING...</div>
+    <div class="coords" id="coords"></div>
+  </div>
+
+  <div class="card">
+    <div class="label">🏍️ CURRENT TRIP</div>
+    <div class="grid">
+      <div class="box">
+        <div class="label">RUNNING DISTANCE</div>
+        <div class="big"><span id="tripDistance">0.00</span></div>
+        <div class="small">KM</div>
+      </div>
+      <div class="box">
+        <div class="label">RUNNING COST</div>
+        <div class="big">₹<span id="tripCost">0.00</span></div>
+      </div>
+    </div>
+    <button class="start" onclick="startGPS()">▶ START GPS</button>
+    <button class="stop" onclick="stopGPS()">■ STOP GPS</button>
+    <div class="status" id="status">🔴 GPS TRACKING: OFF</div>
+  </div>
+
+  <div class="card">
+    <div class="label">⛽ PETROL MONEY ADDED</div>
+    <input id="petrolMoney" type="number" min="0" step="1" placeholder="Example: 150">
+    <button class="save" onclick="addPetrolMoney()">SAVE ₹ PETROL MONEY</button>
+    <div class="small" style="margin-top:8px">₹150 means ₹150 money — NOT 150 litres.</div>
+    <div class="big">TOTAL PETROL MONEY: ₹<span id="petrolMoneyTotal">0.00</span></div>
+  </div>
+
+  <div class="card">
+    <div class="label">⛽ CURRENT PETROL / VEHICLE SETTINGS</div>
+    <input id="fuelLitres" type="number" min="0" step="0.1" placeholder="Current petrol litres">
+    <input id="mileage" type="number" min="1" step="0.1" placeholder="Mileage km/L">
+    <input id="petrolPrice" type="number" min="1" step="0.01" placeholder="Petrol price ₹/L">
+    <button class="save" onclick="saveFuelSettings()">SAVE FUEL SETTINGS</button>
+    <div class="small" style="margin-top:8px">Current petrol range = litres × mileage.</div>
+  </div>
+
+  <div class="card">
+    <div class="label">📊 TOTAL TRAVEL COST</div>
+    <div class="big">₹<span id="totalCost">0.00</span></div>
+  </div>
+
+  <div class="card">
+    <div class="label">🧾 HISTORY</div>
+    <div id="history">No history yet.</div>
+  </div>
+
+</div>
+
+<script>
+const KEY = "avgmBikeTrackerDataV3";
+const OLD_KEY = "avgmBikeTrackerDataV2";
+const VERY_OLD_KEY = "bikeTrackerData";
+
+const TATIPAKA_LAT = 16.7187;
+const TATIPAKA_LON = 81.7978;
+
+let data = {
+  fuelLitres: 0,
+  mileage: 70,
+  petrolPrice: 120,
+  petrolMoneyTotal: 0,
+  totalDistance: 0,
+  todayDistance: 0,
+  sessionDistance: 0,
+  totalTravelCost: 0,
+  todayTravelCost: 0,
+  remainingRange: 0,
+  tatipakaDistance: 0,
+  currentVillage: "GPS WAITING...",
+  lastPosition: null,
+  history: []
+};
+
+let watchId = null;
+let running = false;
+let lastLocationLookup = 0;
+let wakeLock = null;
+
+function num(v, fallback=0){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function localDateKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function costPerKm(){
+  return data.petrolPrice / Math.max(1, data.mileage);
+}
+
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(data));
+  localStorage.setItem("avgmBikeTrackerDayV3", localDateKey());
+}
+
+function migrate(){
+  let raw = localStorage.getItem(KEY) || localStorage.getItem(OLD_KEY) || localStorage.getItem(VERY_OLD_KEY);
+  if(raw){
+    try{
+      const old = JSON.parse(raw);
+      data = {...data, ...old};
+      data.mileage = num(data.mileage,70);
+      data.petrolPrice = num(data.petrolPrice,120);
+      data.petrolMoneyTotal = num(data.petrolMoneyTotal,0);
+      data.remainingRange = num(data.remainingRange,0);
+      data.history = Array.isArray(data.history) ? data.history : [];
+    }catch(e){}
+  }
+
+  const dayKey = localStorage.getItem("avgmBikeTrackerDayV3");
+  if(dayKey !== localDateKey()){
+    data.todayDistance = 0;
+    data.todayTravelCost = 0;
+    localStorage.setItem("avgmBikeTrackerDayV3", localDateKey());
+    save();
+  }
+
+  if(data.fuelLitres > 0 && data.remainingRange <= 0){
+    data.remainingRange = data.fuelLitres * data.mileage;
+  }
+}
+
+function updateDateTime(){
+  const d = new Date();
+  document.getElementById("datetime").textContent =
+    d.toLocaleDateString("en-IN") + " • " + d.toLocaleTimeString("en-IN");
+}
+
+function update(){
+  const cpk = costPerKm();
+
+  document.getElementById("costPerKm").textContent = cpk.toFixed(2);
+  document.getElementById("petrolRateText").textContent = data.petrolPrice.toFixed(2);
+  document.getElementById("mileageText").textContent = data.mileage.toFixed(1);
+
+  document.getElementById("fromTatipaka").textContent = num(data.tatipakaDistance).toFixed(2);
+  document.getElementById("range").textContent = num(data.remainingRange).toFixed(2);
+
+  document.getElementById("todayDistance").textContent = num(data.todayDistance).toFixed(2);
+  document.getElementById("todayCost").textContent = num(data.todayTravelCost).toFixed(2);
+
+  document.getElementById("tripDistance").textContent = num(data.sessionDistance).toFixed(2);
+  document.getElementById("tripCost").textContent = (num(data.sessionDistance)*cpk).toFixed(2);
+
+  document.getElementById("totalCost").textContent = num(data.totalTravelCost).toFixed(2);
+  document.getElementById("petrolMoneyTotal").textContent = num(data.petrolMoneyTotal).toFixed(2);
+
+  document.getElementById("location").textContent =
+    (data.currentVillage || "GPS WAITING...").toUpperCase();
+
+  const card = document.getElementById("rangeCard");
+  card.classList.toggle("low", data.remainingRange > 0 && data.remainingRange < 20);
+
+  renderHistory();
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  const R = 6371;
+  const p = Math.PI/180;
+  const a =
+    0.5 - Math.cos((lat2-lat1)*p)/2 +
+    Math.cos(lat1*p)*Math.cos(lat2*p) *
+    (1-Math.cos((lon2-lon1)*p))/2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+function positionSuccess(position){
+  const lat = position.coords.latitude;
+  const lon = position.coords.longitude;
+
+  const speed = position.coords.speed == null
+    ? 0
+    : Math.max(0, position.coords.speed * 3.6);
+
+  document.getElementById("speed").textContent = speed.toFixed(1);
+  document.getElementById("coords").textContent =
+    "LAT: "+lat.toFixed(6)+" | LON: "+lon.toFixed(6);
+
+  data.tatipakaDistance = haversine(
+    TATIPAKA_LAT, TATIPAKA_LON, lat, lon
+  );
+
+  if(data.lastPosition === null){
+    data.lastPosition = {lat,lon};
+    reverseLocation(lat,lon,true);
+    save();
+    update();
+    return;
+  }
+
+  const km = haversine(
+    data.lastPosition.lat,
+    data.lastPosition.lon,
+    lat,
+    lon
+  );
+
+  if(km >= 0.005 && km <= 2){
+    data.sessionDistance += km;
+    data.todayDistance += km;
+    data.totalDistance += km;
+
+    data.remainingRange = Math.max(0, data.remainingRange - km);
+
+    const cost = km * costPerKm();
+    data.totalTravelCost += cost;
+    data.todayTravelCost += cost;
+
+    data.lastPosition = {lat,lon};
+    save();
+    update();
+  } else if(km > 2){
+    data.lastPosition = {lat,lon};
+    save();
+  }
+
+  if(Date.now() - lastLocationLookup >= 30000){
+    reverseLocation(lat,lon,false);
+  }
+}
+
+function positionError(error){
+  let msg = "GPS ERROR";
+  if(error.code===1) msg = "LOCATION PERMISSION DENIED";
+  if(error.code===2) msg = "LOCATION UNAVAILABLE";
+  if(error.code===3) msg = "GPS TIMEOUT";
+  document.getElementById("status").textContent = "⚠️ "+msg;
+}
+
+async function reverseLocation(lat,lon,force){
+  if(!force && Date.now()-lastLocationLookup < 30000) return;
+  lastLocationLookup = Date.now();
+
+  try{
+    const url =
+      "https://nominatim.openstreetmap.org/reverse" +
+      "?format=jsonv2" +
+      "&lat="+encodeURIComponent(lat) +
+      "&lon="+encodeURIComponent(lon) +
+      "&zoom=14" +
+      "&addressdetails=1";
+
+    const response = await fetch(url,{
+      headers: {"Accept":"application/json"}
+    });
+    if(!response.ok) return;
+
+    const result = await response.json();
+    const a = result.address || {};
+
+    const name =
+      a.village ||
+      a.town ||
+      a.city ||
+      a.municipality ||
+      a.suburb ||
+      a.county ||
+      result.name;
+
+    if(name){
+      data.currentVillage = String(name).toUpperCase();
+      save();
+      update();
+    }
+  }catch(e){
+    console.log("Reverse geocoding failed",e);
+  }
+}
+
+async function requestWakeLock(){
+  try{
+    if("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+    }
+  }catch(e){}
+}
+
+async function startGPS(){
+  if(!navigator.geolocation){
+    alert("GPS is not supported by this browser.");
+    return;
+  }
+
+  if(running) return;
+
+  running = true;
+  data.lastPosition = null;
+  data.sessionDistance = 0;
+
+  document.getElementById("status").textContent = "🟢 GPS TRACKING: ON";
+
+  await requestWakeLock();
+
+  watchId = navigator.geolocation.watchPosition(
+    positionSuccess,
+    positionError,
+    {
+      enableHighAccuracy:true,
+      maximumAge:1000,
+      timeout:15000
+    }
+  );
+}
+
+function stopGPS(){
+  if(watchId !== null){
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+
+  running = false;
+  document.getElementById("status").textContent = "🔴 GPS TRACKING: OFF";
+
+  if(data.sessionDistance > 0){
+    data.history.unshift({
+      date:new Date().toLocaleString("en-IN"),
+      distance:Number(data.sessionDistance.toFixed(2)),
+      cost:Number((data.sessionDistance*costPerKm()).toFixed(2))
+    });
+    if(data.history.length > 50) data.history.length = 50;
+  }
+
+  data.sessionDistance = 0;
+  data.lastPosition = null;
+  save();
+  update();
+
+  if(wakeLock){
+    wakeLock.release().catch(()=>{});
+    wakeLock = null;
+  }
+}
+
+function addPetrolMoney(){
+  const money = num(document.getElementById("petrolMoney").value,-1);
+
+  if(money < 0){
+    alert("Enter petrol money. Example: 150");
+    return;
+  }
+
+  data.petrolMoneyTotal += money;
+
+  const litresAdded = money / Math.max(1,data.petrolPrice);
+  data.fuelLitres += litresAdded;
+  data.remainingRange += litresAdded * data.mileage;
+
+  document.getElementById("petrolMoney").value = "";
+  save();
+  update();
+}
+
+function saveFuelSettings(){
+  const litres = num(document.getElementById("fuelLitres").value,-1);
+  const mileage = num(document.getElementById("mileage").value,-1);
+  const price = num(document.getElementById("petrolPrice").value,-1);
+
+  if(litres < 0 || mileage <= 0 || price <= 0){
+    alert("Enter valid petrol litres, mileage and petrol price.");
+    return;
+  }
+
+  data.fuelLitres = litres;
+  data.mileage = mileage;
+  data.petrolPrice = price;
+  data.remainingRange = litres * mileage;
+
+  document.getElementById("fuelLitres").value = "";
+  document.getElementById("mileage").value = "";
+  document.getElementById("petrolPrice").value = "";
+
+  save();
+  update();
+}
+
+function renderHistory(){
+  const box = document.getElementById("history");
+
+  if(!data.history.length){
+    box.textContent = "No history yet.";
+    return;
+  }
+
+  box.innerHTML = data.history.map(x => `
+    <div class="history">
+      📅 ${escapeHtml(x.date)}<br>
+      Distance: <b>${num(x.distance).toFixed(2)} km</b><br>
+      Cost: <b>₹${num(x.cost).toFixed(2)}</b>
+    </div>
+  `).join("");
+}
+
+function escapeHtml(v){
+  return String(v)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+migrate();
+update();
+updateDateTime();
+setInterval(updateDateTime,1000);
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js?v=avgm20260928fix02")
+      .then(reg=>reg.update())
+      .catch(e=>console.log("SW error",e));
+  });
+}
+</script>
+</body>
+</html>
