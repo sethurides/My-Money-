@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4b400">
+<link rel="manifest" href="./manifest.json">
+<title>AVGM Bike Tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#111}
+header{background:#f4b400;padding:12px;text-align:center;font-weight:800;font-size:22px;position:sticky;top:0;z-index:5}
+.wrap{max-width:620px;margin:auto;padding:10px}
+.row{display:flex;gap:8px;align-items:stretch}.box{background:#fff;border-radius:12px;padding:12px;margin:7px 0;box-shadow:0 2px 8px #0001}
+.half{flex:1}.label{font-size:12px;font-weight:700;color:#555}.big{font-size:24px;font-weight:800}.center{text-align:center}
+.speed-wrap{display:flex;gap:6px;align-items:stretch}.speed{background:#111;color:#fff;border-radius:12px;padding:10px;text-align:center;min-width:120px}.temp-mini{background:#e8f7df;border:2px solid #7bb35b;border-radius:12px;padding:8px 7px;text-align:center;min-width:72px;display:flex;flex-direction:column;justify-content:center}.temp-mini .temp-value{font-size:18px;font-weight:900;line-height:1.05}.temp-mini .temp-label{font-size:9px;font-weight:900;color:#555;margin-bottom:3px}.speed .big{font-size:30px}.yellow{background:#ffe36e;border:2px solid #e0ad00}.green{background:#e8f7df;border:2px solid #7bb35b}
+button{width:100%;padding:13px;border:0;border-radius:10px;font-size:16px;font-weight:800;margin:5px 0;background:#111;color:#fff}
+button.start{background:#16833b}button.stop{background:#b52323}button.secondary{background:#666}
+input{width:100%;padding:11px;border:1px solid #bbb;border-radius:9px;font-size:16px}
+small{color:#666}.value{font-weight:800}.history-item{border:1px solid #ddd;padding:10px;margin-top:8px;border-radius:10px;background:#fafafa;box-shadow:0 1px 5px #0001}
+.fin-card{border-radius:12px;padding:12px;margin:8px 0;font-weight:800;box-shadow:0 2px 7px #0001}
+.income-yellow{background:#ffe36e;border:2px solid #e0ad00}
+.ride-income-green{background:#e8f7df;border:2px solid #55a43d;color:#176b20}
+.expenditure-red{background:#ffe1e1;border:2px solid #d94a4a;color:#a40000}
+.net-income-box{background:#ffe36e;border:3px solid #d89f00;border-radius:14px;padding:16px;margin-top:10px;text-align:center;box-shadow:0 3px 10px #0002}
+.net-income-box .net-label{font-size:14px;font-weight:900}
+.net-income-box .net-value{font-size:32px;font-weight:900;margin-top:5px}
+.date-time-box{background:#fff;border:2px solid #ddd;border-radius:12px;padding:12px}
+.date-time-value{font-size:20px;font-weight:900}
+footer{text-align:center;padding:18px;color:#666;font-size:12px}
+.danger{color:#ff3333;font-weight:900}
+.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rate-line{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #ddd}.rate-line:last-child{border-bottom:0}.rate-total{font-size:22px;font-weight:900}.muted{color:#777;font-size:12px}
+.track-switch{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.track-switch input{display:none}.switch-ui{position:relative;width:48px;height:26px;background:#555;border-radius:20px;display:inline-block;transition:.2s}.switch-ui:after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.track-switch input:checked + .switch-ui{background:#16833b}.track-switch input:checked + .switch-ui:after{transform:translateX(22px)}
+
+/* Premium single-box Income & Expenses design */
+.income-expenses-main{background:#fff;border:3px solid #d7a900;border-radius:18px;padding:14px;box-shadow:0 5px 16px #0002;overflow:hidden}
+.ie-title{text-align:center;font-size:17px;font-weight:900;letter-spacing:.3px;margin:0 0 10px;padding:10px 8px;border-radius:12px;background:#ffe36e;border:2px solid #e0ad00;color:#222}
+.ie-gross-card{background:#fff0a8;border:2px solid #e0ad00;border-radius:14px;padding:12px 14px;box-shadow:0 2px 7px #0001}
+.ie-label{font-size:13px;font-weight:900;color:#4d4d4d}
+.ie-gross-value{font-size:32px;font-weight:900;margin-top:2px;color:#111}
+.ie-stats-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.ie-stat-card{background:#e8f7df;border:2px solid #55a43d;color:#176b20;border-radius:14px;padding:10px;text-align:center;box-shadow:0 2px 7px #0001}
+.ie-stat-value{font-size:24px;font-weight:900;margin-top:3px}
+.ie-aftertax-card{margin-top:10px;background:#fff0a8;border:3px solid #e0ad00;color:#222;border-radius:14px;padding:12px;text-align:center;box-shadow:0 2px 7px #0001}
+.ie-aftertax-label{font-size:14px;font-weight:900;color:#6a5400;letter-spacing:.3px}
+.ie-aftertax-value{font-size:30px;font-weight:900;color:#111;margin-top:2px}
+.ie-aftertax-note{font-size:11px;font-weight:800;color:#6f5b16;margin-top:3px}
+.ie-calc-card{margin-top:10px;background:#fff1f1;border:2px solid #d94a4a;color:#8f0000;border-radius:14px;padding:11px 12px;box-shadow:0 2px 7px #0001}
+.ie-section-title{text-align:center;font-size:15px;font-weight:900;letter-spacing:.4px;padding-bottom:8px;margin-bottom:2px;border-bottom:1px solid #e7a2a2}
+.ie-line{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e2aaaa;font-size:14px;font-weight:800;line-height:1.25}
+.ie-line b{white-space:nowrap;font-size:15px}
+.ie-line small{font-size:10px;color:#8b5555;font-weight:800}
+.ie-line.info-line{color:#8b5555;font-size:12px}
+.ie-line.info-line b{font-size:13px}
+.ie-total-line{display:flex;justify-content:space-between;gap:10px;padding:11px 0 3px;font-size:16px;font-weight:900}
+.ie-total-line b{font-size:19px}
+.ie-final-card{margin-top:10px;background:#e8f7df;border:3px solid #3f9b4a;border-radius:15px;padding:13px;text-align:center;box-shadow:0 3px 10px #0002}
+.ie-final-label{font-size:15px;font-weight:900;color:#176b20;letter-spacing:.4px}
+.ie-final-value{font-size:34px;font-weight:900;color:#111;margin-top:3px}
+.ie-final-note{font-size:11px;font-weight:800;color:#4f6f54;margin-top:4px}
+@media(max-width:380px){.ie-line{font-size:13px}.ie-line b{font-size:14px}.ie-final-value{font-size:30px}}
+
+/* PREMIUM APP NAVIGATION */
+.menu-btn{width:46px!important;height:42px!important;margin:0!important;padding:0!important;border:2px solid rgba(0,0,0,.15)!important;background:#fff!important;color:#111!important;border-radius:12px!important;font-size:25px!important;font-weight:900!important;line-height:1!important;box-shadow:0 2px 8px #0002;cursor:pointer}
+.side-menu{position:fixed;left:-310px;top:0;bottom:0;width:310px;background:#111;z-index:30;padding:18px 14px 22px;box-shadow:10px 0 30px rgba(0,0,0,.35);transition:left .22s ease;overflow:auto}.side-menu.open{left:0}
+.side-title{color:#f4b400;font-weight:1000;font-size:20px;padding:14px 12px 18px;border-bottom:1px solid #333;margin-bottom:14px;letter-spacing:.4px}.side-subtitle{color:#aaa;font-size:11px;font-weight:700;padding:0 12px 10px}
+.side-menu button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid #333;background:#1b1b1b;color:#fff;margin:9px 0;padding:15px 13px;border-radius:14px;font-weight:900;font-size:15px;box-shadow:none;transition:.15s}.side-menu button.active{background:#f4b400;color:#111;border-color:#f4b400;box-shadow:0 5px 15px #f4b40055}
+.menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:20}.menu-overlay.open{display:block}.app-page{display:none}.app-page.active{display:block}
+.page-title{font-weight:1000;font-size:22px;margin:3px 0 2px;text-align:left;letter-spacing:.2px}.page-subtitle{font-size:11px;color:#777;font-weight:700;margin-bottom:12px}.page-back{display:none}
+.page-hero{background:linear-gradient(135deg,#111 0%,#252525 100%);color:#fff;border-radius:18px;padding:15px;margin:4px 0 12px;box-shadow:0 6px 18px #0002}.page-hero .hero-label{font-size:10px;color:#f4b400;font-weight:900;letter-spacing:1px}.page-hero .hero-text{font-size:21px;font-weight:1000;margin-top:4px}.page-hero .hero-note{font-size:11px;color:#bbb;margin-top:3px}.app-page > .box{border-radius:16px;box-shadow:0 3px 12px #00000012;border:1px solid #e9e9e9}
+</style>
+</head>
+<body>
+<header style="text-align:left">
+<div style="display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:9px">
+<button id="menuBtn" class="menu-btn" onclick="toggleMenu()">☰</button>
+<div><div id="headerPageTitle" style="font-size:18px;font-weight:1000;line-height:1">AVGM Bike Tracker</div><div id="headerPageSub" style="font-size:10px;font-weight:800;opacity:.7;margin-top:3px">TRACKER</div></div>
+<label class="track-switch" style="font-size:12px;white-space:nowrap">
+<span id="trackingLabel">OFF</span>
+<input id="trackingToggle" type="checkbox" onchange="toggleTracking(this.checked)">
+<span class="switch-ui"></span>
+</label>
+</div>
+</header>
+<div id="sideMenu" class="side-menu">
+  <div class="side-title">🏍️ AVGM BIKE TRACKER</div>
+  <div class="side-subtitle">APP PAGES</div>
+  <button id="nav1" onclick="showPage(1)">🏠 <span>1. TRACKER</span></button>
+  <button id="nav2" onclick="showPage(2)">🏍️ <span>2. 200 KM / RIDE</span></button>
+  <button id="nav3" onclick="showPage(3)">💰 <span>3. INCOME & EXPENSES</span></button>
+  <button id="nav4" onclick="showPage(4)">📋 <span>4. RIDE HISTORY</span></button>
+</div>
+<div id="menuOverlay" class="menu-overlay" onclick="toggleMenu(false)"></div>
+<div class="wrap">
+
+<div class="box date-time-box">
+  <div class="row">
+    <div class="half">
+      <div class="label">DATE</div><div id="date" class="date-time-value">--</div>
+      <div class="label" style="margin-top:7px">TIME</div><div id="time" class="date-time-value">--:--:--</div>
+    </div>
+    <div class="speed-wrap">
+      <div class="speed">
+        <div class="label" style="color:#fff">SPEED</div>
+        <div id="speed" class="big">0</div><div>KM/H</div>
+      </div>
+      <div class="temp-mini">
+        <div class="temp-label">TEMP</div>
+        <div id="temperature" class="temp-value">--°C</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="box yellow center">
+  <div class="label">🟡 CURRENT LOCATION</div>
+  <div id="currentLocation" class="big">WAITING FOR GPS...</div>
+</div>
+
+<div class="box yellow center">
+  <div class="label">TATIPAKA → CURRENT GPS LOCATION</div>
+  <div id="tatipakaDistance" class="big">0.00 KM</div>
+  <div id="tatipakaTime" style="font-size:20px;font-weight:900;margin-top:4px">--:--:--</div>
+  <small id="tatipakaTimeStatus">CALCULATING ROUTE TIME...</small>
+  <div id="tatipakaAnchorStatus" class="muted" style="margin-top:5px">TATIPAKA ANCHOR: WAITING FOR GPS</div>
+</div>
+
+
+<div class="box yellow">
+  <div class="label">ACTIVE AREA-TO-AREA TRIP</div>
+  <div id="activeTripText" class="value">TRACKING OFF</div>
+  <small id="activeTripStart">Start: --</small><br>
+  <small id="activeTripStartArea">Start Area: --</small>
+</div>
+
+
+<div class="row">
+  <div class="box half center">
+    <div class="label">EVERY 1 KM COST</div>
+    <div id="costPerKm" class="big">₹1.71</div>
+  </div>
+  <div class="box half center">
+    <div class="label">REMAINING PETROL RANGE</div>
+    <div id="remainingRange" class="big">0.00 KM</div>
+  </div>
+</div>
+
+<div class="box yellow center">
+  <div class="label">200 KM OPERATING RANGE</div>
+  <div id="operatingRange" class="big">200.00 KM REMAINING</div>
+  <small>ALL VALID GPS KILOMETRES COUNT TOWARD THE 200 KM OPERATING LIMIT</small>
+  <button id="rideToggleBtn" class="start" onclick="toggleRide()">RIDE OFF</button>
+  <div id="rideModeStatus" class="value">EMPTY / PICKUP MOVING</div>
+  <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;text-align:left">
+    <div>EMPTY + PICKUP KM<br><b id="emptyPickupKmValue">0.00</b> KM</div>
+    <div>PASSENGER RIDE KM<br><b id="rideKmValue">0.00</b> KM</div>
+  </div>
+  <div style="margin-top:6px">200 KM REMAINING: <span id="operatingKmLive">200.00</span> KM · RIDE TIME: <span id="rideTimeValue">0</span> MIN</div>
+</div>
+
+<div class="box">
+  <div class="label">CURRENT TRIP — BIKE RUNNING COST</div>
+  <div class="row">
+    <div class="half center"><div class="label">DISTANCE</div><div id="sessionDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">COST</div><div id="sessionCost" class="big">₹0.00</div></div>
+  </div>
+  <div class="center" style="margin-top:8px;padding:8px;background:#ffe1e1;border:1px solid #d94a4a;border-radius:9px">
+    <div class="label">ACTIVE RIDE PETROL COST</div>
+    <div id="ridePetrolCostLive" class="big" style="color:#a40000">₹0.00</div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">TODAY — BIKE RUNNING COST</div>
+  <div class="row">
+    <div class="half center"><div class="label">DISTANCE</div><div id="todayDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">COST</div><div id="todayCost" class="big">₹0.00</div></div>
+  </div>
+</div>
+
+<div class="box">
+  <div class="label">PETROL MONEY</div>
+  <input id="petrolMoney" type="number" min="0" step="1" placeholder="Example: 150">
+  <button onclick="addPetrolMoney()">ADD PETROL MONEY</button>
+  <small>₹ amount is converted to litres using the current petrol price.</small>
+</div>
+
+<div class="box">
+  <div class="label">PETROL / BIKE SETTINGS</div>
+  <div class="row">
+    <div class="half"><small>Current Petrol Litres</small><input id="petrolLitres" type="number" min="0" step="0.01"></div>
+    <div class="half"><small>Mileage KM/L</small><input id="mileage" type="number" min="1" step="0.1"></div>
+  </div>
+  <div style="margin-top:8px"><small>Petrol Price ₹/L</small><input id="petrolPrice" type="number" min="1" step="0.01"></div>
+  <button class="secondary" onclick="saveFuelSettings()">SAVE FUEL SETTINGS</button>
+</div>
+
+<div class="box">
+  <div class="label">GPS</div>
+  <div id="gpsStatus">GPS NOT STARTED</div>
+  <div id="coords" style="display:none">LAT: -- | LNG: --</div>
+</div>
+
+<div class="box">
+  <div class="label">TRAVEL TOTAL — BIKE RUNNING COST</div>
+  <div class="row">
+    <div class="half center"><div class="label">TOTAL DISTANCE</div><div id="totalDistance" class="big">0.00</div> KM</div>
+    <div class="half center"><div class="label">TOTAL COST</div><div id="totalCost" class="big">₹0.00</div></div>
+  </div>
+</div>
+
+<div class="box income-expenses-main" id="incomeExpenseSheet">
+  <div class="ie-title">TODAY — INCOME & EXPENSES</div>
+
+  <div class="ie-gross-card">
+    <div class="ie-label">RIDE GROSS INCOME</div>
+    <div id="dayGross" class="ie-gross-value">₹0.00</div>
+  </div>
+
+  <div class="ie-stats-row">
+    <div class="ie-stat-card">
+      <div class="ie-label">RIDE COUNT</div>
+      <div id="dayRides" class="ie-stat-value">0</div>
+    </div>
+    <div class="ie-stat-card">
+      <div class="ie-label">RIDE KMS</div>
+      <div id="dayRideKm" class="ie-stat-value">0.00 KM</div>
+    </div>
+  </div>
+
+  <div class="ie-aftertax-card">
+    <div class="ie-aftertax-label">TAX AFTER RIDE INCOME</div>
+    <div id="dayAfterTax" class="ie-aftertax-value">₹0.00</div>
+    <div class="ie-aftertax-note">RIDE GROSS INCOME − 28% RIDE TAX</div>
+  </div>
+
+  <div class="ie-calc-card">
+    <div class="ie-section-title">EXPENDITURE</div>
+    <div class="ie-line"><span>RIDE TAX <small>18% + 10% = 28%</small></span><b id="dayTaxExpense">₹0.00</b></div>
+    <div class="ie-line"><span>RIDE PETROL</span><b id="dayPetrol">₹0.00</b></div>
+    <div class="ie-line info-line"><span>EMPTY + PICKUP PETROL <small>(INFO ONLY)</small></span><b id="dayEmptyPickup">₹0.00</b></div>
+    <div class="ie-line info-line"><span>TOTAL RUNNING PETROL <small>(INFO ONLY)</small></span><b id="dayRunningPetrol">₹0.00</b></div>
+    <div class="ie-line"><span>330 KM JOURNEY PETROL COST</span><b id="dayJourneyCost">₹0.00</b></div>
+    <div class="ie-total-line"><span>TOTAL EXPENDITURE</span><b id="dayTotalExpense">₹0.00</b></div>
+  </div>
+
+  <div class="ie-final-card">
+    <div class="ie-final-label">FINAL NET INCOME</div>
+    <div id="dayFinalNet" class="ie-final-value">₹0.00</div>
+    <div class="ie-final-note">RIDE GROSS INCOME − TOTAL EXPENDITURE</div>
+  </div>
+</div>
+
+<div class="box" id="rideHistoryBox">
+  <div class="label" style="font-size:16px">RIDE HISTORY — AREA TO AREA</div>
+  <div id="history">No completed trips yet.</div>
+</div>
+</div>
+<footer>AVGM Bike Tracker</footer>
+
+<script>
+const DEFAULT_TATIPAKA={lat:16.50483,lng:81.8768};
+const TATIPAKA_AUTO_ANCHOR_RADIUS_KM=3;
+const ANCHOR_KEY="avgmTatipakaAnchorV2";
+const DATA_KEY="avgmBikeTrackerDataV3";
+const DAY_KEY="avgmBikeTrackerDayV3";
+
+let data=loadData();
+let day=loadDay();
+let watchId=null,lastPosition=null,lastGeoTime=0,wakeLock=null;
+let sessionDistance=0,sessionOperatingDistance=0,sessionRideDistance=0,sessionEmptyPickupDistance=0,activeTrip=null,activeRide=null,rideOn=false,trackingStarted=false;
+let routeLastLat=null,routeLastLng=null,routeLastAt=0,routeRequestId=0,routeTimeSec=0;
+let tatipaka=loadTatipaka();
+
+function loadData(){
+  const fresh={totalDistance:0,totalCost:0,remainingRange:0,tatipakaDistance:0,history:[],petrolMoneyTotal:0,activeTrip:null};
+  try{
+    let x=JSON.parse(localStorage.getItem(DATA_KEY)||"null");
+    if(x) return {...fresh,...x};
+    const old=JSON.parse(localStorage.getItem("avgmBikeTrackerDataV2")||localStorage.getItem("bikeTrackerData")||"null");
+    if(old) return {
+      ...fresh,...old,
+      totalDistance:Number(old.totalDistance||old.distance||0),
+      totalCost:Number(old.totalCost||old.cost||0),
+      history:Array.isArray(old.history)?old.history:[]
+    };
+  }catch(e){}
+  return fresh;
+}
+function loadTatipaka(){
+  // Always use the permanent Tatipaka coordinates already present in this index.
+  // Do NOT load an older/custom anchor because it can create the previous ~7 KM error.
+  return {...DEFAULT_TATIPAKA,custom:false};
+}
+function saveTatipaka(){localStorage.setItem(ANCHOR_KEY,JSON.stringify(tatipaka));}
+
+function getLocalDayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function loadDay(){
+  const today=getLocalDayKey();
+  try{
+    const x=JSON.parse(localStorage.getItem(DAY_KEY)||"null");
+    if(x && x.date===today)return x;
+  }catch(e){}
+  return {date:today,distance:0,cost:0,tatipakaFreeDistance:0};
+}
+function ensureToday(){
+  const today=getLocalDayKey();
+  if(!day || day.date!==today){
+    day={date:today,distance:0,cost:0,tatipakaFreeDistance:0};
+    sessionOperatingDistance=0;
+    sessionEmptyPickupDistance=0;
+    sessionRideDistance=0;
+    save();
+    return true;
+  }
+  return false;
+}
+function save(){localStorage.setItem(DATA_KEY,JSON.stringify(data));localStorage.setItem(DAY_KEY,JSON.stringify(day))}
+function money(n){return "₹"+Number(n||0).toFixed(2)}
+function km(n){return Number(n||0).toFixed(2)}
+function hav(a,b){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad,dLon=(b.lng-a.lng)*rad;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function getCostPerKm(){return Number(data.petrolPrice||120)/Number(data.mileage||70)}
+function getRideFare(distance, minutes, waitMinutes){
+  distance=Number(distance||0); minutes=Math.max(0,Number(minutes||0)); waitMinutes=Math.max(0,Number(waitMinutes||0));
+  let distanceFare=0;
+  if(distance>2) distanceFare += Math.min(distance,6)-2>0 ? (Math.min(distance,6)-2)*6 : 0;
+  if(distance>6) distanceFare += (Math.min(distance,100)-6)*8;
+  const timeFare=minutes*0.5;
+  const waitFare=Math.min(30,Math.max(0,waitMinutes-3)*1);
+  return 22+distanceFare+timeFare+2+waitFare;
+}
+function getRideTax(rideAmount){const amount=Number(rideAmount||0); const tax18=amount*0.18; const tax10=amount*0.10; return tax18+tax10}
+function getRideNet(rideAmount,petrolCost){
+  return Math.max(0,Number(rideAmount||0)-getRideTax(rideAmount)-Number(petrolCost||0));
+}
+function getDailySheet(){
+  const today=new Date().toLocaleDateString("en-IN");
+  const rides=data.history.filter(x=>x.date===today);
+  const gross=rides.reduce((s,x)=>s+Number(x.rideFare!=null?x.rideFare:x.cost||0),0);
+  const tax=rides.reduce((s,x)=>{
+    const amount=Number(x.rideFare!=null?x.rideFare:x.cost||0);
+    return s+Number(x.rideTax!=null?x.rideTax:getRideTax(amount));
+  },0);
+  const ridePetrol=rides.reduce((s,x)=>s+Number(x.petrolCost||0),0);
+  const rideKm=rides.reduce((s,x)=>s+Number(x.distance||0),0);
+  // All GPS distance not covered while Ride ON is Empty/Pickup movement.
+  const todayRunningKm=Number(day.distance||0);
+  const emptyPickupKm=Math.max(0,todayRunningKm-rideKm);
+  const emptyPickupCost=emptyPickupKm*getCostPerKm();
+  const totalRunningPetrol=emptyPickupCost+ridePetrol;
+  const afterTax=Math.max(0,gross-tax);
+  const rideNet=Math.max(0,afterTax-ridePetrol);
+  const journeyKm=330;
+  const journeyCost=journeyKm*getCostPerKm();
+  // Final expenditure = 28% ride tax + ride petrol + 330 KM journey expense.
+  const totalExpense=tax+ridePetrol+journeyCost;
+  const finalNet=Math.max(0,gross-totalExpense);
+  return {rides,gross,tax,ridePetrol,petrol:ridePetrol,rideNet,afterTax,journeyKm,journeyCost,finalNet,rideKm,emptyPickupKm,emptyPickupCost,totalRunningPetrol,totalExpense};
+}
+function currentRideMinutes(){
+  if(!activeRide || !activeRide.startTimestamp) return 0;
+  return Math.max(0,(Date.now()-activeRide.startTimestamp)/60000);
+}
+function render(){
+  ensureToday();
+  document.getElementById("costPerKm").textContent=money(getCostPerKm());
+  document.getElementById("remainingRange").textContent=km(data.remainingRange)+" KM";
+  document.getElementById("tatipakaDistance").textContent=km(data.tatipakaDistance)+" KM";
+  const tte=document.getElementById("tatipakaTime"); if(tte) tte.textContent=routeTimeSec>0?formatHMS(routeTimeSec):"--:--:--";
+  const anchorStatus=document.getElementById("tatipakaAnchorStatus");
+  if(anchorStatus){
+    anchorStatus.textContent=tatipaka.custom ? "TATIPAKA ANCHOR: FIXED" : "TATIPAKA ANCHOR: FIXED DEFAULT GPS";
+  }
+  document.getElementById("sessionDistance").textContent=km(sessionDistance);
+  document.getElementById("sessionCost").textContent=money(sessionDistance*getCostPerKm());
+  const liveRidePetrol=document.getElementById("ridePetrolCostLive");
+  if(liveRidePetrol) liveRidePetrol.textContent=money((activeRide?Number(activeRide.distance||0):0)*getCostPerKm());
+  const rideMinutes=currentRideMinutes();
+  const rideFareEl=document.getElementById("rideFare");
+  const rideTimeEl=document.getElementById("rideTime");
+  if(rideFareEl) rideFareEl.textContent=money(getRideFare(sessionRideDistance,rideMinutes,0));
+  if(rideTimeEl) rideTimeEl.textContent=Math.floor(rideMinutes)+" min";
+  const op=document.getElementById("operatingRange"); if(op) op.textContent=km(Math.max(0,200-Number(day.distance||0)))+" KM REMAINING";
+  const epk=document.getElementById("emptyPickupKmValue"); if(epk) epk.textContent=km(sessionEmptyPickupDistance);
+  const rk=document.getElementById("rideKmValue"); if(rk) rk.textContent=km(sessionRideDistance);
+  const ok=document.getElementById("operatingKmLive"); if(ok) ok.textContent=km(Math.max(0,200-Number(day.distance||0)));
+  const or=document.getElementById("operatingRange"); if(or) or.textContent=km(Math.max(0,200-Number(day.distance||0)))+" KM REMAINING";
+  const rt=document.getElementById("rideTimeValue"); if(rt) rt.textContent=Math.floor(rideMinutes);
+  const rb=document.getElementById("rideToggleBtn"); if(rb){rb.textContent=rideOn?"RIDE ON":"RIDE OFF";rb.className=rideOn?"stop":"start";}
+  const rs=document.getElementById("rideModeStatus"); if(rs) rs.textContent=rideOn?"PASSENGER RIDE ACTIVE":"EMPTY / PICKUP MOVING";
+  document.getElementById("todayDistance").textContent=km(day.distance);
+  document.getElementById("todayCost").textContent=money(day.cost);
+  document.getElementById("totalDistance").textContent=km(data.totalDistance);
+  document.getElementById("totalCost").textContent=money(data.totalCost);
+  const ds=getDailySheet();
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set("dayRides",ds.rides.length);
+  set("dayRideKm",km(ds.rideKm)+" KM");
+  set("dayGross",money(ds.gross));
+  set("dayTax",money(ds.tax));
+  set("dayTaxExpense",money(ds.tax));
+  set("dayAfterTax",money(ds.afterTax));
+  set("dayPetrol",money(ds.ridePetrol));
+  set("dayEmptyPickup",money(ds.emptyPickupCost));
+  set("dayRunningPetrol",money(ds.totalRunningPetrol));
+  set("dayJourneyCost",money(ds.journeyCost));
+  set("dayTotalExpense",money(ds.totalExpense));
+  set("dayFinalNet",money(ds.finalNet));
+  document.getElementById("petrolLitres").value=data.petrolLitres||"";
+  document.getElementById("mileage").value=data.mileage||70;
+  document.getElementById("petrolPrice").value=data.petrolPrice||120;
+  const anchorText=document.getElementById("tatipakaAnchorText");
+  if(anchorText) anchorText.textContent=tatipaka.custom?`SAVED GPS: ${tatipaka.lat.toFixed(6)}, ${tatipaka.lng.toFixed(6)}`:"DEFAULT TATIPAKA";
+  const at=document.getElementById("activeTripText");
+  const as=document.getElementById("activeTripStart");
+  const aa=document.getElementById("activeTripStartArea");
+  if(at) at.textContent=trackingStarted?"TRACKING ON":"TRACKING OFF";
+  if(as) as.textContent=activeTrip?`Start: ${activeTrip.startTime||"--"}`:"Start: --";
+  if(aa) aa.textContent=activeTrip?`Start Area: ${activeTrip.startArea||"LOCATING..."}`:"Start Area: --";
+  const h=document.getElementById("history");
+  h.innerHTML=data.history.length?data.history.slice().reverse().map(x=>{
+    const start=x.startArea||"START LOCATION";
+    const end=x.endArea||"END LOCATION";
+    const rideAmount=Number(x.rideFare!=null?x.rideFare:x.cost||0);
+    const tax=Number(x.rideTax!=null?x.rideTax:getRideTax(rideAmount));
+    const petrolLitres=Number(x.petrolUsedLitres||0);
+    const petrolCost=Number(x.petrolCost||0);
+    const net=x.netIncome!=null?Number(x.netIncome):getRideNet(rideAmount,petrolCost);
+    return `<div class="history-item">
+      <b>${x.date||""}</b><br>
+      <b>START LOCATION:</b> ${start}<br>
+      <b>END RIDE LOCATION:</b> ${end}<br>
+      <b>TIME:</b> ${x.startTime||"--"} → ${x.endTime||"--"}<br>
+      <b>DISTANCE:</b> ${km(x.distance)} KM<br>
+      <b style="color:#176b20">RIDE INCOME:</b> <span style="color:green;font-size:20px;font-weight:900">${money(rideAmount)}</span><br>
+      <b style="color:#a40000">EXPENDITURE — TAX (28%):</b> <span style="color:red">${money(tax)}</span><br>
+      <b style="color:#a40000">EXPENDITURE — RIDE PETROL:</b> <span style="color:red">${petrolLitres.toFixed(2)} L · ${money(petrolCost)}</span><br>
+      <b style="font-size:14px">NET INCOME:</b> <span style="background:#ffe36e;padding:4px 8px;border-radius:6px;font-size:22px;font-weight:900">${money(net)}</span><br>
+      <b>RIDE TIME:</b> ${Math.floor(Number(x.rideMinutes||0))} min
+    </div>`;
+  }).join(""):"No completed trips yet.";
+}
+
+function clock(){
+  const d=new Date();
+  const dateEl=document.getElementById("date");
+  const timeEl=document.getElementById("time");
+  if(dateEl) dateEl.textContent=d.toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"});
+  if(timeEl) timeEl.textContent=d.toLocaleTimeString("en-IN",{hour12:false});
+}
+setInterval(()=>{clock();render()},1000);
+clock();
+render();
+
+function saveFuelSettings(){
+  const litres=Number(document.getElementById("petrolLitres").value||0);
+  data.petrolLitres=litres;
+  data.mileage=Number(document.getElementById("mileage").value||70);
+  data.petrolPrice=Number(document.getElementById("petrolPrice").value||120);
+  data.remainingRange=litres*data.mileage;
+  save();render();
+  alert("Fuel settings saved.");
+}
+function addPetrolMoney(){
+  const moneyValue=Number(document.getElementById("petrolMoney").value||0);
+  if(moneyValue<=0)return alert("Enter petrol money.");
+  data.petrolPrice=Number(data.petrolPrice||120);
+  data.mileage=Number(data.mileage||70);
+  const litres=moneyValue/data.petrolPrice;
+  data.petrolMoneyTotal=Number(data.petrolMoneyTotal||0)+moneyValue;
+  data.petrolLitres=Number(data.petrolLitres||0)+litres;
+  data.remainingRange=Number(data.remainingRange||0)+(litres*data.mileage);
+  document.getElementById("petrolMoney").value="";
+  save();render();
+  alert("₹"+moneyValue.toFixed(2)+" added. Range added: "+(litres*data.mileage).toFixed(2)+" KM");
+}
+async function requestWakeLock(){
+  try{if("wakeLock" in navigator)wakeLock=await navigator.wakeLock.request("screen")}catch(e){}
+}
+function maybeAutoSetTatipaka(lat,lng){
+  // Tatipaka is permanently fixed to DEFAULT_TATIPAKA from this index.
+  tatipaka={...DEFAULT_TATIPAKA,custom:false};
+  return false;
+}
+
+let lastTempAt=0;
+function climateText(code,isDay){
+  const c=Number(code);
+  const day=Number(isDay)===1;
+  const prefix=day?"☀️ DAY ATMOSPHERE":"🌙 NIGHT ATMOSPHERE";
+  let condition="CLEAR SKY";
+  if(c===0) condition=day?"CLEAR & SUNNY":"CLEAR SKY";
+  else if(c===1) condition=day?"MAINLY CLEAR":"MOSTLY CLEAR";
+  else if(c===2) condition="PARTLY CLOUDY";
+  else if(c===3) condition="OVERCAST / CLOUDY";
+  else if([45,48].includes(c)) condition="FOGGY / MISTY";
+  else if([51,53,55,56,57].includes(c)) condition="LIGHT DRIZZLE";
+  else if([61,63,65,66,67].includes(c)) condition="RAINY";
+  else if([71,73,75,77].includes(c)) condition="COLD / SNOWY";
+  else if([80,81,82].includes(c)) condition="RAIN SHOWERS";
+  else if([85,86].includes(c)) condition="SNOW SHOWERS";
+  else if([95,96,99].includes(c)) condition="THUNDERSTORM";
+  return prefix+" • "+condition;
+}
+function updateClimateMode(code,isDay){
+  const el=document.getElementById("climateMode");
+  if(!el)return;
+  if(code==null){
+    const hour=new Date().getHours();
+    el.textContent=hour>=6&&hour<18?"☀️ DAY ATMOSPHERE • CHECKING...":"🌙 NIGHT ATMOSPHERE • CHECKING...";
+    return;
+  }
+  el.textContent=climateText(code,isDay);
+}
+function updateTemperature(lat,lng){
+  updateClimateMode();
+  const now=Date.now(); if(now-lastTempAt<600000)return; lastTempAt=now;
+  const tempEl=document.getElementById("temperature"),statusEl=document.getElementById("temperatureStatus");
+  if(statusEl)statusEl.textContent="UPDATING...";
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code,is_day&timezone=auto`).then(r=>r.json()).then(j=>{
+    const t=j&&j.current?Number(j.current.temperature_2m):NaN;
+    const code=j&&j.current?j.current.weather_code:null;
+    const isDay=j&&j.current?j.current.is_day:null;
+    updateClimateMode(code,isDay);
+    if(Number.isFinite(t)){if(tempEl)tempEl.textContent=t.toFixed(1)+"°C";if(statusEl)statusEl.textContent="CURRENT AIR TEMPERATURE";}
+    else if(statusEl)statusEl.textContent="TEMPERATURE UNAVAILABLE";
+  }).catch(()=>{if(statusEl)statusEl.textContent="INTERNET NEEDED FOR TEMPERATURE"});
+}
+function formatHMS(sec){sec=Math.max(0,Math.round(Number(sec)||0));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return [h,m,s].map(v=>String(v).padStart(2,"0")).join(":")}
+setInterval(updateClimateMode,60000); updateClimateMode();
+
+function reverseGeocode(lat,lng,callback,force=false){
+  const el=document.getElementById("currentLocation");
+  const now=Date.now();
+  if(!force && now-lastGeoTime<30000){ if(callback) callback(el.textContent||"CURRENT LOCATION"); return; }
+  lastGeoTime=now;
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en`,{headers:{"Accept":"application/json"}})
+  .then(r=>r.json()).then(j=>{
+    const a=j.address||{};
+    const area=a.village||a.town||a.neighbourhood||a.suburb||a.quarter||a.city_district||"";
+    const street=a.road||a.pedestrian||a.residential||a.footway||a.path||a.cycleway||"";
+    const city=a.city||a.municipality||a.city_district||"";
+    const name=area || street || city || a.county || j.name || "CURRENT LOCATION";
+    const upper=String(name).toUpperCase();
+    if(el) el.textContent=upper;
+    if(callback) callback(upper);
+  }).catch(()=>{if(callback)callback(el?.textContent||"GPS LOCATION FOUND")});
+}
+function updateLocationName(lat,lng,callback){reverseGeocode(lat,lng,callback,false)}
+function setTatipakaHere(){
+  if(tatipaka.custom) return alert("Tatipaka anchor is already permanently saved.");
+  if(!lastPosition) return alert("First turn ON GPS and wait for GPS location.");
+  const d=hav(DEFAULT_TATIPAKA,lastPosition);
+  if(d>TATIPAKA_AUTO_ANCHOR_RADIUS_KM) return alert("Current GPS is not inside the Tatipaka area.");
+  tatipaka={lat:lastPosition.lat,lng:lastPosition.lng,custom:true};
+  saveTatipaka();
+  data.tatipakaDistance=0;
+  save();render();
+  alert("Exact current GPS saved permanently as TATIPAKA anchor.");
+}
+
+function updateTatipakaRoadDistance(current){
+  if(!current||!tatipaka)return;
+  const now=Date.now();
+  const movedSince=routeLastLat===null?999:hav({lat:routeLastLat,lng:routeLastLng},current);
+  if(now-routeLastAt<60000 && movedSince<1)return;
+  routeLastAt=now; routeLastLat=current.lat; routeLastLng=current.lng;
+  const req=++routeRequestId;
+  const url=`https://router.project-osrm.org/route/v1/driving/${tatipaka.lng},${tatipaka.lat};${current.lng},${current.lat}?overview=false`;
+  fetch(url).then(r=>r.json()).then(j=>{
+    if(req!==routeRequestId)return;
+    const meters=j&&j.routes&&j.routes[0]?Number(j.routes[0].distance):NaN;
+    const duration=j&&j.routes&&j.routes[0]?Number(j.routes[0].duration):NaN;
+    if(Number.isFinite(meters)&&meters>0){data.tatipakaDistance=meters/1000;routeTimeSec=Number.isFinite(duration)&&duration>0?duration:0;const ts=document.getElementById("tatipakaTimeStatus");if(ts)ts.textContent=routeTimeSec>0?"ESTIMATED DRIVING TIME TO TATIPAKA":"ROUTE TIME UNAVAILABLE";save();render();}
+  }).catch(()=>{});
+}
+function finishRide(endName){
+  if(!activeRide)return;
+  const now=Date.now();
+  const minutes=Math.max(0,(now-activeRide.startTimestamp)/60000);
+  const distance=Number(activeRide.distance||0);
+  const fare=getRideFare(distance,minutes,0);
+  const petrolUsedLitres=distance/Number(data.mileage||70);
+  const petrolCost=petrolUsedLitres*Number(data.petrolPrice||120);
+  const tax=getRideTax(fare);
+  const net=getRideNet(fare,petrolCost);
+  data.history.push({date:activeRide.date,startTime:activeRide.startTime,endTime:new Date(now).toLocaleTimeString("en-IN",{hour12:false}),startArea:activeRide.startArea||"START LOCATION",endArea:endName||document.getElementById("currentLocation").textContent||"END LOCATION",startLat:activeRide.startLat,startLng:activeRide.startLng,endLat:lastPosition?.lat,endLng:lastPosition?.lng,distance,rideFare:fare,rideMinutes:minutes,petrolUsedLitres,petrolCost,rideTax:tax,netIncome:net});
+  if(data.history.length>100)data.history.shift();
+  activeRide=null; rideOn=false; save(); render();
+}
+function toggleRide(){
+  if(!trackingStarted){alert("First turn ON GPS tracking.");return;}
+  if(!rideOn){
+    if(Number(day.distance||0)>=200){alert("200 KM operating range completed.");return;}
+    const now=new Date();
+    activeRide={date:now.toLocaleDateString("en-IN"),startTime:now.toLocaleTimeString("en-IN",{hour12:false}),startTimestamp:Date.now(),startArea:document.getElementById("currentLocation").textContent||"START LOCATION",startLat:lastPosition?.lat,startLng:lastPosition?.lng,distance:0};
+    rideOn=true; save(); render();
+  }else{
+    finishRide(document.getElementById("currentLocation").textContent||"END LOCATION");
+  }
+}
+
+function positionSuccess(pos){
+  ensureToday();
+  const lat=pos.coords.latitude,lng=pos.coords.longitude;
+  const speed=Number.isFinite(pos.coords.speed)&&pos.coords.speed>=0?pos.coords.speed*3.6:0;
+  document.getElementById("speed").textContent=speed.toFixed(1);
+  document.getElementById("coords").textContent=`LAT: ${lat.toFixed(6)} | LNG: ${lng.toFixed(6)}`;
+  document.getElementById("gpsStatus").textContent="GPS TRACKING ACTIVE";
+  if(speed>50) document.getElementById("speed").style.color="#ff3333"; else document.getElementById("speed").style.color="#fff";
+  const current={lat,lng};
+  updateTemperature(lat,lng);
+  maybeAutoSetTatipaka(lat,lng);
+  updateTatipakaRoadDistance(current);
+  updateLocationName(lat,lng,(name)=>{
+    if(activeTrip && (!activeTrip.startArea || activeTrip.startArea==="LOCATING...")){activeTrip.startArea=name;data.activeTrip=activeTrip;save();render();}
+  });
+  if(!lastPosition){
+    lastPosition=current;
+    if(activeTrip){activeTrip.startLat=lat;activeTrip.startLng=lng;data.activeTrip=activeTrip;}
+    save();render();return;
+  }
+  const moved=hav(lastPosition,current);
+  if(moved>=0.005 && moved<=5){
+    const room=Math.max(0,200-Number(day.distance||0));
+    const counted=Math.min(moved,room);
+    // No 65 KM exemption: all valid GPS movement counts toward daily distance and operating limit.
+    // Petrol consumption uses the full valid GPS movement distance.
+    const actualMovedKm=moved;
+    if(actualMovedKm>0){
+      const mileage=Math.max(1,Number(data.mileage||70));
+      const usedLitres=actualMovedKm/mileage;
+      data.remainingRange=Math.max(0,Number(data.remainingRange||0)-actualMovedKm);
+      data.petrolLitres=Math.max(0,Number(data.petrolLitres||0)-usedLitres);
+    }
+    if(counted>0){
+      sessionDistance+=counted;
+      sessionOperatingDistance+=counted;
+      if(rideOn && activeRide){activeRide.distance+=counted;sessionRideDistance+=counted;}
+      else {sessionEmptyPickupDistance+=counted;}
+      day.distance+=counted; data.totalDistance+=counted;
+      const cost=counted*getCostPerKm(); day.cost+=cost; data.totalCost+=cost;
+    }
+    lastPosition=current;
+    if(day.distance>=200 && rideOn) finishRide(document.getElementById("currentLocation").textContent||"END LOCATION");
+  }else if(moved>5){lastPosition=current;}
+  save();render();
+}
+function positionError(err){
+  document.getElementById("gpsStatus").textContent="GPS ERROR: "+(err.message||"PLEASE ALLOW LOCATION");
+}
+function startGPS(){
+  if(!navigator.geolocation)return alert("This device/browser does not support GPS.");
+  if(watchId!==null)return;
+  sessionDistance=0;sessionOperatingDistance=0;sessionRideDistance=0;sessionEmptyPickupDistance=0;lastPosition=null;activeRide=null;rideOn=false;trackingStarted=true;routeLastLat=null;routeLastLng=null;routeLastAt=0;
+  const now=new Date();
+  activeTrip={date:now.toLocaleDateString("en-IN"),startTime:now.toLocaleTimeString("en-IN",{hour12:false}),startTimestamp:Date.now(),startArea:"LOCATING...",startLat:null,startLng:null,startRemainingRange:Number(data.remainingRange||0)};
+  data.activeTrip=activeTrip;
+  document.getElementById("trackingToggle").checked=true;
+  document.getElementById("trackingLabel").textContent="ON";
+  document.getElementById("gpsStatus").textContent="STARTING GPS...";
+  requestWakeLock();
+  navigator.geolocation.getCurrentPosition(positionSuccess,positionError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+  watchId=navigator.geolocation.watchPosition(positionSuccess,positionError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+  save();render();
+}
+function stopGPS(){
+  if(rideOn && activeRide) finishRide(document.getElementById("currentLocation").textContent||"END LOCATION");
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}
+  const finish=()=>{
+    activeTrip=null;data.activeTrip=null;trackingStarted=false;sessionDistance=0;sessionOperatingDistance=0;sessionRideDistance=0;sessionEmptyPickupDistance=0;activeRide=null;rideOn=false;lastPosition=null;
+    document.getElementById("trackingToggle").checked=false;
+    document.getElementById("trackingLabel").textContent="OFF";
+    document.getElementById("speed").textContent="0.0";
+    document.getElementById("speed").style.color="#fff";
+    document.getElementById("gpsStatus").textContent="GPS STOPPED";
+    save();render();
+  };
+  finish();
+}
+function toggleTracking(on){if(on)startGPS();else stopGPS()}
+
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&watchId!==null)requestWakeLock()});
+trackingStarted=false;activeTrip=null;data.activeTrip=null;render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js?v=avgm20261005weather03").catch(()=>{});
+
+function toggleMenu(force){const m=document.getElementById("sideMenu"),o=document.getElementById("menuOverlay");const open=force===undefined?!m.classList.contains("open"):force;m.classList.toggle("open",open);o.classList.toggle("open",open)}
+function showPage(n){const titles=["TRACKER","200 KM / RIDE","INCOME & EXPENSES","RIDE HISTORY"];document.querySelectorAll(".app-page").forEach((p,i)=>p.classList.toggle("active",i===n-1));document.querySelectorAll(".side-menu button").forEach((b,i)=>b.classList.toggle("active",i===n-1));const h=document.getElementById("headerPageTitle"),s=document.getElementById("headerPageSub");if(h)h.textContent="AVGM Bike Tracker";if(s)s.textContent=titles[n-1];toggleMenu(false);window.scrollTo(0,0)}
+function initAppPages(){
+ const wrap=document.querySelector(".wrap"); if(!wrap)return;
+ const kids=[...wrap.children];
+ const page1=document.createElement("div"),page2=document.createElement("div"),page3=document.createElement("div"),page4=document.createElement("div");
+ [page1,page2,page3,page4].forEach((p,i)=>{p.className="app-page";const names=["TRACKER","200 KM / RIDE","INCOME & EXPENSES","RIDE HISTORY"],subs=["Live GPS, location & petrol tracking","Daily 200 KM limit & ride mode","Today’s income, tax & net calculation","Completed ride records"];p.innerHTML="";wrap.appendChild(p)});
+ page1.classList.add("active");showPage(1);
+ const hist=wrap.querySelector("#rideHistoryBox");
+ const ie=wrap.querySelector("#incomeExpenseSheet");
+ const rangeBox=[...wrap.children].find(x=>x.classList.contains("box")&&x.querySelector("#operatingRange"));
+ // Page 2: 200 KM box only.
+ if(rangeBox)page2.appendChild(rangeBox);
+ // Page 3/4 exact requested sections.
+ if(ie)page3.appendChild(ie);
+ if(hist)page4.appendChild(hist);
+ // Everything else stays on Tracker page, preserving all existing controls/settings.
+ const remain=[...wrap.children].filter(x=>x.classList.contains("box") && ![rangeBox,ie,hist].includes(x));
+ remain.forEach(x=>page1.appendChild(x));
+}
+initAppPages();
+setInterval(()=>{if(ensureToday()) render();},30000);
+</script>
+</body>
+</html>
